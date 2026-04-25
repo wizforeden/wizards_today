@@ -29,6 +29,7 @@ const SHEET_ID = '1bL-8N43NldAHfjPouIZzEDioFUXUNqFhRdJukwasFww';
 const SHEET_BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
 const SHEET_CACHE_KEY = 'app:sheetCache';
 const STORAGE_KEYS = ['app:mahwa','app:wizards','app:affinity','app:level','app:doneCount','app:gachaDate','app:slotSession','app:firstRunDone','app:logs','app:playerName'];
+const TASK_TAG_ORDER = ['근육','가정','회복','작업','지성','정리','생업','생존'];
 
 // 시스템 슬롯 텍스트 상수
 const SYS_SUBJECTS = ['혼자서','분과회원과'];
@@ -37,7 +38,7 @@ const SYS_ACTIONS  = ['차를 마셨다','연구에 매진했다','책을 읽었
 // ── 폴백 데이터 (시트 로드 실패 시) ──────────────────────────────────────────
 const FB_WIZARDS = [
   {id:"W01",name:"시그너스",club:"종장",tags:["지성","정리"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w001.png",bg:"#E3EEF8",border:"#B5CCE4",accent:"#3A6080"},
-  {id:"W02",name:"호타루",club:"종장",tags:["생업","정리"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w002.png",bg:"#D2FCCF",border:"#AFF0AF",accent:"#36911D"},
+  {id:"W02",name:"호타루",club:"종장",tags:["생업","정리"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w002.jpg",bg:"#D2FCCF",border:"#AFF0AF",accent:"#36911D"},
   {id:"W03",name:"릴리메이",club:"종장",tags:["작업","회복"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w003.png",bg:"#F4E6F3",border:"#E5B8E8",accent:"#962C8C"},
   {id:"W04",name:"시타",club:"서광",tags:["근육","가정"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w004.png",bg:"#E8EAEC",border:"#BCC2C8",accent:"#4A5460"},
   {id:"W05",name:"데네브",club:"서광",tags:["회복","생존"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w005.png",bg:"#E4EDE4",border:"#B2CEB2",accent:"#345040"},
@@ -301,12 +302,21 @@ function LvUpBanner({event,onClose}){
     </div>
   );
 }
-function SlotDrop({placeholder,value,onChange,opts,disabledIds,borderColor}){
+function SlotDrop({placeholder,value,onChange,opts,disabledIds,borderColor,disabled,grouped}){
   return(
     <div style={{flex:1,position:'relative'}}>
-      <select value={value} onChange={e=>onChange(e.target.value)} style={{width:'100%',padding:'7px 9px',borderRadius:'var(--border-radius-md)',border:'0.5px solid '+borderColor,background:'rgba(255,255,255,0.55)',fontSize:13,color:value?'var(--color-text-primary)':'var(--color-text-tertiary)',appearance:'none',outline:'none',cursor:'pointer'}}>
+      <select value={value} onChange={e=>onChange(e.target.value)} disabled={disabled} style={{width:'100%',padding:'7px 9px',borderRadius:'var(--border-radius-md)',border:'0.5px solid '+borderColor,background:disabled?'rgba(0,0,0,0.04)':'rgba(255,255,255,0.55)',fontSize:13,color:'var(--color-text-primary)',appearance:'none',outline:'none',cursor:disabled?'not-allowed':'pointer',opacity:disabled?0.5:1}}>
         <option value="" disabled>{placeholder}</option>
-        {opts.map(o=>{var dis=disabledIds&&disabledIds.includes(o.v);return<option key={o.v} value={o.v} disabled={dis} style={{color:dis?'#B0B8C0':undefined}}>{o.l}</option>;})}
+        {grouped
+          ? TASK_TAG_ORDER.map(tag=>{
+              var items=opts.filter(o=>o.tag===tag);
+              if(items.length===0)return null;
+              return<optgroup key={tag} label=" ">
+                {items.map(o=>{var dis=disabledIds&&disabledIds.includes(o.v);return<option key={o.v} value={o.v} disabled={dis}>{dis?'✕ ':''}{o.l}</option>;})}
+              </optgroup>;
+            })
+          : opts.map(o=>{var dis=disabledIds&&disabledIds.includes(o.v);return<option key={o.v} value={o.v} disabled={dis}>{dis?'✕ ':''}{o.l}</option>;})
+        }
       </select>
       <span style={{position:'absolute',right:7,top:'50%',transform:'translateY(-50%)',pointerEvents:'none',color:'rgba(0,0,0,0.3)',fontSize:9}}>▼</span>
     </div>
@@ -403,7 +413,7 @@ function SlotCard({slot,idx,confirmed,affinity,affinityChanges,level,lvTransitio
   var aff=wiz?affinity[wiz.id]:0,chg=wiz?affinityChanges[wiz.id]:null;
   var lv=wiz?level[wiz.id]:1,lvTrans=wiz?lvTransitions[wiz.id]:null;
   var disW=usedWizIds.filter(id=>id!==slot.wizardId);
-  var ownedWiz=wizards.filter(w=>w.owned).sort((a,b)=>{var cc=a.club.localeCompare(b.club,'ko');return cc!==0?cc:a.name.localeCompare(b.name,'ko');});
+  var ownedWiz=wizards.filter(w=>w.owned).sort((a,b)=>{var aDis=disW.includes(a.id),bDis=disW.includes(b.id);if(aDis!==bDis)return aDis?1:-1;var cc=a.club.localeCompare(b.club,'ko');return cc!==0?cc:a.name.localeCompare(b.name,'ko');});
   var bg=wiz?wiz.bg:'#F0F0F0',bdr=wiz?wiz.border:'#DCDCDC',acc=wiz?wiz.accent:'#888';
   function onTask(taskId){var w=wizards.find(w=>w.id===slot.wizardId),t=tasks.find(t=>t.id===taskId);var tm=!!(w&&t&&w.tags.includes(t.tag));onUpd(idx,{taskId,tagMatch:tm,dialogue:w?getLine(slot.wizardId,tm?'TASK_MATCH':'TASK_UNMATCH'):null});}
   function onWiz(wId){var w=wizards.find(w=>w.id===wId),t=tasks.find(t=>t.id===slot.taskId);var tm=!!(w&&t&&w.tags.includes(t.tag));onUpd(idx,{wizardId:wId,tagMatch:tm,dialogue:getLine(wId,tm?'TASK_MATCH':'TASK_UNMATCH')});}
@@ -416,9 +426,9 @@ function SlotCard({slot,idx,confirmed,affinity,affinityChanges,level,lvTransitio
         </div>
       </div>
       {wiz&&<AffinityRow wiz={wiz} aff={aff} chg={chg} lv={lv} lvTrans={lvTrans}/>}
-      {!confirmed&&<div style={{display:'flex',gap:8}}><SlotDrop placeholder='TASK' value={slot.taskId||''} onChange={onTask} opts={tasks.map(t=>({v:t.id,l:t.name}))} disabledIds={[]} borderColor={bdr}/><SlotDrop placeholder='마법사' value={slot.wizardId||''} onChange={onWiz} opts={ownedWiz.map(w=>({v:w.id,l:w.name}))} disabledIds={disW} borderColor={bdr}/></div>}
+      {!confirmed&&<div style={{display:'flex',gap:8}}><SlotDrop placeholder='TASK' value={slot.taskId||''} onChange={onTask} opts={tasks.map(t=>({v:t.id,l:t.name,tag:t.tag}))} disabledIds={[]} borderColor={bdr} grouped={true}/><SlotDrop placeholder='마법사' value={slot.wizardId||''} onChange={onWiz} opts={ownedWiz.map(w=>({v:w.id,l:w.name}))} disabledIds={disW} borderColor={bdr} disabled={!slot.taskId}/></div>}
       {confirmed&&task&&<div style={{fontSize:13,color:'rgba(0,0,0,0.5)',marginBottom:8}}><span style={{fontWeight:500,color:acc}}>{task.name}</span></div>}
-      {wiz&&slot.dialogue&&<div style={{display:'flex',gap:10,alignItems:'flex-start',marginTop:8,padding:'9px 11px',background:'rgba(255,255,255,0.55)',borderRadius:'var(--border-radius-md)',border:'0.5px solid '+bdr}}><Avatar wiz={wiz} size={30}/><div><div style={{fontSize:11,fontWeight:500,color:acc,marginBottom:2}}>{wiz.name}</div><div style={{fontSize:12,color:'rgba(0,0,0,0.55)',lineHeight:1.6}}>{slot.dialogue}</div></div></div>}
+      {wiz&&slot.dialogue&&<div style={{display:'flex',gap:10,alignItems:'flex-start',marginTop:8,padding:'9px 11px',background:'rgba(255,255,255,0.55)',borderRadius:'var(--border-radius-md)',border:'0.5px solid '+bdr}}><Avatar wiz={wiz} size={40}/><div><div style={{fontSize:11,fontWeight:500,color:acc,marginBottom:2}}>{wiz.name}</div><div style={{fontSize:12,color:'rgba(0,0,0,0.55)',lineHeight:1.6}}>{slot.dialogue}</div></div></div>}
       {confirmed&&slot.status==='active'&&<div style={{display:'flex',gap:8,marginTop:10}}><button onClick={()=>onUpd(idx,'complete')} style={{flex:2,background:acc,color:'white',border:'none',borderRadius:'var(--border-radius-md)',padding:'8px 0',fontSize:13,fontWeight:500,cursor:'pointer'}}>완료</button><button onClick={()=>onAskForfeit(idx)} style={{flex:1,background:'rgba(255,255,255,0.55)',color:'#8A3030',border:'0.5px solid #D0A0A0',borderRadius:'var(--border-radius-md)',padding:'8px 0',fontSize:13,cursor:'pointer'}}>포기</button></div>}
     </div>
   );
@@ -526,9 +536,13 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
         confirmLabel='예' cancelLabel={modal.type==='confirmWithEmpty'?'아니오':'아니오'}
         onConfirm={handleOk} onCancel={()=>setModal(null)} confirmDisabled={false}
       />}
+<div style={{textAlign:'center',marginTop:24,paddingBottom:8}}>
+        <span style={{fontSize:10,color:'rgba(0,0,0,0.2)',lineHeight:1.8}}>캐시·쿠키 삭제 전 데이터를 백업해 두세요 (우상단 A → 데이터 백업)</span>
+      </div>
     </div>
   );
 }
+
 
 // ── 수집 페이지 ───────────────────────────────────────────────────────────────
 function CollectPage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,ownedCount,gachaDate,setGachaDate,addLogEntry}){
