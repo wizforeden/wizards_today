@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>오늘의 임무</title>
+<style>
+  :root{--border-radius-lg:12px;--border-radius-md:8px;--color-text-primary:rgba(0,0,0,0.78);--color-text-secondary:rgba(0,0,0,0.5);--color-text-tertiary:rgba(0,0,0,0.35);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo',sans-serif;background:#F4F4F2;-webkit-font-smoothing:antialiased;}
+  select,button,input{font-family:inherit;}
+  button{cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+
+// ── 상수 ──────────────────────────────────────────────────────────────────────
+const LV_REQ = [0, 100, 200, 300, 400];
+const SHEET_ID = '1bL-8N43NldAHfjPouIZzEDioFUXUNqFhRdJukwasFww';
+const SHEET_BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
+const SHEET_CACHE_KEY = 'app:sheetCache';
+const STORAGE_KEYS = ['app:mahwa','app:wizards','app:affinity','app:level','app:doneCount','app:gachaDate','app:slotSession','app:firstRunDone','app:logs','app:playerName'];
+
+// 시스템 슬롯 텍스트 상수
+const SYS_SUBJECTS = ['혼자서','분과회원과'];
+const SYS_ACTIONS  = ['차를 마셨다','연구에 매진했다','책을 읽었다','이경을 탐사했다','갈등을 해결하기 위해 애썼다','불도마뱀 골목을 돌아다녔다','긴급한 마법 재액을 해결하는 데 투입되었다','인계의 앵커와 시간을 보냈다','서고를 정리했다','쇼핑을 했다','영화를 봤다'];
+
+// ── 폴백 데이터 (시트 로드 실패 시) ──────────────────────────────────────────
+const FB_WIZARDS = [
+  {id:"W01",name:"시그너스",club:"종장",tags:["지성","정리"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w001.png",bg:"#E3EEF8",border:"#B5CCE4",accent:"#3A6080"},
+  {id:"W02",name:"호타루",club:"종장",tags:["생업","정리"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w002.png",bg:"#D2FCCF",border:"#AFF0AF",accent:"#36911D"},
+  {id:"W03",name:"릴리메이",club:"종장",tags:["작업","회복"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w003.png",bg:"#F4E6F3",border:"#E5B8E8",accent:"#962C8C"},
+  {id:"W04",name:"시타",club:"서광",tags:["근육","가정"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w004.png",bg:"#E8EAEC",border:"#BCC2C8",accent:"#4A5460"},
+  {id:"W05",name:"데네브",club:"서광",tags:["회복","생존"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w005.png",bg:"#E4EDE4",border:"#B2CEB2",accent:"#345040"},
+  {id:"W06",name:"초롱",club:"서광",tags:["회복","근육"],josa:"은",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w006.png",bg:"#E2EEF2",border:"#B0CDD8",accent:"#305870"},
+  {id:"W07",name:"가흠",club:"흉몽퇴치반",tags:["지성","생업"],josa:"은",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w007.png",bg:"#F2E6E6",border:"#D8B8B8",accent:"#703030"},
+  {id:"W08",name:"리온",club:"흉몽퇴치반",tags:["생존","가정"],josa:"은",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w008.png",bg:"#F2EEE0",border:"#D8CCA8",accent:"#706030"},
+  {id:"W09",name:"네로",club:"흉몽퇴치반",tags:["지성","작업"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w009.png",bg:"#E2E4E6",border:"#B0B6BC",accent:"#3C4048"},
+];
+const FB_TASKS = [
+  {id:"T001",name:"운동(기타)",tag:"근육"},{id:"T002",name:"스트레칭",tag:"근육"},
+  {id:"T003",name:"독서",tag:"지성"},{id:"T004",name:"공부",tag:"지성"},{id:"T005",name:"가계부",tag:"지성"},
+  {id:"T006",name:"약속 조정",tag:"정리"},{id:"T007",name:"정리정돈",tag:"정리"},{id:"T008",name:"메일 확인",tag:"정리"},{id:"T009",name:"연락하기",tag:"정리"},
+  {id:"T010",name:"설거지",tag:"가정"},{id:"T011",name:"청소",tag:"가정"},{id:"T012",name:"빨래",tag:"가정"},
+  {id:"T013",name:"업무",tag:"생업"},{id:"T014",name:"마감",tag:"생업"},{id:"T015",name:"계획 짜기",tag:"생업"},
+  {id:"T016",name:"물 마시기",tag:"생존"},{id:"T017",name:"영양제 먹기",tag:"생존"},{id:"T018",name:"환기하기",tag:"생존"},
+  {id:"T019",name:"연성",tag:"작업"},{id:"T020",name:"세션 준비",tag:"작업"},{id:"T021",name:"뜨개질",tag:"작업"},
+  {id:"T022",name:"일기 쓰기",tag:"회복"},{id:"T023",name:"산책",tag:"회복"},{id:"T024",name:"명상",tag:"회복"},
+  {id:"T025",name:"장 보기",tag:"생존"},{id:"T026",name:"운동(유산소)",tag:"생존"},{id:"T027",name:"운동(근력)",tag:"근육"},
+].sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+const FB_DLG = {
+  W01:{MEET:["원탁의 서경, 『하늘과 땅을 가르는 무한선』 시그너스입니다. 잘 부탁드립니다."],MEET_AGAIN:["여기 계셨군요. 찾고 있었습니다. ……무슨 일이 있으신가요?"],TASK_MATCH:["제가 도움을 드릴 수 있을 것 같군요."],TASK_UNMATCH:["자신 있는 분야는 아니지만, 최선을 다해 보죠."],TASK_SUCCESS:["수고했어요. 나쁘지 않은 성과네요."],TASK_FAILURE:["……무슨 일이죠?"],LV_UP:{1:["수고했습니다. 다음에 또 뵙죠."],2:["…"],3:["…"],4:["…"]}},
+  W02:{MEET:["학원의 외전, 『그대의 부름에 답하여』 여기 왔어. 이름은 호타루. 아니면 선생님이라고 불러."],MEET_AGAIN:["너도 참 성가신 녀석이네. 그래, 『그대의 부름에 답하여』 여기 왔어."],TASK_MATCH:["좋아, 맡겨 두라고."],TASK_UNMATCH:["엑, 이걸? …일단 해 볼게."],TASK_SUCCESS:["어때? 해내니까 기분 좋지?"],TASK_FAILURE:["이 녀석! 한눈 팔지 말랬지!"],LV_UP:{1:["너도 꽤 쓸 만한 녀석이야. …우쭐해지진 말라고!"],2:["…"],3:["…"],4:["…"]}},
+  W03:{MEET:["천애의 사서, 『봄은 지는 법 없이 피고』 릴리메이 웬즈데이란다. 막을 올려보자꾸나."],MEET_AGAIN:["이런, 다시 나를 부르는 거니? 묘하구나. 네게는 꼭 행운이 아닐지도 모르겠지만……."],TASK_MATCH:["나는 이 시간이 제일 좋더라♡"],TASK_UNMATCH:["이걸 해보자구? 좋아, 도전욕이 불타오르네!"],TASK_SUCCESS:["해낼 줄 알았단다!"],TASK_FAILURE:["어머, 이렇게 막을 내려버리는 거니?"],LV_UP:{1:["가끔은 운명에 대해 생각하지. 무슨 말이냐구? 후훗, 비밀이란다."],2:["…"],3:["…"],4:["…"]}},
+  W04:{MEET:["엽귀의 서경, 『섣달그믐의 등불』. 시타 웬즈데이. 이상이다."],MEET_AGAIN:["어디 있었던 거야? 찾아다녔잖아!"],TASK_MATCH:["임무 확인."],TASK_UNMATCH:["…임무 확인."],TASK_SUCCESS:["완료했습니다."],TASK_FAILURE:["사유를 듣지."],LV_UP:{1:["고맙다. 덕분에 무사히 끝났어. …그러고 보니 이름을 들었던가?"],2:["…"],3:["…"],4:["소개해 주고 싶은 녀석들이 있어. 좀 시끄럽고 귀찮지만… 다음에 한번."]}},
+  W05:{MEET:["『별빛의 증명자』. 데네브라고 불러. 뭐? 날개? 그야 있긴 한데…?"],MEET_AGAIN:["헤에. 나를 부른 줄 알았는데. 그냥 갈까?"],TASK_MATCH:["이런 것쯤이야~"],TASK_UNMATCH:["응? 새 업무야?"],TASK_SUCCESS:["이제 뭐해?"],TASK_FAILURE:["아니 그게ㅡ 미안하다니까!"],LV_UP:{1:["…"],2:["…"],3:["…"],4:["…"]}},
+  W06:{MEET:["나는 초롱! 『초롱아기』! 잘 부탁해~! 처음이니까 특별히 쓰다듬게 해 주지. 에헴!"],MEET_AGAIN:["이제 온 거야? 한참 기다렸다구~! 데이트 하기로 했잖아! 잊지 않았지?"],TASK_MATCH:["초롱님이 나가신다~!"],TASK_UNMATCH:["으…응? 나? 놀러가려고 했는데에……."],TASK_SUCCESS:["요 녀석, 요 녀석! 잘할 줄 알았다니까!"],TASK_FAILURE:["음! 실패는 성공의 어머니니까!"],LV_UP:{1:["내 이름은 초롱! 놀이공원의 마스코트라네! 너는?"],2:["…"],3:["…"],4:["…"]}},
+  W07:{MEET:["『하늘에는 별이 일곱, 땅 위에는 사람의 노래』. 기니까 줄여서 가흠. 소속? 어딜 것 같으냐? 맞춰봐."],MEET_AGAIN:["얼씨구? 실망한 표정인데? 아니긴. 왜, 나랑 다정해지는 건 싫으냐? 핫핫."],TASK_MATCH:["그래, 그래."],TASK_UNMATCH:["뭘 이런 걸 또 시키고 그러냐……."],TASK_SUCCESS:["어떠냐? 나쁘지 않지?"],TASK_FAILURE:["……흐음."],LV_UP:{1:["무당 일은 접은 지 좀 됐지만, 뭐 고민 있으면 연락하시든가."],2:["…"],3:["…"],4:["…"]}},
+  W08:{MEET:["『돌아오는 그림자는 하나』 이리온임다! 원래 고모랑 살고 있었는데 지금은 네로 씨랑 살고 있어여. 좋아하는 건 … 아, 이게 아님까?"],MEET_AGAIN:["넵! 부르셨어여?! …엑, 제가 아니라구여? 그런~."],TASK_MATCH:["라져~! 맡겨주십쇼!"],TASK_UNMATCH:["…"],TASK_SUCCESS:["…"],TASK_FAILURE:["…"],LV_UP:{1:["…"],2:["…"],3:["…"],4:["…"]}},
+  W09:{MEET:["당신이 부른 건가요? ……흐응."],MEET_AGAIN:["저런, 꽝이네요. 하하."],TASK_MATCH:["제가요?"],TASK_UNMATCH:["헤에."],TASK_SUCCESS:["뭐, 수고하셨네요."],TASK_FAILURE:["아하하… 끝인가요?"],LV_UP:{1:["그러고 보니 이름을 안 물어봤네요. 아뇨, 알고는 있지만요."],2:["…"],3:["…"],4:["…"]}},
+};
+const FB_JOURNALS = {
+  W01:[
+    "시그너스는 서가에서 오래된 고서를 찾아냈다. 조금 복잡한 표정으로 그것을 쓰다듬었다. 무슨 사연이 있었을까?",
+    "시그너스가 전서구에 매달린 편지를 받았다. 읽고 난 그의 표정이 조금 부드러워졌다.",
+    "시그너스는 하루 종일 안락의자에서 느긋한 하루를 보낸 것 같다.",
+    "시그너스는 오랜만에 외출한 모양이다. 금방 올 것 같았는데, 왠지 지친 표정으로 밤 늦게 귀가했다. 누군가에게 시달린 걸까?"
+  ],
+  W02:[
+    "호타루는 오랜만에 스바루와 드럼을 연습했다. 곧 라이브 일정이 있을지도?",
+    "호타루는 재기발랄한 학원생들 덕분에 하루 종일 학원을 동분서주했다. 귀가하자마자 풀썩 쓰러졌다.",
+    "호타루는 대법전의 서공과 진지한 대화를 나누었던 모양이다. 평소보다 조금 어두운 얼굴로 돌아나왔다.",
+    "호타루는 한참 동안 옷을 고르며 외출 준비를 했다. 오늘은 늦을지도 모른다고 어딘지 비장한 표정으로 말하고 나갔다."
+  ],
+  W03:[
+    "릴리메이는 며칠 동안 전화를 붙잡고 씨름하더니, 드디어 분과회원을 불러내는 데 성공한 모양이다. 오늘은 조금 늦는다며 기뻐 보이는 얼굴로 나갔다.",
+    "릴리메이는 예언서에 꽂아둔 책갈피를 한참이나 물끄러미 바라보았다. 어떤 미래를 보고 있는 걸까?",
+    "릴리메이는 쇼핑을 마치고 행복한 표정으로 돌아왔다. 데보라를 잔뜩 괴롭혔다며 즐거워했다. …그래도 되는 거야?",
+    "오늘은 릴리메이의 신작 발표회가 있었다. 세상이 온통 대여배우의 화려한 복귀로 들썩였다."
+  ],
+  W04:[
+    "시타는 영화관에서 수상한 마력을 감지하고 온종일 추격전을 벌였다. 엉망이 된 옷차림보다도 신작 영화를 놓쳐 우울해 보인다.",
+    "시타는 오랜만에 학원에 방문했다. 어린 학생들의 동경 어린 시선이 부끄러우면서도 싫지만은 않았던 것 같다.",
+    "시타는 아침부터 엽귀의 소집 명령을 받고 다녀왔다. 돌아온 눈빛이 평소보다 어둡다.",
+    "놀이공원 성에 공주가 살고 있다는 유튜브가 게시되었다. 소문을 해명하기 위해 시타는 하루종일 진땀을 빼야 했다."
+  ],
+  W05:[
+    "데네브가 무언가를 끄적이더니 전서구에 매달아 보냈다. 의기양양해 보인다.",
+    "데네브는 하루 종일 나무 위에서 낮잠을 잤다. 간신히 찾아낸 분과회원들이 잔소리를 하지만 건성으로 들은 게 틀림없지.",
+    "데네브가 용의 형상으로 꿈을 꾼 모양이다. 잠꼬대를 하며 작은 불꽃을 내뱉는 바람에 커튼 한쪽이 조금 그슬리고 말았다.",
+    "한밤중, 데네브는 훌쩍 창문 너머로 뛰어내리더니 잠시 후 거대한 용이 되어 하늘을 날아올랐다. 근사한 야간 비행을 했다."
+  ],
+  W06:[
+    "초롱은 놀이공원에서 꼬마 손님들과 한바탕 술래잡기를 했다. 돌아와 탈을 벗자마자 김이 날 정도로 온 힘을 다한 모양이다.",
+    "초롱은 학원의 친구들과 비밀 회동을 했다. 무슨 모의를 했는지, 가방 안에서 수상한 마법 폭죽들이 잔뜩 쏟아져 나왔다.",
+    "초롱은 분과회원들과 유행한다는 과자 만들기를 했다. 코코아 가루를 묻힌 경단이 대량 생산되었다.",
+    "초롱은 시타가 뜨던 옷을 몰래 입어 보다가 실수로 망가뜨리고 말았다. 시타가 돌아오기 전까지 필사적으로 수복한다던데, 결과는 과연……."
+  ],
+  W07:[
+    "오늘 가흠의 레코드샵에는 손님이 한 명도 없었다. 하루 종일 주인장 취향의 오래된 노래가 흘러나왔다.",
+    "가흠이 심각한 얼굴로 꽃집에서 꽃다발을 골랐다. 특별한 날은 아닌 것 같았는데….",
+    "원탁 상사의 부름을 받고 나간 가흠은 하루 종일 자리를 비웠다. 조금 지친 표정으로 귀가했다.",
+    "오늘 가흠은 분과회원들과 MT를 갔다. 시작부터 자동차 타이어가 펑크 났다던데, 이래저래 험난했던 모양이다."
+  ],
+  W08:[
+    "리온은 대청소를 했다. 네로가 들어가지 말라는 방에 실수로 들어갔다가 새파래진 얼굴로 뛰쳐나왔다.",
+    "오늘 리온은 분과회원들과 MT를 갔다. 간신히 강릉 숙소에 도착해서 기진맥진해 뻗고 말았다. 원래 가려던 곳은 포천이었던 것 같은데….",
+    "리온은 고모의 강권에 못 이겨 슬램덩크를 읽기 시작했다. 처음에는 심드렁하더니 결국 식음을 전폐하며 독서 삼매경에 빠지고 말았다.",
+    "리온은 하루 종일 꾸벅꾸벅 졸았다. 어제 밤 늦게까지 서공 마법을 익혔던 모양이다."
+  ],
+  W09:[
+    "네로가 업로드한 유튜브가 알고리즘을 탔다. 세계의 음모론이 조금 짙어졌지만, 아무튼 마법계의 비밀은 지켜냈다.",
+    "네로는 하루 종일 카페에 앉아 사람을 구경했다. 어느 때보다 즐거운 표정이었다.",
+    "네로는 방에 틀어박힌 하루를 보냈다. 방에서는 인간의 귀로 포착할 수 없는 소리들이 들려온다… 착각이겠지.",
+    "네로는 분과회원들과 MT를 다녀왔다. 괴담 영상의 새로운 소재를 찾아냈다며 즐거운 듯 웃었다."
+  ]
+};
+
+// ── 모듈 레벨 게임 데이터 (동적 로드 후 업데이트) ────────────────────────────
+let _dlg = FB_DLG;
+let _journals = FB_JOURNALS;
+let _tasks = FB_TASKS;
+let _wizardDefs = FB_WIZARDS;
+
+// ── CSV 파싱 ──────────────────────────────────────────────────────────────────
+function parseCSV(text){
+  var rows=[],row=[],cell='',inQ=false;
+  for(var i=0;i<text.length;i++){
+    var c=text[i];
+    if(c==='"'){if(inQ&&text[i+1]==='"'){cell+='"';i++;}else inQ=!inQ;}
+    else if(c===','&&!inQ){row.push(cell.trim());cell='';}
+    else if((c==='\n'||c==='\r')&&!inQ){
+      if(c==='\r'&&text[i+1]==='\n')i++;
+      row.push(cell.trim());cell='';
+      if(row.some(x=>x!==''))rows.push(row);
+      row=[];
+    }else cell+=c;
+  }
+  if(cell||row.length){row.push(cell.trim());if(row.some(x=>x!==''))rows.push(row);}
+  return rows;
+}
+function parseWizards(csv){
+  var rows=parseCSV(csv);
+  return rows.slice(1).filter(r=>r[0]).map(r=>({
+    id:r[0],name:r[1],club:r[2],
+    tags:r[3]?r[3].split(',').map(t=>t.trim()):[],
+    img:r[4]||'',bg:r[5]||'#F0F0F0',border:r[6]||'#DCDCDC',accent:r[7]||'#888',
+    josa:r[8]||'은',owned:false,
+  }));
+}
+function parseTasks(csv){
+  var rows=parseCSV(csv);
+  return rows.slice(1).filter(r=>r[0]).map(r=>({id:r[0],name:r[1],tag:r[2]}))
+    .sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+}
+function parseDialogues(csv){
+  var rows=parseCSV(csv);var dlg={};
+  rows.slice(1).forEach(r=>{
+    var[wId,key,text]=r;if(!wId||!key||!text)return;
+    if(!dlg[wId])dlg[wId]={};
+    if(key.startsWith('LV_UP_')){
+      var lv=parseInt(key.split('_')[2]);
+      if(!dlg[wId].LV_UP)dlg[wId].LV_UP={};
+      if(!dlg[wId].LV_UP[lv])dlg[wId].LV_UP[lv]=[];
+      dlg[wId].LV_UP[lv].push(text);
+    }else{
+      if(!dlg[wId][key])dlg[wId][key]=[];
+      dlg[wId][key].push(text);
+    }
+  });
+  return dlg;
+}
+function parseJournals(csv){
+  var rows=parseCSV(csv);var j={};
+  rows.slice(1).forEach(r=>{var[wId,text]=r;if(!wId||!text)return;if(!j[wId])j[wId]=[];j[wId].push(text);});
+  return j;
+}
+
+// ── 구글 시트 로드 ────────────────────────────────────────────────────────────
+async function fetchSheet(name){
+  var r=await fetch(SHEET_BASE+encodeURIComponent(name));
+  if(!r.ok)throw new Error('fetch failed');
+  var text=await r.text();
+  if(text.trim().startsWith('<'))throw new Error('HTML response');
+  return text;
+}
+async function fetchAllSheets(){
+  var[wCSV,tCSV,dCSV,jCSV]=await Promise.all([
+    fetchSheet('wizards'),fetchSheet('tasks'),fetchSheet('dialogues'),fetchSheet('journals'),
+  ]);
+  return{wizards:parseWizards(wCSV),tasks:parseTasks(tCSV),dlg:parseDialogues(dCSV),journals:parseJournals(jCSV)};
+}
+async function loadGameData(){
+  // 1) 캐시 확인
+  var cached=null;
+  try{var c=await storeGet(SHEET_CACHE_KEY);if(c)cached=JSON.parse(c);}catch(e){}
+
+  // 2) config 버전 확인
+  var sheetVer=null;
+  try{
+    var cfgCSV=await fetchSheet('config');
+    var cfgRows=parseCSV(cfgCSV);
+    var vRow=cfgRows.slice(1).find(r=>r[0]==='version');
+    sheetVer=vRow?vRow[1]:null;
+  }catch(e){}
+
+  // 3) 캐시 유효하면 사용
+  if(cached&&(sheetVer===null||cached.version===sheetVer)){
+    return cached.data;
+  }
+
+  // 4) 전체 fetch
+  try{
+    var data=await fetchAllSheets();
+    var version=sheetVer||'1';
+    await storeSet(SHEET_CACHE_KEY,JSON.stringify({version,data}));
+    return data;
+  }catch(e){
+    if(cached)return cached.data;
+    return{wizards:FB_WIZARDS,tasks:FB_TASKS,dlg:FB_DLG,journals:FB_JOURNALS};
+  }
+}
+
+// ── Storage 유틸 ──────────────────────────────────────────────────────────────
+function storeSet(k,v){try{localStorage.setItem(k,v);}catch(e){}return Promise.resolve();}
+function storeGet(k){try{return Promise.resolve(localStorage.getItem(k));}catch(e){return Promise.resolve(null);}}
+function storeDel(k){try{localStorage.removeItem(k);}catch(e){}return Promise.resolve();}
+
+// ── 게임 유틸 ─────────────────────────────────────────────────────────────────
+function gameDay(){var now=new Date();if(now.getHours()<5)return new Date(now.getTime()-864e5).toDateString();return now.toDateString();}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function getLine(wId,key){var a=_dlg[wId]&&_dlg[wId][key];return Array.isArray(a)&&a.length?pick(a):null;}
+function getLvUpLine(wId,lv){var a=_dlg[wId]&&_dlg[wId].LV_UP&&_dlg[wId].LV_UP[lv];return a&&a.length?pick(a):'…';}
+function mkSlot(){return{taskId:null,wizardId:null,status:'idle',dialogue:null,tagMatch:false,isSystem:false,systemText:null};}
+function mkSystemSlot(wiz){
+  var text=wiz.name+wiz.josa+' '+pick(SYS_SUBJECTS)+' '+pick(SYS_ACTIONS)+'.';
+  return{taskId:'__system__',wizardId:wiz.id,status:'system_active',dialogue:null,tagMatch:false,isSystem:true,systemText:text};
+}
+function finalizeLog(dl){
+  if(dl.finalized)return dl;
+  var completedCount=(dl.entries||[]).filter(e=>e.dir==='up'&&e.source==='task').length;
+  var journalWizardId=null,journalText=null,journalUnread=false;
+  if(completedCount>=3){
+    var maxWId=null,maxTotal=-Infinity;
+    Object.entries(dl.affinityTotals||{}).forEach(([wId,data])=>{if(data.total>maxTotal){maxTotal=data.total;maxWId=wId;}});
+    if(maxWId&&maxTotal>0&&_journals[maxWId]){journalWizardId=maxWId;journalText=pick(_journals[maxWId]);journalUnread=true;}
+  }
+  return{...dl,finalized:true,completedCount,journalWizardId,journalText,journalUnread};
+}
+
+// ── UI 컴포넌트 ───────────────────────────────────────────────────────────────
+function Avatar({wiz,size}){
+  var s=size||36;var[err,setErr]=useState(false);
+  var st={width:s,height:s,borderRadius:'50%',overflow:'hidden',flexShrink:0,border:'0.5px solid rgba(0,0,0,0.12)'};
+  if(wiz.img&&!err)return<div style={st}><img src={wiz.img} onError={()=>setErr(true)} alt={wiz.name} style={{width:'100%',height:'100%',objectFit:'cover'}}/></div>;
+  return<div style={st}><div style={{width:'100%',height:'100%',background:wiz.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:s*0.38,fontWeight:600,color:wiz.accent}}>{wiz.name[0]}</div></div>;
+}
+function AffinityRow({wiz,aff,chg,lv,lvTrans}){
+  var threshold=lv<5?LV_REQ[lv]:LV_REQ[4],isMax=lv>=5;
+  function cl(v){return Math.min(Math.max(v,0),threshold);}
+  var base=isMax?threshold:cl(chg?chg.from:aff);
+  var barBase=base/threshold*100;
+  var dPct=chg&&!isMax?Math.min(Math.abs(chg.delta)/threshold*100,100-barBase):0;
+  var dLeft=(chg&&chg.dir==='up')?barBase:cl(aff)/threshold*100;
+  var numLabel=isMax?'MAX':(chg?chg.from+'→'+aff+'/'+threshold:aff+'/'+threshold);
+  var lvDisplay=lvTrans?<span style={{fontWeight:600}}>{' Lv.'+lvTrans.from}<span style={{opacity:0.5}}> → </span>{'Lv.'+lvTrans.to}</span>:<span>{' Lv.'+lv}</span>;
+  return(
+    <div style={{marginBottom:10}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:5}}>
+        <span style={{fontSize:12,color:wiz.accent,fontWeight:600}}>{wiz.name}{lvDisplay}</span>
+        <span style={{fontSize:11,color:'rgba(0,0,0,0.4)'}}>{numLabel}</span>
+      </div>
+      <div style={{height:4,background:'rgba(0,0,0,0.1)',borderRadius:2,overflow:'hidden',position:'relative'}}>
+        <div style={{position:'absolute',left:0,top:0,height:'100%',width:barBase+'%',background:wiz.accent,opacity:0.5,borderRadius:2,transition:'width 0.3s'}}/>
+        {chg&&!isMax&&<div style={{position:'absolute',left:dLeft+'%',top:0,height:'100%',width:dPct+'%',background:chg.dir==='up'?'#5A9A48':'#C05050',borderRadius:2}}/>}
+      </div>
+    </div>
+  );
+}
+function LvUpBanner({event,onClose}){
+  var w=event.wiz;
+  return(
+    <div style={{background:w.bg,borderRadius:'var(--border-radius-lg)',border:'0.5px solid '+w.border,padding:'14px 16px',marginBottom:12}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+        <div><span style={{fontSize:14,fontWeight:600,color:w.accent}}>{w.name}</span><span style={{fontSize:12,color:w.accent,opacity:0.8,marginLeft:10}}>Lv.{event.prevLv}<span style={{opacity:0.5}}> → </span>Lv.{event.newLv}</span></div>
+        <button onClick={onClose} style={{fontSize:11,color:w.accent,background:'rgba(255,255,255,0.6)',border:'0.5px solid '+w.border,borderRadius:20,padding:'3px 10px',cursor:'pointer'}}>닫기</button>
+      </div>
+      <div style={{display:'flex',gap:12,alignItems:'center'}}>
+        <Avatar wiz={w} size={48}/>
+        <div style={{fontSize:12,color:w.accent,lineHeight:1.7,fontStyle:'italic',opacity:0.9}}>"{event.dialogue||'…'}"</div>
+      </div>
+    </div>
+  );
+}
+function SlotDrop({placeholder,value,onChange,opts,disabledIds,borderColor}){
+  return(
+    <div style={{flex:1,position:'relative'}}>
+      <select value={value} onChange={e=>onChange(e.target.value)} style={{width:'100%',padding:'7px 9px',borderRadius:'var(--border-radius-md)',border:'0.5px solid '+borderColor,background:'rgba(255,255,255,0.55)',fontSize:13,color:value?'var(--color-text-primary)':'var(--color-text-tertiary)',appearance:'none',outline:'none',cursor:'pointer'}}>
+        <option value="" disabled>{placeholder}</option>
+        {opts.map(o=>{var dis=disabledIds&&disabledIds.includes(o.v);return<option key={o.v} value={o.v} disabled={dis} style={{color:dis?'#B0B8C0':undefined}}>{o.l}</option>;})}
+      </select>
+      <span style={{position:'absolute',right:7,top:'50%',transform:'translateY(-50%)',pointerEvents:'none',color:'rgba(0,0,0,0.3)',fontSize:9}}>▼</span>
+    </div>
+  );
+}
+function Overlay({children}){
+  return<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.28)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:100}}>{children}</div>;
+}
+function ConfirmModal({msg,onConfirm,onCancel,confirmDisabled,confirmLabel,cancelLabel,danger}){
+  return(
+    <Overlay>
+      <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'86%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+        <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:20,textAlign:'center',whiteSpace:'pre-line'}}>{msg}</div>
+        <div style={{display:'flex',gap:8}}>
+          <button onClick={onCancel} style={{flex:1,padding:'9px 0',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-secondary)'}}>{cancelLabel||'취소'}</button>
+          <button onClick={onConfirm} disabled={confirmDisabled} style={{flex:1,padding:'9px 0',borderRadius:8,border:'none',background:danger?'#8A3030':confirmDisabled?'rgba(0,0,0,0.07)':'#4A6080',color:confirmDisabled?'rgba(0,0,0,0.3)':'white',fontSize:13,fontWeight:500,cursor:confirmDisabled?'not-allowed':'pointer'}}>{confirmLabel||'예'}</button>
+        </div>
+      </div>
+    </Overlay>
+  );
+}
+function SparkleLoader({msg}){
+  var[f,setF]=useState(0);
+  var frames=['✦  ✧  ✦','✧  ✦  ✧','✦  ✧  ✦','✧  ✦  ✧'];
+  useEffect(()=>{var t=setInterval(()=>setF(n=>(n+1)%4),300);return()=>clearInterval(t);},[]);
+  return(
+    <div style={{position:'fixed',inset:0,background:'rgba(242,244,248,0.97)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',zIndex:80}}>
+      <div style={{fontSize:22,letterSpacing:8,marginBottom:20,color:'#8A9AB0'}}>{frames[f]}</div>
+      <div style={{fontSize:12,color:'rgba(0,0,0,0.4)',letterSpacing:'1px'}}>{msg||'불러오는 중...'}</div>
+    </div>
+  );
+}
+function PageHeader({title,line1,line2}){
+  var today=new Date().toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'});
+  return(
+    <div style={{textAlign:'center',marginBottom:20}}>
+      <div style={{fontSize:17,fontWeight:500,color:'var(--color-text-primary)',letterSpacing:'-0.3px'}}>{title}</div>
+      <div style={{fontSize:13,fontFamily:"Georgia,'Nanum Myeongjo',serif",color:'var(--color-text-secondary)',margin:'5px 0 4px',letterSpacing:'0.3px'}}>세계를 구해 주세요, 마법사!</div>
+      <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginBottom:5}}>{today}</div>
+      <div style={{fontSize:11,color:'var(--color-text-tertiary)',display:'flex',justifyContent:'center',gap:16}}><span>{line1}</span><span>{line2}</span></div>
+    </div>
+  );
+}
+
+// ── 설정 패널 ─────────────────────────────────────────────────────────────────
+function SettingsPanel({onClose,onReset,onBackup,onRestore}){
+  var fileRef=useRef(null);
+  var[msg,setMsg]=useState('');
+  function handleFile(e){
+    var f=e.target.files[0];if(!f)return;
+    var reader=new FileReader();
+    reader.onload=ev=>{try{onRestore(JSON.parse(ev.target.result));}catch{setMsg('파일을 읽을 수 없습니다.');}};
+    reader.readAsText(f);
+    e.target.value='';
+  }
+  return(
+    <Overlay>
+      <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'86%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
+          <span style={{fontSize:13,fontWeight:500,color:'var(--color-text-secondary)'}}>설정</span>
+          <button onClick={onClose} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',color:'rgba(0,0,0,0.35)',lineHeight:1}}>✕</button>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          <button onClick={onBackup} style={{padding:'10px 0',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-primary)'}}>데이터 백업</button>
+          <button onClick={()=>fileRef.current.click()} style={{padding:'10px 0',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-primary)'}}>데이터 복구</button>
+          <input ref={fileRef} type="file" accept=".json" style={{display:'none'}} onChange={handleFile}/>
+          <div style={{borderTop:'0.5px solid #EBEBEB',paddingTop:10}}>
+            <button onClick={onReset} style={{width:'100%',padding:'10px 0',borderRadius:8,border:'0.5px solid #D0A0A0',background:'white',fontSize:13,cursor:'pointer',color:'#8A3030'}}>데이터 초기화</button>
+          </div>
+        </div>
+        {msg&&<div style={{marginTop:10,fontSize:11,color:'#8A3030',textAlign:'center'}}>{msg}</div>}
+      </div>
+    </Overlay>
+  );
+}
+
+// ── 슬롯 카드 ─────────────────────────────────────────────────────────────────
+function SystemSlotCard({slot,wizards}){
+  var wiz=wizards.find(w=>w.id===slot.wizardId);
+  var bg=wiz?wiz.bg:'#F5F5F5',bdr=wiz?wiz.border:'#E0E0E0',acc=wiz?wiz.accent:'#999';
+  return(
+    <div style={{background:bg,borderRadius:'var(--border-radius-lg)',border:'0.5px solid '+bdr,padding:'12px 14px'}}>
+      <div style={{marginBottom:8}}>
+        <span style={{fontSize:11,padding:'2px 9px',borderRadius:20,background:'rgba(0,0,0,0.05)',color:'rgba(0,0,0,0.35)',fontWeight:500}}>자유 행동 중</span>
+      </div>
+      <div style={{fontSize:12,color:'rgba(0,0,0,0.48)',lineHeight:1.7,fontFamily:"Georgia,'Nanum Myeongjo',serif",fontStyle:'italic'}}>{slot.systemText}</div>
+    </div>
+  );
+}
+function SlotCard({slot,idx,confirmed,affinity,affinityChanges,level,lvTransitions,onUpd,usedWizIds,wizards,tasks,onAskForfeit}){
+  if(slot.isSystem)return<SystemSlotCard slot={slot} wizards={wizards}/>;
+  var wiz=wizards.find(w=>w.id===slot.wizardId);
+  var task=tasks.find(t=>t.id===slot.taskId);
+  var aff=wiz?affinity[wiz.id]:0,chg=wiz?affinityChanges[wiz.id]:null;
+  var lv=wiz?level[wiz.id]:1,lvTrans=wiz?lvTransitions[wiz.id]:null;
+  var disW=usedWizIds.filter(id=>id!==slot.wizardId);
+  var ownedWiz=wizards.filter(w=>w.owned).sort((a,b)=>{var cc=a.club.localeCompare(b.club,'ko');return cc!==0?cc:a.name.localeCompare(b.name,'ko');});
+  var bg=wiz?wiz.bg:'#F0F0F0',bdr=wiz?wiz.border:'#DCDCDC',acc=wiz?wiz.accent:'#888';
+  function onTask(taskId){var w=wizards.find(w=>w.id===slot.wizardId),t=tasks.find(t=>t.id===taskId);var tm=!!(w&&t&&w.tags.includes(t.tag));onUpd(idx,{taskId,tagMatch:tm,dialogue:w?getLine(slot.wizardId,tm?'TASK_MATCH':'TASK_UNMATCH'):null});}
+  function onWiz(wId){var w=wizards.find(w=>w.id===wId),t=tasks.find(t=>t.id===slot.taskId);var tm=!!(w&&t&&w.tags.includes(t.tag));onUpd(idx,{wizardId:wId,tagMatch:tm,dialogue:getLine(wId,tm?'TASK_MATCH':'TASK_UNMATCH')});}
+  return(
+    <div style={{background:bg,borderRadius:'var(--border-radius-lg)',border:'0.5px solid '+bdr,padding:'12px 14px',transition:'background 0.5s,border-color 0.5s'}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:wiz?10:8}}>
+        <div style={{display:'flex',alignItems:'center',gap:6}}>
+          <span style={{fontSize:11,padding:'2px 9px',borderRadius:20,background:slot.status==='idle'?'rgba(0,0,0,0.06)':slot.status==='active'?'rgba(0,0,0,0.08)':slot.status==='done'?'rgba(80,140,60,0.15)':'rgba(180,60,60,0.12)',color:slot.status==='idle'?'rgba(0,0,0,0.38)':slot.status==='active'?acc:slot.status==='done'?'#3A6A28':'#8A3030',fontWeight:500}}>{slot.status==='idle'?'대기':slot.status==='active'?'진행 중':slot.status==='done'?'완료':'포기'}</span>
+          {slot.status==='idle'&&slot.wizardId&&<button onClick={()=>onUpd(idx,{wizardId:null,dialogue:null,tagMatch:false})} style={{width:18,height:18,borderRadius:'50%',border:'0.5px solid '+bdr,background:'rgba(255,255,255,0.6)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,color:'rgba(0,0,0,0.35)',padding:0}}>✕</button>}
+        </div>
+      </div>
+      {wiz&&<AffinityRow wiz={wiz} aff={aff} chg={chg} lv={lv} lvTrans={lvTrans}/>}
+      {!confirmed&&<div style={{display:'flex',gap:8}}><SlotDrop placeholder='TASK' value={slot.taskId||''} onChange={onTask} opts={tasks.map(t=>({v:t.id,l:t.name}))} disabledIds={[]} borderColor={bdr}/><SlotDrop placeholder='마법사' value={slot.wizardId||''} onChange={onWiz} opts={ownedWiz.map(w=>({v:w.id,l:w.name}))} disabledIds={disW} borderColor={bdr}/></div>}
+      {confirmed&&task&&<div style={{fontSize:13,color:'rgba(0,0,0,0.5)',marginBottom:8}}><span style={{fontWeight:500,color:acc}}>{task.name}</span></div>}
+      {wiz&&slot.dialogue&&<div style={{display:'flex',gap:10,alignItems:'flex-start',marginTop:8,padding:'9px 11px',background:'rgba(255,255,255,0.55)',borderRadius:'var(--border-radius-md)',border:'0.5px solid '+bdr}}><Avatar wiz={wiz} size={30}/><div><div style={{fontSize:11,fontWeight:500,color:acc,marginBottom:2}}>{wiz.name}</div><div style={{fontSize:12,color:'rgba(0,0,0,0.55)',lineHeight:1.6}}>{slot.dialogue}</div></div></div>}
+      {confirmed&&slot.status==='active'&&<div style={{display:'flex',gap:8,marginTop:10}}><button onClick={()=>onUpd(idx,'complete')} style={{flex:2,background:acc,color:'white',border:'none',borderRadius:'var(--border-radius-md)',padding:'8px 0',fontSize:13,fontWeight:500,cursor:'pointer'}}>완료</button><button onClick={()=>onAskForfeit(idx)} style={{flex:1,background:'rgba(255,255,255,0.55)',color:'#8A3030',border:'0.5px solid #D0A0A0',borderRadius:'var(--border-radius-md)',padding:'8px 0',fontSize:13,cursor:'pointer'}}>포기</button></div>}
+    </div>
+  );
+}
+
+// ── 인트로 ───────────────────────────────────────────────────────────────────
+function IntroScreen({wizards,setWizards,onComplete}){
+  var INTRO="오래된 책 냄새에 눈을 뜬다.\n당신은 누구지?\n이름이란 해내는 일로써 정의되는 것.\n마법의 힘은 명명하는 힘.\n그렇다면 분명,\n당신이 수행하는 하루하루의 임무는…….\n…\n…\n한 권의 책이 당신 앞에 나타난다.";
+  var[phase,setPhase]=useState('text');
+  var[charPos,setCharPos]=useState(0);
+  var[queue,setQueue]=useState([]);
+  var[acqIdx,setAcqIdx]=useState(0);
+  var[acqWiz,setAcqWiz]=useState(null);
+  var[typed,setTyped]=useState('');
+  var[full,setFull]=useState('');
+  var[showResult,setShowResult]=useState(false);
+  var[nameInput,setNameInput]=useState('');
+  useEffect(()=>{var u=wizards.filter(w=>!w.owned);setQueue(u.slice().sort(()=>Math.random()-0.5).slice(0,3));},[]);
+  useEffect(()=>{
+    if(phase!=='text')return;
+    if(charPos>=INTRO.length){var t=setTimeout(()=>setPhase('askName'),1000);return()=>clearTimeout(t);}
+    var delay=INTRO[charPos]==='\n'?600:58;
+    var t=setTimeout(()=>setCharPos(p=>p+1),delay);return()=>clearTimeout(t);
+  },[phase,charPos]);
+  function startAcquiring(){var q=queue;if(q.length>0)doAcquire(q,0);else setPhase('mahwaPopup');}
+  function doAcquire(q,idx){
+    if(idx>=q.length){setPhase('mahwaPopup');return;}
+    var wiz=q[idx];var txt=getLine(wiz.id,'MEET')||'…';
+    setWizards(p=>p.map(w=>w.id===wiz.id?{...w,owned:true}:w));
+    setAcqWiz(wiz);setFull(txt);setTyped('');setShowResult(false);setAcqIdx(idx);setPhase('acquiring');
+  }
+  useEffect(()=>{
+    if(phase!=='acquiring'||showResult)return;
+    if(typed.length>=full.length){var t=setTimeout(()=>setShowResult(true),800);return()=>clearTimeout(t);}
+    var t=setTimeout(()=>setTyped(p=>full.slice(0,p.length+1)),45);return()=>clearTimeout(t);
+  },[phase,typed,full,showResult]);
+  useEffect(()=>{
+    if(!showResult||phase!=='acquiring')return;
+    var q=queue,idx=acqIdx;
+    var t=setTimeout(()=>doAcquire(q,idx+1),2000);return()=>clearTimeout(t);
+  },[showResult,acqIdx,queue]);
+  var isLight=phase==='acquiring'||phase==='mahwaPopup';
+  return(
+    <div style={{minHeight:'100vh',background:isLight?'#F4F4F2':'#15161C',transition:'background 1.2s ease',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'40px 28px',boxSizing:'border-box'}}>
+      {phase==='text'&&<div style={{maxWidth:340,width:'100%',fontFamily:"Georgia,'Nanum Myeongjo',serif",fontSize:15,lineHeight:2.3,color:'#C8C4B4',letterSpacing:'0.3px',whiteSpace:'pre-line'}}>{INTRO.slice(0,charPos)}<span style={{opacity:0.4}}>▌</span></div>}
+      {phase==='askName'&&<>
+        <div style={{maxWidth:340,width:'100%',fontFamily:"Georgia,'Nanum Myeongjo',serif",fontSize:15,lineHeight:2.3,color:'#C8C4B4',letterSpacing:'0.3px',whiteSpace:'pre-line',marginBottom:32}}>{INTRO}</div>
+        <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'100%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+          <div style={{fontSize:13,color:'var(--color-text-primary)',marginBottom:14,textAlign:'center',fontFamily:"Georgia,'Nanum Myeongjo',serif",lineHeight:1.8}}>당신의 이름?</div>
+          <input value={nameInput} onChange={e=>setNameInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&nameInput.trim())startAcquiring();}} autoFocus style={{width:'100%',padding:'8px 12px',borderRadius:8,border:'0.5px solid #D0D0D0',fontSize:13,outline:'none',marginBottom:12,boxSizing:'border-box',fontFamily:'inherit',color:'var(--color-text-primary)'}}/>
+          <button onClick={()=>{if(nameInput.trim())startAcquiring();}} disabled={!nameInput.trim()} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',background:nameInput.trim()?'#4A6080':'rgba(0,0,0,0.07)',color:nameInput.trim()?'white':'rgba(0,0,0,0.3)',fontSize:13,fontWeight:500,cursor:nameInput.trim()?'pointer':'not-allowed'}}>확인</button>
+        </div>
+      </>}
+      {phase==='acquiring'&&acqWiz&&(
+        <div style={{maxWidth:380,width:'100%'}}>
+          <div style={{textAlign:'center',marginBottom:16}}><div style={{fontSize:11,color:'rgba(0,0,0,0.3)',letterSpacing:'1px'}}>{acqIdx+1} / {queue.length}</div></div>
+          <div style={{display:'flex',gap:12,alignItems:'flex-start',padding:'14px',background:acqWiz.bg,borderRadius:12,border:'0.5px solid '+acqWiz.border}}>
+            <Avatar wiz={acqWiz} size={48}/>
+            <div style={{flex:1}}>
+              <div style={{fontSize:12,fontWeight:600,color:acqWiz.accent,marginBottom:6}}>{acqWiz.name}</div>
+              <div style={{fontSize:13,color:'rgba(0,0,0,0.65)',lineHeight:1.75,minHeight:40}}>{typed}{typed.length<full.length&&<span style={{opacity:0.4}}>▌</span>}</div>
+            </div>
+          </div>
+          {showResult&&<div style={{marginTop:12,textAlign:'center',padding:'11px',background:'rgba(255,255,255,0.7)',borderRadius:10,border:'0.5px solid rgba(0,0,0,0.07)'}}><div style={{fontSize:13,color:'rgba(0,0,0,0.55)',fontFamily:"Georgia,'Nanum Myeongjo',serif"}}>{acqWiz.name} 수집 성공!</div></div>}
+        </div>
+      )}
+      {phase==='mahwaPopup'&&(
+        <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'86%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+          <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:20,textAlign:'center'}}>초기 자금으로 마화 50닢이 지급되었습니다.</div>
+          <button onClick={()=>onComplete(nameInput)} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',background:'#4A6080',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>확인</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── 임무 페이지 ───────────────────────────────────────────────────────────────
+function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,level,lvTransitions,lvUpEvent,setLvUpEvent,onUpd,onConfirmMission,onReset,slots,confirmed}){
+  var[modal,setModal]=useState(null);
+  var canConfirm=!confirmed&&slots.some(s=>!s.isSystem&&s.taskId&&s.wizardId);
+  var hasEmpty=slots.some(s=>!s.isSystem&&(!s.taskId||!s.wizardId));
+  var userSlots=slots.filter(s=>!s.isSystem);
+  var allDone=confirmed&&userSlots.length>0&&userSlots.every(s=>s.status==='done'||s.status==='forfeited');
+  var usedWizIds=slots.map(s=>s.wizardId).filter(Boolean);
+  function handleConfirmClick(){
+    if(hasEmpty)setModal({type:'confirmWithEmpty'});
+    else{onConfirmMission(false);setModal(null);}
+  }
+  function handleOk(){
+    if(modal.type==='confirmWithEmpty'){onConfirmMission(true);setModal(null);}
+    else if(modal.type==='forfeit'){onUpd(modal.idx,'forfeit');setModal(null);}
+  }
+  var l1=<span>오늘 완료한 임무: <span style={{fontWeight:500,color:'#4A6060'}}>{doneCount}건</span></span>;
+  var l2=<span>소지 마화: <span style={{fontWeight:500,color:'#4A6060'}}>{mahwa}닢</span></span>;
+  return(
+    <div style={{padding:'22px 16px 20px',maxWidth:420,margin:'0 auto'}}>
+      <PageHeader title='오늘의 임무' line1={l1} line2={l2}/>
+      <div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {lvUpEvent&&<LvUpBanner event={lvUpEvent} onClose={()=>setLvUpEvent(null)}/>}
+        {slots.map((sl,i)=><SlotCard key={i} slot={sl} idx={i} confirmed={confirmed} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} onUpd={onUpd} usedWizIds={usedWizIds} wizards={wizards} tasks={tasks} onAskForfeit={idx=>setModal({type:'forfeit',idx})}/>)}
+        {!confirmed&&<button onClick={handleConfirmClick} disabled={!canConfirm} style={{marginTop:4,background:canConfirm?'#4A6080':'rgba(0,0,0,0.07)',color:canConfirm?'white':'var(--color-text-tertiary)',border:'none',borderRadius:'var(--border-radius-lg)',padding:'11px 0',fontSize:13,fontWeight:500,cursor:canConfirm?'pointer':'not-allowed',transition:'background 0.2s'}}>임무 확정</button>}
+        {allDone&&<div style={{textAlign:'center',padding:'18px 16px',marginTop:4,background:'#EAEAEA',borderRadius:'var(--border-radius-lg)',border:'0.5px solid #D0D0D0'}}><div style={{fontSize:14,fontWeight:500,color:'#3A4A40',marginBottom:10,fontFamily:"Georgia,'Nanum Myeongjo',serif",letterSpacing:'0.3px'}}>당신의 임무, 세계를 구했다!</div><button onClick={onReset} style={{background:'white',color:'var(--color-text-secondary)',border:'0.5px solid #C8C8C8',borderRadius:'var(--border-radius-md)',padding:'6px 20px',fontSize:12,cursor:'pointer'}}>Reset</button></div>}
+      </div>
+      {modal&&<ConfirmModal
+        msg={modal.type==='confirmWithEmpty'?'빈 임무 슬롯이 있어요.\n이대로 임무를 확정할까요?':'정말 포기하시겠어요?'}
+        confirmLabel='예' cancelLabel={modal.type==='confirmWithEmpty'?'아니오':'아니오'}
+        onConfirm={handleOk} onCancel={()=>setModal(null)} confirmDisabled={false}
+      />}
+    </div>
+  );
+}
+
+// ── 수집 페이지 ───────────────────────────────────────────────────────────────
+function CollectPage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,ownedCount,gachaDate,setGachaDate,addLogEntry}){
+  var[phase,setPhase]=useState('idle');
+  var[gWiz,setGWiz]=useState(null);
+  var[gNew,setGNew]=useState(false);
+  var[full,setFull]=useState('');
+  var[typed,setTyped]=useState('');
+  useEffect(()=>{if(gachaDate===gameDay())setPhase('done');},[gachaDate]);
+  useEffect(()=>{
+    if(phase!=='loading')return;
+    var t=setTimeout(()=>{var wiz=wizards[Math.floor(Math.random()*wizards.length)];var isNew=!wiz.owned,txt=getLine(wiz.id,isNew?'MEET':'MEET_AGAIN')||'…';setGWiz(wiz);setGNew(isNew);setFull(txt);setTyped('');setPhase('dialogue');},3000);return()=>clearTimeout(t);
+  },[phase]);
+  useEffect(()=>{
+    if(phase!=='dialogue')return;
+    if(typed.length>=full.length){var t=setTimeout(()=>{if(gNew){setWizards(p=>p.map(w=>w.id===gWiz.id?{...w,owned:true}:w));setPhase('resultNew');}else{applyAff(gWiz.id,20,'up');setMahwa(n=>n+30);addLogEntry({taskId:'__gacha__',taskName:'수집(중복)',wizardId:gWiz.id,wizardName:gWiz.name,delta:20,dir:'up',source:'gacha'});setPhase('resultDup');}},700);return()=>clearTimeout(t);}
+    var t=setTimeout(()=>setTyped(p=>full.slice(0,p.length+1)),45);return()=>clearTimeout(t);
+  },[phase,typed,full,gNew,gWiz]);
+  function startGacha(){setMahwa(n=>n-100);setPhase('loading');}
+  var showDlg=phase==='dialogue'||phase==='resultNew'||phase==='resultDup';
+  var l1=<span>현재 수집한 마법사: <span style={{fontWeight:500,color:'#4A6060'}}>{ownedCount}명</span></span>;
+  var l2=<span>소지 마화: <span style={{fontWeight:500,color:'#4A6060'}}>{mahwa}닢</span></span>;
+  return(
+    <div style={{padding:'22px 16px 20px',maxWidth:420,margin:'0 auto'}}>
+      <PageHeader title='수집' line1={l1} line2={l2}/>
+      {!showDlg&&<div style={{display:'flex',justifyContent:'center',marginBottom:24}}><div style={{width:150,height:200,borderRadius:10,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',color:'#8A9AB0',gap:8}}><img src="https://raw.githubusercontent.com/wizforeden/wizards_today/refs/heads/main/image/slot.jpg" alt="마법사 도감" style={{width:120,height:120,borderRadius:'50%',objectFit:'cover',border:'0.5px solid #C2CAD6'}}/><div style={{fontSize:11,letterSpacing:'0.5px',marginTop:8}}>누구의 책일까?</div></div></div>}
+      {phase==='idle'&&<div style={{textAlign:'center'}}><button onClick={()=>setPhase('confirming')} style={{background:'#4A6080',color:'white',border:'none',borderRadius:'var(--border-radius-lg)',padding:'12px 48px',fontSize:14,fontWeight:500,cursor:'pointer'}}>수집</button></div>}
+      {phase==='done'&&<div style={{textAlign:'center',padding:'13px 16px',background:'#F0F0F0',borderRadius:'var(--border-radius-lg)',border:'0.5px solid #DCDCDC',fontSize:12,color:'var(--color-text-secondary)'}}>오늘 가능한 수집이 완료되었습니다.</div>}
+      {phase==='loading'&&<SparkleLoader msg="소환 중..."/>}
+      {showDlg&&gWiz&&<div style={{display:'flex',gap:12,alignItems:'flex-start',padding:'14px',background:gWiz.bg,borderRadius:'var(--border-radius-lg)',border:'0.5px solid '+gWiz.border}}><Avatar wiz={gWiz} size={48}/><div style={{flex:1}}><div style={{fontSize:12,fontWeight:600,color:gWiz.accent,marginBottom:6}}>{gWiz.name}</div><div style={{fontSize:13,color:'rgba(0,0,0,0.65)',lineHeight:1.75,minHeight:40}}>{typed}{typed.length<full.length&&<span style={{opacity:0.4}}>▌</span>}</div></div></div>}
+      {(phase==='resultNew'||phase==='resultDup')&&gWiz&&<Overlay><div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:290,width:'88%',textAlign:'center',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}><div style={{fontSize:13,fontWeight:500,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:18,whiteSpace:'pre-line'}}>{phase==='resultNew'?gWiz.name+' 수집 성공!':gWiz.name+'과 더 가까워졌다!\n호감도가 20 상승했다.\n마화 30닢을 돌려받았다.'}</div><button onClick={()=>{var today=gameDay();setGachaDate(today);storeSet('app:gachaDate',today);setGWiz(null);setPhase('done');}} style={{background:'#4A6080',color:'white',border:'none',borderRadius:8,padding:'8px 28px',fontSize:13,cursor:'pointer'}}>확인</button></div></Overlay>}
+      {phase==='confirming'&&<ConfirmModal msg={'소환권을 사용할까요?\n(마화 100닢 소모)'} onConfirm={startGacha} onCancel={()=>setPhase('idle')} confirmDisabled={mahwa<100} confirmLabel='예' cancelLabel='취소'/>}
+    </div>
+  );
+}
+
+// ── 기록 페이지 ───────────────────────────────────────────────────────────────
+function RecordPage({logs,wizards,onMarkRead,onTestFinalize}){
+  var now=new Date();
+  var[calYear,setCalYear]=useState(now.getFullYear());
+  var[calMonth,setCalMonth]=useState(now.getMonth());
+  var[selDate,setSelDate]=useState(null);
+  var detailRef=useRef(null);
+  var WEEKDAYS=['일','월','화','수','목','금','토'];
+  function prevMonth(){if(calMonth===0){setCalYear(y=>y-1);setCalMonth(11);}else setCalMonth(m=>m-1);setSelDate(null);}
+  function nextMonth(){if(calMonth===11){setCalYear(y=>y+1);setCalMonth(0);}else setCalMonth(m=>m+1);setSelDate(null);}
+  var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  var firstDay=new Date(calYear,calMonth,1).getDay();
+  var todayStr=new Date().toDateString();
+  function getLog(d){return logs[new Date(calYear,calMonth,d).toDateString()]||null;}
+  function handleDayClick(d){
+    var date=new Date(calYear,calMonth,d);setSelDate(date);
+    var ds=date.toDateString();
+    if(logs[ds]&&logs[ds].journalUnread)onMarkRead(ds);
+    setTimeout(()=>{if(detailRef.current)detailRef.current.scrollIntoView({behavior:'smooth',block:'start'});},80);
+  }
+  var selLog=selDate?(logs[selDate.toDateString()]||null):null;
+  return(
+    <div style={{padding:'16px 16px 20px',maxWidth:420,margin:'0 auto'}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14,paddingTop:8}}>
+        <button onClick={prevMonth} style={{width:32,height:32,border:'none',background:'none',cursor:'pointer',fontSize:20,color:'rgba(0,0,0,0.35)',display:'flex',alignItems:'center',justifyContent:'center'}}>‹</button>
+        <div style={{fontSize:14,fontWeight:500,color:'var(--color-text-primary)'}}>{calYear}년 {calMonth+1}월</div>
+        <button onClick={nextMonth} style={{width:32,height:32,border:'none',background:'none',cursor:'pointer',fontSize:20,color:'rgba(0,0,0,0.35)',display:'flex',alignItems:'center',justifyContent:'center'}}>›</button>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',marginBottom:4}}>
+        {WEEKDAYS.map(d=><div key={d} style={{textAlign:'center',fontSize:10,color:'rgba(0,0,0,0.3)',padding:'2px 0'}}>{d}</div>)}
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:'2px 1px'}}>
+        {Array.from({length:firstDay}).map((_,i)=><div key={'e'+i}/>)}
+        {Array.from({length:daysInMonth}).map((_,i)=>{
+          var d=i+1,log=getLog(d),cnt=log?log.completedCount||0:0;
+          var dateStr=new Date(calYear,calMonth,d).toDateString();
+          var isToday=dateStr===todayStr,isSel=selDate&&dateStr===selDate.toDateString(),hasUnread=log&&log.journalUnread;
+          var spark=cnt>=3?{sz:13,c:'#C8A030'}:cnt>=1?{sz:9,c:'rgba(0,0,0,0.22)'}:null;
+          return(
+            <div key={d} onClick={()=>handleDayClick(d)} style={{position:'relative',display:'flex',flexDirection:'column',alignItems:'center',padding:'5px 1px 4px',borderRadius:8,cursor:'pointer',background:isSel?'rgba(74,96,128,0.12)':isToday?'rgba(74,96,128,0.05)':'transparent',border:isToday&&!isSel?'0.5px solid rgba(74,96,128,0.18)':'0.5px solid transparent',minHeight:44,userSelect:'none'}}>
+              {hasUnread&&<div style={{position:'absolute',top:4,right:5,width:5,height:5,borderRadius:'50%',background:'#C4634A',boxShadow:'0 0 0 1.5px rgba(255,255,255,0.9)'}}/>}
+              <div style={{fontSize:12,color:isSel?'#4A6080':'var(--color-text-primary)',fontWeight:isSel||isToday?600:400,lineHeight:1.4,marginBottom:2}}>{d}</div>
+              <div style={{height:15,display:'flex',alignItems:'center',justifyContent:'center'}}>{spark&&<span style={{fontSize:spark.sz,color:spark.c,lineHeight:1}}>✦</span>}</div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{borderTop:'0.5px solid rgba(0,0,0,0.08)',margin:'16px 0'}}/>
+      <div ref={detailRef}>
+        {!selDate&&<div style={{textAlign:'center',padding:'32px 0',color:'var(--color-text-tertiary)',fontSize:12,letterSpacing:'0.3px'}}>날짜를 선택하세요</div>}
+        {selDate&&(!selLog||selLog.completedCount===0)&&<div style={{textAlign:'center',padding:'32px 0',color:'var(--color-text-tertiary)',fontSize:12}}>{selDate.toLocaleDateString('ko-KR',{month:'long',day:'numeric'})}의 기록이 없습니다</div>}
+        {selDate&&selLog&&selLog.completedCount>0&&(
+          <div>
+            <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginBottom:12}}>{selDate.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'})}</div>
+            <div style={{display:'flex',flexDirection:'column',gap:5,marginBottom:12}}>
+              {(selLog.entries||[]).map((entry,i)=>{
+                var isUp=entry.dir==='up';
+                return<div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:8}}>
+                  <span style={{fontSize:12,color:isUp?'var(--color-text-primary)':'rgba(0,0,0,0.32)',flex:1,lineHeight:1.5}}>{entry.taskName} | {entry.wizardName}</span>
+                  <span style={{fontSize:11,fontWeight:500,color:isUp?'#3A6A28':'rgba(0,0,0,0.28)',flexShrink:0}}>{isUp?'♥+':'♥ −'}{entry.delta}</span>
+                </div>;
+              })}
+            </div>
+            {Object.keys(selLog.affinityTotals||{}).length>0&&(
+              <div style={{borderTop:'0.5px solid rgba(0,0,0,0.07)',paddingTop:9,marginBottom:selLog.journalText?16:0,display:'flex',flexDirection:'column',gap:4}}>
+                {Object.entries(selLog.affinityTotals).map(([wId,data])=>{
+                  var isPos=data.total>=0;
+                  return<div key={wId} style={{fontSize:11,color:'var(--color-text-secondary)'}}>{data.name}의 호감도가 총&nbsp;<span style={{color:isPos?'#3A6A28':'#8A5050',fontWeight:500}}>{isPos?'+':''}{data.total}</span>&nbsp;{isPos?'상승했습니다.':'하락했습니다.'}</div>;
+                })}
+              </div>
+            )}
+            {selLog.finalized&&selLog.journalText&&<div style={{paddingTop:14,marginTop:4}}><div style={{fontSize:12,color:'rgba(0,0,0,0.58)',lineHeight:2,fontStyle:'italic',fontFamily:"Georgia,'Nanum Myeongjo',serif",letterSpacing:'0.1px'}}>{selLog.journalText}</div></div>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BottomNav({page,setPage}){
+  return(
+    <div style={{position:'fixed',bottom:0,left:0,right:0,height:54,background:'white',borderTop:'0.5px solid #DCDCDC',display:'flex',zIndex:200}}>
+      {[{id:'mission',label:'임무'},{id:'collect',label:'수집'},{id:'record',label:'기록'}].map(tab=>{
+        var active=page===tab.id;
+        return<button key={tab.id} onClick={()=>setPage(tab.id)} style={{flex:1,border:'none',borderTop:active?'2px solid #4A6080':'2px solid transparent',background:'transparent',fontSize:13,cursor:'pointer',color:active?'#4A6080':'rgba(0,0,0,0.38)',fontWeight:active?500:400,transition:'color 0.2s'}}>{tab.label}</button>;
+      })}
+    </div>
+  );
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
+function App(){
+  var[appKey,setAppKey]=useState(0);
+  return<AppInner key={appKey} onForceReset={()=>setAppKey(k=>k+1)}/>;
+}
+
+function AppInner({onForceReset}){
+  var[gameLoaded,setGameLoaded]=useState(false); // 시트 데이터 로드 완료
+  var[userLoaded,setUserLoaded]=useState(false); // 유저 데이터 로드 완료
+  var[firstRunDone,setFirstRunDone]=useState(false);
+  var[showJournalPopup,setShowJournalPopup]=useState(false);
+  var[showSettings,setShowSettings]=useState(false);
+  var[showResetConfirm,setShowResetConfirm]=useState(false);
+  var[page,setPage]=useState('mission');
+  var[wizards,setWizards]=useState([]);
+  var[slots,setSlots]=useState([mkSlot(),mkSlot(),mkSlot()]);
+  var[confirmed,setConfirmed]=useState(false);
+  var[mahwa,setMahwa]=useState(0);
+  var[doneCount,setDoneCount]=useState(0);
+  var[gachaDate,setGachaDate]=useState('');
+  var[affinity,setAffinity]=useState({});
+  var[affinityChanges,setAffinityChanges]=useState({});
+  var[level,setLevel]=useState({});
+  var[lvTransitions,setLvTransitions]=useState({});
+  var[lvUpEvent,setLvUpEvent]=useState(null);
+  var[logs,setLogs]=useState({});
+  var[playerName,setPlayerName]=useState('');
+  var[tasks,setTasks]=useState(FB_TASKS);
+
+  // 1) 시트 데이터 로드
+  useEffect(()=>{
+    loadGameData().then(data=>{
+      _dlg=data.dlg;
+      _journals=data.journals;
+      _tasks=data.tasks;
+      _wizardDefs=data.wizards;
+      setTasks(data.tasks);
+      setGameLoaded(true);
+    });
+  },[]);
+
+  // 2) 유저 데이터 로드 (시트 로드 후)
+  useEffect(()=>{
+    if(!gameLoaded)return;
+    var day=gameDay();
+    Promise.all(STORAGE_KEYS.map(storeGet)).then(vals=>{
+      var mahwaVal=vals[0]!==null?Number(vals[0])||0:0;
+      var ownedMap=vals[1]!==null?JSON.parse(vals[1]):{};
+      var affVal=vals[2]!==null?JSON.parse(vals[2]):{};
+      var lvVal=vals[3]!==null?JSON.parse(vals[3]):{};
+      // 마법사 목록 초기화
+      var wList=_wizardDefs.map(w=>({...w,owned:ownedMap[w.id]||false}));
+      var initAff=Object.fromEntries(wList.map(w=>[w.id,affVal[w.id]||0]));
+      var initLv=Object.fromEntries(wList.map(w=>[w.id,lvVal[w.id]||1]));
+      setWizards(wList);
+      setAffinity(initAff);
+      setAffinityChanges(Object.fromEntries(wList.map(w=>[w.id,null])));
+      setLevel(initLv);
+      setLvTransitions(Object.fromEntries(wList.map(w=>[w.id,null])));
+      setMahwa(mahwaVal);
+      if(vals[4]!==null){var dd=JSON.parse(vals[4]);if(dd.date===day)setDoneCount(dd.count);}
+      if(vals[5]!==null)setGachaDate(vals[5]);
+      if(vals[6]!==null){var ss=JSON.parse(vals[6]);if(ss.date===day){setSlots(ss.slots);setConfirmed(ss.confirmed);}}
+      if(vals[7]==='1')setFirstRunDone(true);
+      if(vals[8]!==null){
+        var savedLogs=JSON.parse(vals[8]);
+        var updated={...savedLogs};var changed=false;
+        Object.keys(updated).forEach(ds=>{if(ds!==day&&!updated[ds].finalized){updated[ds]=finalizeLog(updated[ds]);changed=true;}});
+        var fl=changed?updated:savedLogs;
+        setLogs(fl);
+        if(Object.values(fl).some(l=>l.journalUnread))setTimeout(()=>setShowJournalPopup(true),700);
+      }
+      if(vals[9]!==null)setPlayerName(vals[9]);
+      setUserLoaded(true);
+    }).catch(()=>setUserLoaded(true));
+  },[gameLoaded]);
+
+  // 자동 저장
+  useEffect(()=>{if(!userLoaded)return;storeSet('app:mahwa',String(mahwa));},[mahwa,userLoaded]);
+  useEffect(()=>{if(!userLoaded)return;var om=Object.fromEntries(wizards.map(w=>[w.id,w.owned]));storeSet('app:wizards',JSON.stringify(om));},[wizards,userLoaded]);
+  useEffect(()=>{if(!userLoaded)return;storeSet('app:affinity',JSON.stringify(affinity));},[affinity,userLoaded]);
+  useEffect(()=>{if(!userLoaded)return;storeSet('app:level',JSON.stringify(level));},[level,userLoaded]);
+  useEffect(()=>{if(!userLoaded)return;storeSet('app:doneCount',JSON.stringify({date:gameDay(),count:doneCount}));},[doneCount,userLoaded]);
+  useEffect(()=>{if(!userLoaded)return;storeSet('app:slotSession',JSON.stringify({slots,confirmed,date:gameDay()}));},[slots,confirmed,userLoaded]);
+  useEffect(()=>{if(!userLoaded)return;storeSet('app:firstRunDone',firstRunDone?'1':'0');},[firstRunDone,userLoaded]);
+  useEffect(()=>{if(!userLoaded)return;storeSet('app:logs',JSON.stringify(logs));},[logs,userLoaded]);
+
+  // 로그 추가
+  function addLogEntry({taskId,taskName,wizardId,wizardName,delta,dir,source}){
+    var day=gameDay();
+    setLogs(prev=>{
+      var dl=prev[day]||{entries:[],affinityTotals:{},completedCount:0,finalized:false,journalWizardId:null,journalText:null,journalUnread:false};
+      var newEntries=[...dl.entries,{taskId,taskName,wizardId,wizardName,delta,dir,source,ts:Date.now()}];
+      var newTotals={...dl.affinityTotals};
+      if(wizardId){var ex=newTotals[wizardId]||{name:wizardName,total:0};newTotals[wizardId]={name:wizardName,total:ex.total+(dir==='up'?delta:-delta)};}
+      var completedCount=newEntries.filter(e=>e.dir==='up'&&e.source==='task').length;
+      return{...prev,[day]:{...dl,entries:newEntries,affinityTotals:newTotals,completedCount}};
+    });
+  }
+
+  function applyAff(wId,delta,dir){
+    var from=affinity[wId]||0,curLv=level[wId]||1;
+    var to=dir==='up'?from+delta:from-delta;
+    var chgFrom=from,chgDelta=delta,chgDir=dir;
+    if(dir==='up'&&curLv>=2)to=Math.min(to,LV_REQ[2]);
+    if(to>=LV_REQ[curLv]&&curLv<2){
+      var newLv=curLv+1,carry=to-LV_REQ[curLv];
+      to=carry;chgFrom=0;chgDelta=carry;
+      setLevel(p=>({...p,[wId]:newLv}));
+      var wiz=wizards.find(w=>w.id===wId);
+      setLvUpEvent({wiz,prevLv:curLv,newLv,dialogue:getLvUpLine(wId,curLv)});
+      setLvTransitions(p=>({...p,[wId]:{from:curLv,to:newLv}}));
+      setTimeout(()=>setLvTransitions(p=>({...p,[wId]:null})),4000);
+    }
+    setAffinity(p=>({...p,[wId]:to}));
+    setAffinityChanges(p=>({...p,[wId]:{from:chgFrom,delta:chgDelta,dir:chgDir}}));
+    setTimeout(()=>setAffinityChanges(p=>({...p,[wId]:null})),4500);
+  }
+
+  function onUpd(idx,patch){
+    if(patch==='complete'){
+      var s=slots[idx];
+      var wiz=wizards.find(w=>w.id===s.wizardId);
+      var task=tasks.find(t=>t.id===s.taskId);
+      var delta=s.tagMatch?25:20;
+      applyAff(s.wizardId,delta,'up');
+      setDoneCount(n=>n+1);setMahwa(n=>n+10);
+      setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'done',dialogue:getLine(s.wizardId,'TASK_SUCCESS')}:sl));
+      addLogEntry({taskId:s.taskId,taskName:task?task.name:'?',wizardId:s.wizardId,wizardName:wiz?wiz.name:'?',delta,dir:'up',source:'task'});
+    }else if(patch==='forfeit'){
+      var s2=slots[idx];
+      var wiz2=wizards.find(w=>w.id===s2.wizardId);
+      var task2=tasks.find(t=>t.id===s2.taskId);
+      applyAff(s2.wizardId,20,'down');
+      setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'forfeited',dialogue:getLine(s2.wizardId,'TASK_FAILURE')}:sl));
+      addLogEntry({taskId:s2.taskId,taskName:task2?task2.name:'?',wizardId:s2.wizardId,wizardName:wiz2?wiz2.name:'?',delta:20,dir:'down',source:'task'});
+    }else{
+      setSlots(p=>p.map((sl,i)=>i===idx?{...sl,...patch}:sl));
+    }
+  }
+
+  // 임무 확정: fillEmpty=true면 빈 슬롯에 시스템 슬롯 채움
+  function onConfirmMission(fillEmpty){
+    var usedIds=slots.filter(s=>s.wizardId).map(s=>s.wizardId);
+    var pool=wizards.filter(w=>w.owned&&!usedIds.includes(w.id));
+    var newSlots=slots.map(s=>{
+      if(!s.isSystem&&s.taskId&&s.wizardId)return{...s,status:'active'};
+      if(fillEmpty&&(!s.taskId||!s.wizardId)&&pool.length>0){
+        var chosen=pool.splice(Math.floor(Math.random()*pool.length),1)[0];
+        return mkSystemSlot(chosen);
+      }
+      return s;
+    });
+    setSlots(newSlots);setConfirmed(true);
+  }
+  function onReset(){setSlots([mkSlot(),mkSlot(),mkSlot()]);setConfirmed(false);}
+
+  // T 버튼
+  function onTestFinalize(){
+    var day=gameDay();
+    setLogs(prev=>{
+      var dl=prev[day];
+      if(!dl||dl.entries.length===0){
+        var ownedW=wizards.filter(w=>w.owned);if(ownedW.length===0)return prev;
+        var entries=[],totals={};
+        for(var k=0;k<3;k++){var rw=ownedW[Math.floor(Math.random()*ownedW.length)];var rt=tasks[Math.floor(Math.random()*tasks.length)];entries.push({taskId:rt.id,taskName:rt.name,wizardId:rw.id,wizardName:rw.name,delta:20,dir:'up',source:'task',ts:Date.now()});if(!totals[rw.id])totals[rw.id]={name:rw.name,total:0};totals[rw.id].total+=20;}
+        dl={entries,affinityTotals:totals,completedCount:3,finalized:false,journalWizardId:null,journalText:null,journalUnread:false};
+      }
+      var fin=finalizeLog(dl);var newLogs={...prev,[day]:fin};
+      if(Object.values(newLogs).some(l=>l.journalUnread))setTimeout(()=>setShowJournalPopup(true),200);
+      return newLogs;
+    });
+  }
+  function onMarkRead(ds){setLogs(prev=>{if(!prev[ds]||!prev[ds].journalUnread)return prev;return{...prev,[ds]:{...prev[ds],journalUnread:false}};});}
+
+  // 설정 기능
+  function handleBackup(){
+    Promise.all(STORAGE_KEYS.map(k=>storeGet(k).then(v=>({k,v})))).then(pairs=>{
+      var data={};pairs.forEach(({k,v})=>{if(v!==null)data[k]=v;});
+      var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');a.href=url;a.download='mahwa_backup_'+new Date().toISOString().slice(0,10)+'.json';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+    });
+  }
+  async function handleRestore(data){
+    await Promise.all(STORAGE_KEYS.map(storeDel));
+    await Promise.all(Object.entries(data).map(([k,v])=>storeSet(k,v)));
+    setShowSettings(false);
+    onForceReset();
+  }
+  function resetAllData(){
+    Promise.all([...STORAGE_KEYS.map(storeDel)]);
+    setWizards(_wizardDefs.map(w=>({...w,owned:false})));
+    setSlots([mkSlot(),mkSlot(),mkSlot()]);
+    setConfirmed(false);setMahwa(0);setDoneCount(0);setGachaDate('');
+    setAffinity(Object.fromEntries(_wizardDefs.map(w=>[w.id,0])));
+    setAffinityChanges(Object.fromEntries(_wizardDefs.map(w=>[w.id,null])));
+    setLevel(Object.fromEntries(_wizardDefs.map(w=>[w.id,1])));
+    setLvTransitions(Object.fromEntries(_wizardDefs.map(w=>[w.id,null])));
+    setLvUpEvent(null);setFirstRunDone(false);setLogs({});setPlayerName('');
+  }
+
+  var ownedCount=wizards.filter(w=>w.owned).length;
+  var isLoading=!gameLoaded||!userLoaded;
+
+  if(isLoading)return<SparkleLoader msg={!gameLoaded?'데이터를 불러오는 중...':'준비 중...'}/>;
+  if(!firstRunDone){
+    return<IntroScreen wizards={wizards} setWizards={setWizards} onComplete={(name)=>{
+      var n=name||'';setPlayerName(n);storeSet('app:playerName',n);setMahwa(prev=>prev+50);setFirstRunDone(true);
+    }}/>;
+  }
+
+  return(
+    <div style={{paddingBottom:54}}>
+      {/* 설정 버튼 (A) */}
+      <button onClick={()=>setShowSettings(true)} style={{position:'fixed',top:14,right:14,width:28,height:28,borderRadius:'50%',border:'0.5px solid rgba(0,0,0,0.15)',background:'rgba(255,255,255,0.9)',fontSize:11,fontWeight:600,color:'rgba(0,0,0,0.4)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:150,boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>A</button>
+
+      {page==='mission'&&<MissionPage wizards={wizards} tasks={tasks} mahwa={mahwa} doneCount={doneCount} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} lvUpEvent={lvUpEvent} setLvUpEvent={setLvUpEvent} onUpd={onUpd} onConfirmMission={onConfirmMission} onReset={onReset} slots={slots} confirmed={confirmed}/>}
+      {page==='collect'&&<CollectPage wizards={wizards} setWizards={setWizards} mahwa={mahwa} setMahwa={setMahwa} affinity={affinity} level={level} applyAff={applyAff} ownedCount={ownedCount} gachaDate={gachaDate} setGachaDate={setGachaDate} addLogEntry={addLogEntry}/>}
+      {page==='record'&&<RecordPage logs={logs} wizards={wizards} onMarkRead={onMarkRead} onTestFinalize={onTestFinalize}/>}
+      <BottomNav page={page} setPage={setPage}/>
+
+      {showSettings&&<SettingsPanel
+        onClose={()=>setShowSettings(false)}
+        onBackup={handleBackup}
+        onRestore={handleRestore}
+        onReset={()=>{setShowSettings(false);setShowResetConfirm(true);}}
+      />}
+      {showResetConfirm&&<ConfirmModal msg={'데이터를 정말 초기화하나요?\n모든 진행 상황이 삭제됩니다.'} confirmLabel='초기화' cancelLabel='취소' onConfirm={()=>{resetAllData();setShowResetConfirm(false);}} onCancel={()=>setShowResetConfirm(false)} confirmDisabled={false} danger={true}/>}
+      {showJournalPopup&&(
+        <Overlay>
+          <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'86%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+            <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:20,textAlign:'center'}}>미확인 일지를 확인할까요?</div>
+            <div style={{display:'flex',gap:8}}>
+              <button onClick={()=>setShowJournalPopup(false)} style={{flex:1,padding:'9px 0',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-secondary)'}}>나중에</button>
+              <button onClick={()=>{setShowJournalPopup(false);setPage('record');}} style={{flex:1,padding:'9px 0',borderRadius:8,border:'none',background:'#4A6080',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>네</button>
+            </div>
+          </div>
+        </Overlay>
+      )}
+    </div>
+  );
+}
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
