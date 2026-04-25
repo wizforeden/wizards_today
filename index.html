@@ -822,9 +822,9 @@ useEffect(()=>{
       var task=tasks.find(t=>t.id===s.taskId);
       var delta=s.tagMatch?25:20;
       applyAff(s.wizardId,delta,'up');
-      setDoneCount(n=>n+1);
-    if(doneCount<10)setMahwa(n=>n+10);
-    if(doneCount===9)setShowMahwaLimit(true);
+      if(doneCount<10)setMahwa(n=>n+10);
+if(doneCount===9)setShowMahwaLimit(true);
+setDoneCount(n=>n+1);
       setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'done',dialogue:getLine(s.wizardId,'TASK_SUCCESS')}:sl));
       addLogEntry({taskId:s.taskId,taskName:task?task.name:'?',wizardId:s.wizardId,wizardName:wiz?wiz.name:'?',delta,dir:'up',source:'task'});
     }else if(patch==='forfeit'){
@@ -954,7 +954,15 @@ function onSlotReset(idx){setSlots(p=>p.map((sl,i)=>i===idx?{...mkSlot(),editing
         </Overlay>
       )}
       {showResetConfirm&&<ConfirmModal msg={'데이터를 정말 초기화하나요?\n모든 진행 상황이 삭제됩니다.'} confirmLabel='초기화' cancelLabel='취소' onConfirm={()=>{resetAllData();setShowResetConfirm(false);}} onCancel={()=>setShowResetConfirm(false)} confirmDisabled={false} danger={true}/>}
-      {showJournalPopup&&(
+      {showMahwaLimit&&(
+  <Overlay>
+    <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'86%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+      <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:20,textAlign:'center'}}>오늘의 마화 보상이 모두 지급되었습니다.</div>
+      <button onClick={()=>setShowMahwaLimit(false)} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',background:'#4A6080',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>확인</button>
+    </div>
+  </Overlay>
+)}
+        {showJournalPopup&&(
         <Overlay>
           <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'86%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
             <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:20,textAlign:'center'}}>미확인 일지를 확인할까요?</div>
