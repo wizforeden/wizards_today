@@ -683,7 +683,7 @@ function RecordPage({logs,wizards,onMarkRead,onTestFinalize}){
       </div>
       <div style={{borderTop:'0.5px solid rgba(0,0,0,0.08)',margin:'16px 0'}}/>
       <div ref={detailRef}>
-        {!selDate&&<div style={{textAlign:'center',padding:'32px 0',color:'var(--color-text-tertiary)',fontSize:12,letterSpacing:'0.3px'}}>날짜를 선택하세요</div>}
+        {!selDate&&<div style={{textAlign:'center',padding:'32px 0',color:'var(--color-text-tertiary)',fontSize:12,letterSpacing:'0.3px'}}>날짜를 선택하세요<div style={{fontSize:10,marginTop:6,opacity:0.7}}>* 오전 5시에 날짜가 변경됩니다</div></div>}
         {selDate&&(!selLog||selLog.completedCount===0)&&<div style={{textAlign:'center',padding:'32px 0',color:'var(--color-text-tertiary)',fontSize:12}}>{selDate.toLocaleDateString('ko-KR',{month:'long',day:'numeric'})}의 기록이 없습니다</div>}
         {selDate&&selLog&&selLog.completedCount>0&&(
           <div>
@@ -708,6 +708,9 @@ function RecordPage({logs,wizards,onMarkRead,onTestFinalize}){
             {selLog.finalized&&selLog.journalText&&<div style={{paddingTop:14,marginTop:4}}><div style={{fontSize:12,color:'rgba(0,0,0,0.58)',lineHeight:2,fontStyle:'italic',fontFamily:"Georgia,'Nanum Myeongjo',serif",letterSpacing:'0.1px'}}>{selLog.journalText}</div></div>}
           </div>
         )}
+      </div>
+    <div style={{textAlign:'center',marginTop:40}}>
+        <button onClick={onTestFinalize} title="오전 5시 경과 시뮬레이션" style={{fontSize:10,color:'rgba(0,0,0,0.2)',background:'rgba(0,0,0,0.04)',border:'0.5px solid rgba(0,0,0,0.1)',borderRadius:4,cursor:'pointer',padding:'2px 8px'}}>T</button>
       </div>
     </div>
   );
@@ -778,7 +781,6 @@ function AppInner({onForceReset}){
 
   // 2) 유저 데이터 로드 (시트 로드 후)
   useEffect(()=>{
-    if(!gameLoaded)return;
     var day=gameDay();
     Promise.all(STORAGE_KEYS.map(storeGet)).then(vals=>{
       var mahwaVal=vals[0]!==null?Number(vals[0])||0:0;
@@ -805,7 +807,7 @@ function AppInner({onForceReset}){
         Object.keys(updated).forEach(ds=>{if(ds!==day&&!updated[ds].finalized){updated[ds]=finalizeLog(updated[ds]);changed=true;}});
         var fl=changed?updated:savedLogs;
         setLogs(fl);
-        if(Object.values(fl).some(l=>l.journalUnread))setTimeout(()=>setShowJournalPopup(true),700);
+        if(Object.values(fl).some(l=>l.journalUnread))setTimeout(()=>setShowJournalPopup(true),300);
       }
       if(vals[9]!==null)setPlayerName(vals[9]);
       setUserLoaded(true);
