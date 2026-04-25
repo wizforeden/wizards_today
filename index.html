@@ -244,9 +244,14 @@ function finalizeLog(dl){
   var completedCount=(dl.entries||[]).filter(e=>e.dir==='up'&&e.source==='task').length;
   var journalWizardId=null,journalText=null,journalUnread=false;
   if(completedCount>=3){
-    var maxWId=null,maxTotal=-Infinity;
-    Object.entries(dl.affinityTotals||{}).forEach(([wId,data])=>{if(data.total>maxTotal){maxTotal=data.total;maxWId=wId;}});
-    if(maxWId&&maxTotal>0&&_journals[maxWId]){journalWizardId=maxWId;journalText=pick(_journals[maxWId]);journalUnread=true;}
+    var candidates=Object.entries(dl.affinityTotals||{})
+      .filter(([wId,data])=>data.total>0&&_journals[wId]);
+    if(candidates.length>0){
+      var chosen=candidates[Math.floor(Math.random()*candidates.length)];
+      journalWizardId=chosen[0];
+      journalText=pick(_journals[chosen[0]]);
+      journalUnread=true;
+    }
   }
   return{...dl,finalized:true,completedCount,journalWizardId,journalText,journalUnread};
 }
@@ -446,7 +451,7 @@ function SlotCard({slot,idx,confirmed,affinity,affinityChanges,level,lvTransitio
       {(!confirmed||slot.editing)&&<div style={{display:'flex',gap:8}}><SlotDrop placeholder='TASK' value={slot.taskId||''} onChange={onTask} opts={tasks.map(t=>({v:t.id,l:t.name,tag:t.tag}))} disabledIds={[]} borderColor={bdr} grouped={true}/><SlotDrop placeholder='마법사' value={slot.wizardId||''} onChange={onWiz} opts={ownedWiz.map(w=>({v:w.id,l:w.name}))} disabledIds={disW} borderColor={bdr} disabled={!slot.taskId}/></div>}
       {confirmed&&!slot.editing&&task&&<div style={{fontSize:13,color:'rgba(0,0,0,0.5)',marginBottom:8}}><span style={{fontWeight:500,color:acc}}>{task.name}</span></div>}
       {wiz&&slot.dialogue&&<div style={{display:'flex',gap:10,alignItems:'flex-start',marginTop:8,padding:'9px 11px',background:'rgba(255,255,255,0.55)',borderRadius:'var(--border-radius-md)',border:'0.5px solid '+bdr}}><Avatar wiz={wiz} size={40}/><div><div style={{fontSize:11,fontWeight:500,color:acc,marginBottom:2}}>{wiz.name}</div><div style={{fontSize:12,color:'rgba(0,0,0,0.55)',lineHeight:1.6}}>{slot.dialogue}</div></div></div>}
-      {confirmed&&slot.status==='active'&&<div style={{display:'flex',gap:8,marginTop:10}}><button onClick={()=>onAskComplete(idx,slot.startedAt)} style={{flex:2,background:acc,color:'white',border:'none',borderRadius:'var(--border-radius-md)',padding:'8px 0',fontSize:13,fontWeight:500,cursor:'pointer'}}>완료</button></div>}
+      {confirmed&&slot.status==='active'&&<div style={{display:'flex',gap:8,marginTop:10}}><button onClick={()=>onAskComplete(idx,slot.startedAt)} style={{flex:2,background:acc,color:'white',border:'none',borderRadius:'var(--border-radius-md)',padding:'8px 0',fontSize:13,fontWeight:500,cursor:'pointer'}}>완료</button><button onClick={()=>onAskForfeit(idx)} style={{flex:1,background:'rgba(255,255,255,0.55)',color:'#8A3030',border:'0.5px solid #D0A0A0',borderRadius:'var(--border-radius-md)',padding:'8px 0',fontSize:13,cursor:'pointer'}}>포기</button></div>}
 {confirmed&&!slot.isSystem&&(slot.status==='done'||slot.status==='forfeited')&&!allDone&&<button onClick={()=>onSlotReset(idx)} style={{width:'100%',marginTop:8,padding:'7px 0',borderRadius:'var(--border-radius-md)',border:'0.5px solid '+bdr,background:'rgba(255,255,255,0.6)',color:'rgba(0,0,0,0.45)',fontSize:12,cursor:'pointer'}}>새 임무 배정</button>}
     </div>
   );
@@ -567,7 +572,7 @@ onAskComplete={(idx,startedAt)=>setModal({type:'confirmComplete',idx,elapsed:for
         onCancel={modal.type==='activateSlot'?()=>{onUpd(modal.idx,{wizardId:null,dialogue:null,tagMatch:false});setModal(null);}:()=>setModal(null)}
         confirmDisabled={false}
       />}
-<div style={{textAlign:'center',marginTop:24,paddingBottom:8}}>
+      <div style={{textAlign:'center',marginTop:24,paddingBottom:8}}>
         <span style={{fontSize:10,color:'rgba(0,0,0,0.2)',lineHeight:1.8}}>캐시·쿠키 삭제 전 데이터를 백업해 두세요 (우상단 A → 데이터 백업)</span>
       </div>
     </div>
@@ -577,7 +582,7 @@ onAskComplete={(idx,startedAt)=>setModal({type:'confirmComplete',idx,elapsed:for
 
 // ── 수집 페이지 ───────────────────────────────────────────────────────────────
 function CollectPage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,ownedCount,gachaDate,setGachaDate,addLogEntry}){
- var[phase,setPhase]=useState('idle');
+  var[phase,setPhase]=useState('idle');
   var[gWiz,setGWiz]=useState(null);
   var[gNew,setGNew]=useState(false);
   var[full,setFull]=useState('');
@@ -747,17 +752,17 @@ function AppInner({onForceReset}){
   var[logs,setLogs]=useState({});
   var[playerName,setPlayerName]=useState('');
   var[tasks,setTasks]=useState(FB_TASKS);
-var[showInstallBanner,setShowInstallBanner]=useState(false);
-var[showMahwaLimit,setShowMahwaLimit]=useState(false);
+  var[showInstallBanner,setShowInstallBanner]=useState(false);
+  var[showMahwaLimit,setShowMahwaLimit]=useState(false);
 
-useEffect(()=>{
-  var isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
-  if(!isStandalone){
-    var dismissed=localStorage.getItem('installBannerDismissed');
-    if(!dismissed)setTimeout(()=>setShowInstallBanner(true),2000);
-  }
-},[]);
-  
+  // 설치 배너 및 초기 체크
+  useEffect(()=>{
+    var isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
+    if(!isStandalone){
+      var dismissed=localStorage.getItem('installBannerDismissed');
+      if(!dismissed)setTimeout(()=>setShowInstallBanner(true),2000);
+    }
+  },[]);
 
   // 1) 시트 데이터 로드
   useEffect(()=>{
@@ -857,8 +862,8 @@ useEffect(()=>{
       var delta=s.tagMatch?25:20;
       applyAff(s.wizardId,delta,'up');
       if(doneCount<10)setMahwa(n=>n+10);
-if(doneCount===9)setShowMahwaLimit(true);
-setDoneCount(n=>n+1);
+      if(doneCount===9)setShowMahwaLimit(true);
+      setDoneCount(n=>n+1);
       setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'done',dialogue:getLine(s.wizardId,'TASK_SUCCESS')}:sl));
       addLogEntry({taskId:s.taskId,taskName:task?task.name:'?',wizardId:s.wizardId,wizardName:wiz?wiz.name:'?',delta,dir:'up',source:'task'});
     }else if(patch==='forfeit'){
@@ -880,7 +885,7 @@ setDoneCount(n=>n+1);
     var usedIds=slots.filter(s=>s.wizardId).map(s=>s.wizardId);
     var pool=wizards.filter(w=>w.owned&&!usedIds.includes(w.id));
     var newSlots=slots.map(s=>{
-  if(!s.isSystem&&s.taskId&&s.wizardId)return{...s,status:'active',startedAt:Date.now()};
+      if(!s.isSystem&&s.taskId&&s.wizardId)return{...s,status:'active',startedAt:Date.now()};
       if(fillEmpty&&(!s.taskId||!s.wizardId)){
         if(pool.length>0){
           var chosen=pool.splice(Math.floor(Math.random()*pool.length),1)[0];
@@ -894,7 +899,7 @@ setDoneCount(n=>n+1);
     setSlots(newSlots);setConfirmed(true);
   }
   function onReset(){setSlots([mkSlot(),mkSlot(),mkSlot()]);setConfirmed(false);}
-function onSlotReset(idx){setSlots(p=>p.map((sl,i)=>i===idx?{...mkSlot(),editing:true}:sl));}
+  function onSlotReset(idx){setSlots(p=>p.map((sl,i)=>i===idx?{...mkSlot(),editing:true}:sl));}
 
   // T 버튼
   function onTestFinalize(){
