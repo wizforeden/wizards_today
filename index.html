@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>오늘의 임무</title>
 <style>
   :root{--border-radius-lg:12px;--border-radius-md:8px;--color-text-primary:rgba(0,0,0,0.78);--color-text-secondary:rgba(0,0,0,0.5);--color-text-tertiary:rgba(0,0,0,0.35);}
@@ -515,7 +517,6 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
     <div style={{padding:'22px 16px 20px',maxWidth:420,margin:'0 auto'}}>
       <PageHeader title='오늘의 임무' line1={l1} line2={l2}/>
       <div style={{display:'flex',flexDirection:'column',gap:10}}>
-        {lvUpEvent&&<LvUpBanner event={lvUpEvent} onClose={()=>setLvUpEvent(null)}/>}
         {slots.map((sl,i)=><SlotCard key={i} slot={sl} idx={i} confirmed={confirmed} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} onUpd={onUpd} usedWizIds={usedWizIds} wizards={wizards} tasks={tasks} onAskForfeit={idx=>setModal({type:'forfeit',idx})}/>)}
         {!confirmed&&<button onClick={handleConfirmClick} disabled={!canConfirm} style={{marginTop:4,background:canConfirm?'#4A6080':'rgba(0,0,0,0.07)',color:canConfirm?'white':'var(--color-text-tertiary)',border:'none',borderRadius:'var(--border-radius-lg)',padding:'11px 0',fontSize:13,fontWeight:500,cursor:canConfirm?'pointer':'not-allowed',transition:'background 0.2s'}}>임무 확정</button>}
         {allDone&&<div style={{textAlign:'center',padding:'18px 16px',marginTop:4,background:'#EAEAEA',borderRadius:'var(--border-radius-lg)',border:'0.5px solid #D0D0D0'}}><div style={{fontSize:14,fontWeight:500,color:'#3A4A40',marginBottom:10,fontFamily:"Georgia,'Nanum Myeongjo',serif",letterSpacing:'0.3px'}}>당신의 임무, 세계를 구했다!</div><button onClick={onReset} style={{background:'white',color:'var(--color-text-secondary)',border:'0.5px solid #C8C8C8',borderRadius:'var(--border-radius-md)',padding:'6px 20px',fontSize:12,cursor:'pointer'}}>Reset</button></div>}
@@ -883,6 +884,13 @@ function AppInner({onForceReset}){
         onRestore={handleRestore}
         onReset={()=>{setShowSettings(false);setShowResetConfirm(true);}}
       />}
+      {lvUpEvent&&(
+        <Overlay>
+          <div style={{maxWidth:320,width:'88%'}}>
+            <LvUpBanner event={lvUpEvent} onClose={()=>setLvUpEvent(null)}/>
+          </div>
+        </Overlay>
+      )}
       {showResetConfirm&&<ConfirmModal msg={'데이터를 정말 초기화하나요?\n모든 진행 상황이 삭제됩니다.'} confirmLabel='초기화' cancelLabel='취소' onConfirm={()=>{resetAllData();setShowResetConfirm(false);}} onCancel={()=>setShowResetConfirm(false)} confirmDisabled={false} danger={true}/>}
       {showJournalPopup&&(
         <Overlay>
