@@ -26,6 +26,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <script type="text/babel">
+  // 설치 프롬프트 이벤트 저장
+let _installPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _installPrompt = e;
+});
 const { useState, useEffect, useRef } = React;
 
 
@@ -412,7 +418,7 @@ function SystemSlotCard({slot,wizards}){
     </div>
   );
 }
-function SlotCard({slot,idx,confirmed,affinity,affinityChanges,level,lvTransitions,onUpd,usedWizIds,wizards,tasks,onAskForfeit}){
+function SlotCard({slot,idx,confirmed,affinity,affinityChanges,level,lvTransitions,onUpd,usedWizIds,wizards,tasks,onAskForfeit,onSlotReset,allDone,onAskActivate}){
   if(slot.isSystem)return<SystemSlotCard slot={slot} wizards={wizards}/>;
   var wiz=wizards.find(w=>w.id===slot.wizardId);
   var task=tasks.find(t=>t.id===slot.taskId);
@@ -422,7 +428,7 @@ function SlotCard({slot,idx,confirmed,affinity,affinityChanges,level,lvTransitio
   var ownedWiz=wizards.filter(w=>w.owned).sort((a,b)=>{var aDis=disW.includes(a.id),bDis=disW.includes(b.id);if(aDis!==bDis)return aDis?1:-1;var cc=a.club.localeCompare(b.club,'ko');return cc!==0?cc:a.name.localeCompare(b.name,'ko');});
   var bg=wiz?wiz.bg:'#F0F0F0',bdr=wiz?wiz.border:'#DCDCDC',acc=wiz?wiz.accent:'#888';
   function onTask(taskId){var w=wizards.find(w=>w.id===slot.wizardId),t=tasks.find(t=>t.id===taskId);var tm=!!(w&&t&&w.tags.includes(t.tag));onUpd(idx,{taskId,tagMatch:tm,dialogue:w?getLine(slot.wizardId,tm?'TASK_MATCH':'TASK_UNMATCH'):null});}
-  function onWiz(wId){var w=wizards.find(w=>w.id===wId),t=tasks.find(t=>t.id===slot.taskId);var tm=!!(w&&t&&w.tags.includes(t.tag));onUpd(idx,{wizardId:wId,tagMatch:tm,dialogue:getLine(wId,tm?'TASK_MATCH':'TASK_UNMATCH')});}
+  function onWiz(wId){var w=wizards.find(w=>w.id===wId),t=tasks.find(t=>t.id===slot.taskId);var tm=!!(w&&t&&w.tags.includes(t.tag));onUpd(idx,{wizardId:wId,tagMatch:tm,dialogue:getLine(wId,tm?'TASK_MATCH':'TASK_UNMATCH')});if(slot.editing&&slot.taskId)onAskActivate(idx);}
   return(
     <div style={{background:bg,borderRadius:'var(--border-radius-lg)',border:'0.5px solid '+bdr,padding:'12px 14px',transition:'background 0.5s,border-color 0.5s'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:wiz?10:8}}>
@@ -432,10 +438,11 @@ function SlotCard({slot,idx,confirmed,affinity,affinityChanges,level,lvTransitio
         </div>
       </div>
       {wiz&&<AffinityRow wiz={wiz} aff={aff} chg={chg} lv={lv} lvTrans={lvTrans}/>}
-      {!confirmed&&<div style={{display:'flex',gap:8}}><SlotDrop placeholder='TASK' value={slot.taskId||''} onChange={onTask} opts={tasks.map(t=>({v:t.id,l:t.name,tag:t.tag}))} disabledIds={[]} borderColor={bdr} grouped={true}/><SlotDrop placeholder='마법사' value={slot.wizardId||''} onChange={onWiz} opts={ownedWiz.map(w=>({v:w.id,l:w.name}))} disabledIds={disW} borderColor={bdr} disabled={!slot.taskId}/></div>}
-      {confirmed&&task&&<div style={{fontSize:13,color:'rgba(0,0,0,0.5)',marginBottom:8}}><span style={{fontWeight:500,color:acc}}>{task.name}</span></div>}
+      {(!confirmed||slot.editing)&&<div style={{display:'flex',gap:8}}><SlotDrop placeholder='TASK' value={slot.taskId||''} onChange={onTask} opts={tasks.map(t=>({v:t.id,l:t.name,tag:t.tag}))} disabledIds={[]} borderColor={bdr} grouped={true}/><SlotDrop placeholder='마법사' value={slot.wizardId||''} onChange={onWiz} opts={ownedWiz.map(w=>({v:w.id,l:w.name}))} disabledIds={disW} borderColor={bdr} disabled={!slot.taskId}/></div>}
+      {confirmed&&!slot.editing&&task&&<div style={{fontSize:13,color:'rgba(0,0,0,0.5)',marginBottom:8}}><span style={{fontWeight:500,color:acc}}>{task.name}</span></div>}
       {wiz&&slot.dialogue&&<div style={{display:'flex',gap:10,alignItems:'flex-start',marginTop:8,padding:'9px 11px',background:'rgba(255,255,255,0.55)',borderRadius:'var(--border-radius-md)',border:'0.5px solid '+bdr}}><Avatar wiz={wiz} size={40}/><div><div style={{fontSize:11,fontWeight:500,color:acc,marginBottom:2}}>{wiz.name}</div><div style={{fontSize:12,color:'rgba(0,0,0,0.55)',lineHeight:1.6}}>{slot.dialogue}</div></div></div>}
       {confirmed&&slot.status==='active'&&<div style={{display:'flex',gap:8,marginTop:10}}><button onClick={()=>onUpd(idx,'complete')} style={{flex:2,background:acc,color:'white',border:'none',borderRadius:'var(--border-radius-md)',padding:'8px 0',fontSize:13,fontWeight:500,cursor:'pointer'}}>완료</button><button onClick={()=>onAskForfeit(idx)} style={{flex:1,background:'rgba(255,255,255,0.55)',color:'#8A3030',border:'0.5px solid #D0A0A0',borderRadius:'var(--border-radius-md)',padding:'8px 0',fontSize:13,cursor:'pointer'}}>포기</button></div>}
+{confirmed&&!slot.isSystem&&(slot.status==='done'||slot.status==='forfeited')&&!allDone&&<button onClick={()=>onSlotReset(idx)} style={{width:'100%',marginTop:8,padding:'7px 0',borderRadius:'var(--border-radius-md)',border:'0.5px solid '+bdr,background:'rgba(255,255,255,0.6)',color:'rgba(0,0,0,0.45)',fontSize:12,cursor:'pointer'}}>새 임무 배정</button>}
     </div>
   );
 }
@@ -512,7 +519,7 @@ function IntroScreen({wizards,setWizards,onComplete}){
 }
 
 // ── 임무 페이지 ───────────────────────────────────────────────────────────────
-function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,level,lvTransitions,lvUpEvent,setLvUpEvent,onUpd,onConfirmMission,onReset,slots,confirmed}){
+function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,level,lvTransitions,lvUpEvent,setLvUpEvent,onUpd,onConfirmMission,onReset,onSlotReset,slots,confirmed}){
   var[modal,setModal]=useState(null);
   var canConfirm=!confirmed&&slots.some(s=>!s.isSystem&&s.taskId&&s.wizardId);
   var hasEmpty=slots.some(s=>!s.isSystem&&(!s.taskId||!s.wizardId));
@@ -526,6 +533,7 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
   function handleOk(){
     if(modal.type==='confirmWithEmpty'){onConfirmMission(true);setModal(null);}
     else if(modal.type==='forfeit'){onUpd(modal.idx,'forfeit');setModal(null);}
+    else if(modal.type==='activateSlot'){onUpd(modal.idx,'activate');setModal(null);}
   }
   var l1=<span>오늘 완료한 임무: <span style={{fontWeight:500,color:'#4A6060'}}>{doneCount}건</span></span>;
   var l2=<span>소지 마화: <span style={{fontWeight:500,color:'#4A6060'}}>{mahwa}닢</span></span>;
@@ -533,14 +541,16 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
     <div style={{padding:'80px 16px 20px',maxWidth:420,margin:'0 auto'}}>
       <PageHeader title='오늘의 임무' line1={l1} line2={l2}/>
       <div style={{display:'flex',flexDirection:'column',gap:10}}>
-        {slots.map((sl,i)=><SlotCard key={i} slot={sl} idx={i} confirmed={confirmed} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} onUpd={onUpd} usedWizIds={usedWizIds} wizards={wizards} tasks={tasks} onAskForfeit={idx=>setModal({type:'forfeit',idx})}/>)}
+        {slots.map((sl,i)=><SlotCard key={i} slot={sl} idx={i} confirmed={confirmed} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} onUpd={onUpd} usedWizIds={usedWizIds} wizards={wizards} tasks={tasks} onAskForfeit={idx=>setModal({type:'forfeit',idx})} onSlotReset={onSlotReset} allDone={allDone} onAskActivate={idx=>setModal({type:'activateSlot',idx})}/>)}
         {!confirmed&&<button onClick={handleConfirmClick} disabled={!canConfirm} style={{marginTop:4,background:canConfirm?'#4A6080':'rgba(0,0,0,0.07)',color:canConfirm?'white':'var(--color-text-tertiary)',border:'none',borderRadius:'var(--border-radius-lg)',padding:'11px 0',fontSize:13,fontWeight:500,cursor:canConfirm?'pointer':'not-allowed',transition:'background 0.2s'}}>임무 확정</button>}
         {allDone&&<div style={{textAlign:'center',padding:'18px 16px',marginTop:4,background:'#EAEAEA',borderRadius:'var(--border-radius-lg)',border:'0.5px solid #D0D0D0'}}><div style={{fontSize:14,fontWeight:500,color:'#3A4A40',marginBottom:10,fontFamily:"Georgia,'Nanum Myeongjo',serif",letterSpacing:'0.3px'}}>당신의 임무, 세계를 구했다!</div><button onClick={onReset} style={{background:'white',color:'var(--color-text-secondary)',border:'0.5px solid #C8C8C8',borderRadius:'var(--border-radius-md)',padding:'6px 20px',fontSize:12,cursor:'pointer'}}>Reset</button></div>}
       </div>
       {modal&&<ConfirmModal
-        msg={modal.type==='confirmWithEmpty'?'빈 임무 슬롯이 있어요.\n이대로 임무를 확정할까요?':'정말 포기하시겠어요?'}
-        confirmLabel='예' cancelLabel={modal.type==='confirmWithEmpty'?'아니오':'아니오'}
-        onConfirm={handleOk} onCancel={()=>setModal(null)} confirmDisabled={false}
+        msg={modal.type==='confirmWithEmpty'?'빈 임무 슬롯이 있어요.\n이대로 임무를 확정할까요?':modal.type==='activateSlot'?'이대로 새 임무를 시작할까요?':'정말 포기하시겠어요?'}
+        confirmLabel='예' cancelLabel='아니오'
+        onConfirm={handleOk}
+        onCancel={modal.type==='activateSlot'?()=>{onUpd(modal.idx,{wizardId:null,dialogue:null,tagMatch:false});setModal(null);}:()=>setModal(null)}
+        confirmDisabled={false}
       />}
 <div style={{textAlign:'center',marginTop:24,paddingBottom:8}}>
         <span style={{fontSize:10,color:'rgba(0,0,0,0.2)',lineHeight:1.8}}>캐시·쿠키 삭제 전 데이터를 백업해 두세요 (우상단 A → 데이터 백업)</span>
@@ -703,6 +713,17 @@ function AppInner({onForceReset}){
   var[logs,setLogs]=useState({});
   var[playerName,setPlayerName]=useState('');
   var[tasks,setTasks]=useState(FB_TASKS);
+var[showInstallBanner,setShowInstallBanner]=useState(false);
+var[showMahwaLimit,setShowMahwaLimit]=useState(false);
+
+useEffect(()=>{
+  var isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
+  if(!isStandalone){
+    var dismissed=localStorage.getItem('installBannerDismissed');
+    if(!dismissed)setTimeout(()=>setShowInstallBanner(true),2000);
+  }
+},[]);
+  
 
   // 1) 시트 데이터 로드
   useEffect(()=>{
@@ -801,7 +822,9 @@ function AppInner({onForceReset}){
       var task=tasks.find(t=>t.id===s.taskId);
       var delta=s.tagMatch?25:20;
       applyAff(s.wizardId,delta,'up');
-      setDoneCount(n=>n+1);setMahwa(n=>n+10);
+      setDoneCount(n=>n+1);
+    if(doneCount<10)setMahwa(n=>n+10);
+    if(doneCount===9)setShowMahwaLimit(true);
       setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'done',dialogue:getLine(s.wizardId,'TASK_SUCCESS')}:sl));
       addLogEntry({taskId:s.taskId,taskName:task?task.name:'?',wizardId:s.wizardId,wizardName:wiz?wiz.name:'?',delta,dir:'up',source:'task'});
     }else if(patch==='forfeit'){
@@ -811,6 +834,8 @@ function AppInner({onForceReset}){
       applyAff(s2.wizardId,20,'down');
       setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'forfeited',dialogue:getLine(s2.wizardId,'TASK_FAILURE')}:sl));
       addLogEntry({taskId:s2.taskId,taskName:task2?task2.name:'?',wizardId:s2.wizardId,wizardName:wiz2?wiz2.name:'?',delta:20,dir:'down',source:'task'});
+    }else if(patch==='activate'){
+      setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'active',editing:false}:sl));
     }else{
       setSlots(p=>p.map((sl,i)=>i===idx?{...sl,...patch}:sl));
     }
@@ -821,7 +846,7 @@ function AppInner({onForceReset}){
     var usedIds=slots.filter(s=>s.wizardId).map(s=>s.wizardId);
     var pool=wizards.filter(w=>w.owned&&!usedIds.includes(w.id));
     var newSlots=slots.map(s=>{
-      if(!s.isSystem&&s.taskId&&s.wizardId)return{...s,status:'active'};
+  if(!s.isSystem&&s.taskId&&s.wizardId)return{...s,status:'active'};
       if(fillEmpty&&(!s.taskId||!s.wizardId)&&pool.length>0){
         var chosen=pool.splice(Math.floor(Math.random()*pool.length),1)[0];
         return mkSystemSlot(chosen);
@@ -831,6 +856,7 @@ function AppInner({onForceReset}){
     setSlots(newSlots);setConfirmed(true);
   }
   function onReset(){setSlots([mkSlot(),mkSlot(),mkSlot()]);setConfirmed(false);}
+function onSlotReset(idx){setSlots(p=>p.map((sl,i)=>i===idx?{...mkSlot(),editing:true}:sl));}
 
   // T 버튼
   function onTestFinalize(){
@@ -893,9 +919,25 @@ function AppInner({onForceReset}){
       {/* 설정 버튼 (A) */}
       <button onClick={()=>setShowSettings(true)} style={{position:'fixed',top:14,right:14,width:28,height:28,borderRadius:'50%',border:'0.5px solid rgba(0,0,0,0.15)',background:'rgba(255,255,255,0.9)',fontSize:11,fontWeight:600,color:'rgba(0,0,0,0.4)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:150,boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>A</button>
 
-      {page==='mission'&&<MissionPage wizards={wizards} tasks={tasks} mahwa={mahwa} doneCount={doneCount} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} lvUpEvent={lvUpEvent} setLvUpEvent={setLvUpEvent} onUpd={onUpd} onConfirmMission={onConfirmMission} onReset={onReset} slots={slots} confirmed={confirmed}/>}
+      {page==='mission'&&<MissionPage wizards={wizards} tasks={tasks} mahwa={mahwa} doneCount={doneCount} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} lvUpEvent={lvUpEvent} setLvUpEvent={setLvUpEvent} onUpd={onUpd} onConfirmMission={onConfirmMission} onReset={onReset} onSlotReset={onSlotReset} slots={slots} confirmed={confirmed}/>}
       {page==='collect'&&<CollectPage wizards={wizards} setWizards={setWizards} mahwa={mahwa} setMahwa={setMahwa} affinity={affinity} level={level} applyAff={applyAff} ownedCount={ownedCount} gachaDate={gachaDate} setGachaDate={setGachaDate} addLogEntry={addLogEntry}/>}
       {page==='record'&&<RecordPage logs={logs} wizards={wizards} onMarkRead={onMarkRead} onTestFinalize={onTestFinalize}/>}
+      {showInstallBanner&&(
+  <div style={{position:'fixed',bottom:62,left:12,right:12,background:'white',borderRadius:12,padding:'14px 16px',boxShadow:'0 4px 20px rgba(0,0,0,0.12)',border:'0.5px solid #D8D8D8',zIndex:190,display:'flex',alignItems:'center',gap:12}}>
+    <div style={{flex:1}}>
+      <div style={{fontSize:13,fontWeight:500,color:'var(--color-text-primary)',marginBottom:3}}>홈 화면에 설치하면 더 쾌적해요</div>
+      <div style={{fontSize:11,color:'var(--color-text-tertiary)',lineHeight:1.6}}>전체화면으로 앱처럼 사용할 수 있어요</div>
+    </div>
+    <div style={{display:'flex',flexDirection:'column',gap:6,flexShrink:0}}>
+      {_installPrompt?(
+        <button onClick={()=>{_installPrompt.prompt();_installPrompt.userChoice.then(()=>{setShowInstallBanner(false);localStorage.setItem('installBannerDismissed','1');});}} style={{padding:'7px 14px',borderRadius:8,border:'none',background:'#4A6080',color:'white',fontSize:12,fontWeight:500,cursor:'pointer'}}>설치하기</button>
+      ):(
+        <div style={{fontSize:11,color:'var(--color-text-secondary)',maxWidth:120,lineHeight:1.6,textAlign:'right'}}>브라우저 메뉴 → 홈 화면에 추가 → 앱 설치</div>
+      )}
+      <button onClick={()=>{setShowInstallBanner(false);localStorage.setItem('installBannerDismissed','1');}} style={{padding:'5px 14px',borderRadius:8,border:'0.5px solid #D8D8D8',background:'white',color:'var(--color-text-tertiary)',fontSize:11,cursor:'pointer'}}>다시 보지 않기</button>
+    </div>
+  </div>
+)}
       <BottomNav page={page} setPage={setPage}/>
 
       {showSettings&&<SettingsPanel
