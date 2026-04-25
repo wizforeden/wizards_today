@@ -52,90 +52,50 @@ const FB_WIZARDS = [
   {id:"W01",name:"시그너스",club:"종장",tags:["지성","정리"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w001.png",bg:"#E3EEF8",border:"#B5CCE4",accent:"#3A6080"},
   {id:"W02",name:"호타루",club:"종장",tags:["생업","정리"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w002.jpg",bg:"#D2FCCF",border:"#AFF0AF",accent:"#36911D"},
   {id:"W03",name:"릴리메이",club:"종장",tags:["작업","회복"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w003.png",bg:"#F4E6F3",border:"#E5B8E8",accent:"#962C8C"},
-  {id:"W04",name:"시타",club:"서광",tags:["근육","가정"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w004.png",bg:"#E8EAEC",border:"#BCC2C8",accent:"#4A5460"},
+  {id:"W04",name:"시타",club:"서광",tags:["근육","가정"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w004.png",bg:"#E5EFED",border:"#A3BDB8",accent:"#2A4A46"},
   {id:"W05",name:"데네브",club:"서광",tags:["회복","생존"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w005.png",bg:"#E4EDE4",border:"#B2CEB2",accent:"#345040"},
-  {id:"W06",name:"초롱",club:"서광",tags:["회복","근육"],josa:"은",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w006.png",bg:"#E2EEF2",border:"#B0CDD8",accent:"#305870"},
+  {id:"W06",name:"초롱",club:"서광",tags:["회복","근육"],josa:"은",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w006.png",bg:"#EAF6FB",border:"#B6E0F2",accent:"#2F6F8F"},
   {id:"W07",name:"가흠",club:"흉몽퇴치반",tags:["지성","생업"],josa:"은",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w007.png",bg:"#F2E6E6",border:"#D8B8B8",accent:"#703030"},
   {id:"W08",name:"리온",club:"흉몽퇴치반",tags:["생존","가정"],josa:"은",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w008.png",bg:"#F2EEE0",border:"#D8CCA8",accent:"#706030"},
   {id:"W09",name:"네로",club:"흉몽퇴치반",tags:["지성","작업"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w009.png",bg:"#E2E4E6",border:"#B0B6BC",accent:"#3C4048"},
+  {id:"W10",name:"유리디스",club:"불꽃의 서약",tags:["생업","정리"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w011.png",bg:"#EFE4D8",border:"#C2A58A",accent:"#4B2E1F"},
+  {id:"W11",name:"리디아",club:"불꽃의 서약",tags:["근육","지성"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w011.png",bg:"#ECE9F7",border:"#B9B4E3",accent:"#3A3570"},
 ];
 const FB_TASKS = [
-  {id:"T001",name:"운동(기타)",tag:"근육"},{id:"T002",name:"스트레칭",tag:"근육"},
+  {id:"T001",name:"운동(기타)",tag:"근육"},{id:"T002",name:"스트레칭",tag:"근육"},{id:"T027",name:"운동(근력)",tag:"근육"},{id:"T026",name:"운동(유산소)",tag:"생존"},
   {id:"T003",name:"독서",tag:"지성"},{id:"T004",name:"공부",tag:"지성"},{id:"T005",name:"가계부",tag:"지성"},
-  {id:"T006",name:"약속 조정",tag:"정리"},{id:"T007",name:"정리정돈",tag:"정리"},{id:"T008",name:"메일 확인",tag:"정리"},{id:"T009",name:"연락하기",tag:"정리"},
-  {id:"T010",name:"설거지",tag:"가정"},{id:"T011",name:"청소",tag:"가정"},{id:"T012",name:"빨래",tag:"가정"},
+  {id:"T006",name:"약속 조정",tag:"정리"},{id:"T007",name:"정리정돈",tag:"정리"},{id:"T008",name:"메일 확인",tag:"정리"},{id:"T009",name:"연락",tag:"정리"},
+  {id:"T010",name:"설거지",tag:"가정"},{id:"T011",name:"청소",tag:"가정"},{id:"T012",name:"빨래",tag:"가정"},{id:"T028",name:"요리",tag:"가정"},{id:"T029",name:"쓰레기 버리기",tag:"가정"},
   {id:"T013",name:"업무",tag:"생업"},{id:"T014",name:"마감",tag:"생업"},{id:"T015",name:"계획 짜기",tag:"생업"},
-  {id:"T016",name:"물 마시기",tag:"생존"},{id:"T017",name:"영양제 먹기",tag:"생존"},{id:"T018",name:"환기하기",tag:"생존"},
+  {id:"T016",name:"물 마시기",tag:"생존"},{id:"T017",name:"영양제 먹기",tag:"생존"},{id:"T018",name:"환기하기",tag:"생존"},{id:"T025",name:"장 보기",tag:"생존"},{id:"T030",name:"씻기",tag:"생존"},
   {id:"T019",name:"연성",tag:"작업"},{id:"T020",name:"세션 준비",tag:"작업"},{id:"T021",name:"뜨개질",tag:"작업"},
-  {id:"T022",name:"일기 쓰기",tag:"회복"},{id:"T023",name:"산책",tag:"회복"},{id:"T024",name:"명상",tag:"회복"},
-  {id:"T025",name:"장 보기",tag:"생존"},{id:"T026",name:"운동(유산소)",tag:"생존"},{id:"T027",name:"운동(근력)",tag:"근육"},
+  {id:"T022",name:"일기",tag:"회복"},{id:"T023",name:"산책",tag:"회복"},{id:"T024",name:"명상",tag:"회복"},
 ].sort((a,b)=>a.name.localeCompare(b.name,'ko'));
 const FB_DLG = {
   W01:{MEET:["원탁의 서경, 『하늘과 땅을 가르는 무한선』 시그너스입니다. 잘 부탁드립니다."],MEET_AGAIN:["여기 계셨군요. 찾고 있었습니다. ……무슨 일이 있으신가요?"],TASK_MATCH:["제가 도움을 드릴 수 있을 것 같군요."],TASK_UNMATCH:["자신 있는 분야는 아니지만, 최선을 다해 보죠."],TASK_SUCCESS:["수고했어요. 나쁘지 않은 성과네요."],TASK_FAILURE:["……무슨 일이죠?"],LV_UP:{1:["수고했습니다. 다음에 또 뵙죠."],2:["…"],3:["…"],4:["…"]}},
   W02:{MEET:["학원의 외전, 『그대의 부름에 답하여』 여기 왔어. 이름은 호타루. 아니면 선생님이라고 불러."],MEET_AGAIN:["너도 참 성가신 녀석이네. 그래, 『그대의 부름에 답하여』 여기 왔어."],TASK_MATCH:["좋아, 맡겨 두라고."],TASK_UNMATCH:["엑, 이걸? …일단 해 볼게."],TASK_SUCCESS:["어때? 해내니까 기분 좋지?"],TASK_FAILURE:["이 녀석! 한눈 팔지 말랬지!"],LV_UP:{1:["너도 꽤 쓸 만한 녀석이야. …우쭐해지진 말라고!"],2:["…"],3:["…"],4:["…"]}},
   W03:{MEET:["천애의 사서, 『봄은 지는 법 없이 피고』 릴리메이 웬즈데이란다. 막을 올려보자꾸나."],MEET_AGAIN:["이런, 다시 나를 부르는 거니? 묘하구나. 네게는 꼭 행운이 아닐지도 모르겠지만……."],TASK_MATCH:["나는 이 시간이 제일 좋더라♡"],TASK_UNMATCH:["이걸 해보자구? 좋아, 도전욕이 불타오르네!"],TASK_SUCCESS:["해낼 줄 알았단다!"],TASK_FAILURE:["어머, 이렇게 막을 내려버리는 거니?"],LV_UP:{1:["가끔은 운명에 대해 생각하지. 무슨 말이냐구? 후훗, 비밀이란다."],2:["…"],3:["…"],4:["…"]}},
   W04:{MEET:["엽귀의 서경, 『섣달그믐의 등불』. 시타 웬즈데이. 이상이다."],MEET_AGAIN:["어디 있었던 거야? 찾아다녔잖아!"],TASK_MATCH:["임무 확인."],TASK_UNMATCH:["…임무 확인."],TASK_SUCCESS:["완료했습니다."],TASK_FAILURE:["사유를 듣지."],LV_UP:{1:["고맙다. 덕분에 무사히 끝났어. …그러고 보니 이름을 들었던가?"],2:["…"],3:["…"],4:["소개해 주고 싶은 녀석들이 있어. 좀 시끄럽고 귀찮지만… 다음에 한번."]}},
-  W05:{MEET:["『별빛의 증명자』. 데네브라고 불러. 뭐? 날개? 그야 있긴 한데…?"],MEET_AGAIN:["헤에. 나를 부른 줄 알았는데. 그냥 갈까?"],TASK_MATCH:["이런 것쯤이야~"],TASK_UNMATCH:["응? 새 업무야?"],TASK_SUCCESS:["이제 뭐해?"],TASK_FAILURE:["아니 그게ㅡ 미안하다니까!"],LV_UP:{1:["…"],2:["…"],3:["…"],4:["…"]}},
+  W05:{MEET:["『별빛의 증명자』. 데네브라고 불러. 뭐? 날개? 그야 있긴 한데…?"],MEET_AGAIN:["헤에. 나를 부른 줄 알았는데. 그냥 갈까?"],TASK_MATCH:["이런 것쯤이야~"],TASK_UNMATCH:["응? 새 임무야?"],TASK_SUCCESS:["이제 뭐해?"],TASK_FAILURE:["아니 그게ㅡ 미안하다니까!"],LV_UP:{1:["\"그러고 보니 이름이 뭐라고?\""],2:["…"],3:["…"],4:["…"]}},
   W06:{MEET:["나는 초롱! 『초롱아기』! 잘 부탁해~! 처음이니까 특별히 쓰다듬게 해 주지. 에헴!"],MEET_AGAIN:["이제 온 거야? 한참 기다렸다구~! 데이트 하기로 했잖아! 잊지 않았지?"],TASK_MATCH:["초롱님이 나가신다~!"],TASK_UNMATCH:["으…응? 나? 놀러가려고 했는데에……."],TASK_SUCCESS:["요 녀석, 요 녀석! 잘할 줄 알았다니까!"],TASK_FAILURE:["음! 실패는 성공의 어머니니까!"],LV_UP:{1:["내 이름은 초롱! 놀이공원의 마스코트라네! 너는?"],2:["…"],3:["…"],4:["…"]}},
-  W07:{MEET:["『하늘에는 별이 일곱, 땅 위에는 사람의 노래』. 기니까 줄여서 가흠. 소속? 어딜 것 같으냐? 맞춰봐."],MEET_AGAIN:["얼씨구? 실망한 표정인데? 아니긴. 왜, 나랑 다정해지는 건 싫으냐? 핫핫."],TASK_MATCH:["그래, 그래."],TASK_UNMATCH:["뭘 이런 걸 또 시키고 그러냐……."],TASK_SUCCESS:["어떠냐? 나쁘지 않지?"],TASK_FAILURE:["……흐음."],LV_UP:{1:["무당 일은 접은 지 좀 됐지만, 뭐 고민 있으면 연락하시든가."],2:["…"],3:["…"],4:["…"]}},
-  W08:{MEET:["『돌아오는 그림자는 하나』 이리온임다! 원래 고모랑 살고 있었는데 지금은 네로 씨랑 살고 있어여. 좋아하는 건 … 아, 이게 아님까?"],MEET_AGAIN:["넵! 부르셨어여?! …엑, 제가 아니라구여? 그런~."],TASK_MATCH:["라져~! 맡겨주십쇼!"],TASK_UNMATCH:["…"],TASK_SUCCESS:["…"],TASK_FAILURE:["…"],LV_UP:{1:["…"],2:["…"],3:["…"],4:["…"]}},
+  W07:{MEET:["『하늘에는 별이 일곱, 땅 위에는 사람의 노래』. 기니까 줄여서 가흠. 소속? 어딜 것 같으냐? 맞춰봐."],MEET_AGAIN:["얼씨구? 실망한 표정인데? 아니긴. 왜, 나랑 다정해지는 건 싫으냐? 핫핫."],TASK_MATCH:["그래, 그래."],TASK_UNMATCH:["뭘 이런 걸 또 하라고."],TASK_SUCCESS:["나도 꽤 쓸 만하지?"],TASK_FAILURE:["……흐음."],LV_UP:{1:["무당 일은 접은 지 좀 됐지만, 뭐 고민 있으면 연락하시든가."],2:["…"],3:["…"],4:["…"]}},
+  W08:{MEET:["『돌아오는 그림자는 하나』 이리온임다! 원래 고모랑 살고 있었는데 지금은 네로 씨랑 살고 있어여. 좋아하는 건 … 아, 이게 아님까?"],MEET_AGAIN:["넵! 부르셨어여?! …엑, 제가 아니라구여? 그런~."],TASK_MATCH:["라져~! 맡겨주십쇼!"],TASK_UNMATCH:["에? 이렇게 하면 되는 거예여?"],TASK_SUCCESS:["어떻슴까! 잘했죠?!"],TASK_FAILURE:["우…… 왜 항상 이런 일이 일어나는 걸까여……."],LV_UP:{1:["할일이 많다는 건 즐겁네여. 혼자 하지 않아도 된단 건 더 즐겁고요! 앗, 낯간지러웠슴까?"],2:["…"],3:["…"],4:["…"]}},
   W09:{MEET:["당신이 부른 건가요? ……흐응."],MEET_AGAIN:["저런, 꽝이네요. 하하."],TASK_MATCH:["제가요?"],TASK_UNMATCH:["헤에."],TASK_SUCCESS:["뭐, 수고하셨네요."],TASK_FAILURE:["아하하… 끝인가요?"],LV_UP:{1:["그러고 보니 이름을 안 물어봤네요. 아뇨, 알고는 있지만요."],2:["…"],3:["…"],4:["…"]}},
+  W10:{MEET:["『행동이 부른 결과』다. 분과회는 … 「불꽃의 서약」."],MEET_AGAIN:["또 만났군."],TASK_MATCH:["당연히 해야 할 일이야."],TASK_UNMATCH:["적절한 인선을 못 찾은 거 아닌가?"],TASK_SUCCESS:["수고했어."],TASK_FAILURE:["……."],LV_UP:{1:["인계의 이름? 유리디스 앳우드다. 편한 쪽으로 불러."],2:["…"],3:["…"],4:["…"]}},
+  W11:{MEET:["『푸른 불길이 지나간 곳에 그을음은 없으리라』, 리디아 지브란입니다. 문호에서 일하고 있어요."],MEET_AGAIN:["후후, 이것도 인연이네요. 마침 따뜻한 차를 내려 두었는데 드시겠어요?"],TASK_MATCH:["기대되네요!"],TASK_UNMATCH:["네, 바로 시작하겠습니다."],TASK_SUCCESS:["정말 기특하네요."],TASK_FAILURE:["다시 한번 해 볼까요?"],LV_UP:{1:["아, 유리와는 인사해 보셨나요? 후후, 무뚝뚝해 보여도 괜찮은 친구죠?"],2:["…"],3:["…"],4:["…"]}},
 };
 const FB_JOURNALS = {
-  W01:[
-    "시그너스는 서가에서 오래된 고서를 찾아냈다. 조금 복잡한 표정으로 그것을 쓰다듬었다. 무슨 사연이 있었을까?",
-    "시그너스가 전서구에 매달린 편지를 받았다. 읽고 난 그의 표정이 조금 부드러워졌다.",
-    "시그너스는 하루 종일 안락의자에서 느긋한 하루를 보낸 것 같다.",
-    "시그너스는 오랜만에 외출한 모양이다. 금방 올 것 같았는데, 왠지 지친 표정으로 밤 늦게 귀가했다. 누군가에게 시달린 걸까?"
-  ],
-  W02:[
-    "호타루는 오랜만에 스바루와 드럼을 연습했다. 곧 라이브 일정이 있을지도?",
-    "호타루는 재기발랄한 학원생들 덕분에 하루 종일 학원을 동분서주했다. 귀가하자마자 풀썩 쓰러졌다.",
-    "호타루는 대법전의 서공과 진지한 대화를 나누었던 모양이다. 평소보다 조금 어두운 얼굴로 돌아나왔다.",
-    "호타루는 한참 동안 옷을 고르며 외출 준비를 했다. 오늘은 늦을지도 모른다고 어딘지 비장한 표정으로 말하고 나갔다."
-  ],
-  W03:[
-    "릴리메이는 며칠 동안 전화를 붙잡고 씨름하더니, 드디어 분과회원을 불러내는 데 성공한 모양이다. 오늘은 조금 늦는다며 기뻐 보이는 얼굴로 나갔다.",
-    "릴리메이는 예언서에 꽂아둔 책갈피를 한참이나 물끄러미 바라보았다. 어떤 미래를 보고 있는 걸까?",
-    "릴리메이는 쇼핑을 마치고 행복한 표정으로 돌아왔다. 데보라를 잔뜩 괴롭혔다며 즐거워했다. …그래도 되는 거야?",
-    "오늘은 릴리메이의 신작 발표회가 있었다. 세상이 온통 대여배우의 화려한 복귀로 들썩였다."
-  ],
-  W04:[
-    "시타는 영화관에서 수상한 마력을 감지하고 온종일 추격전을 벌였다. 엉망이 된 옷차림보다도 신작 영화를 놓쳐 우울해 보인다.",
-    "시타는 오랜만에 학원에 방문했다. 어린 학생들의 동경 어린 시선이 부끄러우면서도 싫지만은 않았던 것 같다.",
-    "시타는 아침부터 엽귀의 소집 명령을 받고 다녀왔다. 돌아온 눈빛이 평소보다 어둡다.",
-    "놀이공원 성에 공주가 살고 있다는 유튜브가 게시되었다. 소문을 해명하기 위해 시타는 하루종일 진땀을 빼야 했다."
-  ],
-  W05:[
-    "데네브가 무언가를 끄적이더니 전서구에 매달아 보냈다. 의기양양해 보인다.",
-    "데네브는 하루 종일 나무 위에서 낮잠을 잤다. 간신히 찾아낸 분과회원들이 잔소리를 하지만 건성으로 들은 게 틀림없지.",
-    "데네브가 용의 형상으로 꿈을 꾼 모양이다. 잠꼬대를 하며 작은 불꽃을 내뱉는 바람에 커튼 한쪽이 조금 그슬리고 말았다.",
-    "한밤중, 데네브는 훌쩍 창문 너머로 뛰어내리더니 잠시 후 거대한 용이 되어 하늘을 날아올랐다. 근사한 야간 비행을 했다."
-  ],
-  W06:[
-    "초롱은 놀이공원에서 꼬마 손님들과 한바탕 술래잡기를 했다. 돌아와 탈을 벗자마자 김이 날 정도로 온 힘을 다한 모양이다.",
-    "초롱은 학원의 친구들과 비밀 회동을 했다. 무슨 모의를 했는지, 가방 안에서 수상한 마법 폭죽들이 잔뜩 쏟아져 나왔다.",
-    "초롱은 분과회원들과 유행한다는 과자 만들기를 했다. 코코아 가루를 묻힌 경단이 대량 생산되었다.",
-    "초롱은 시타가 뜨던 옷을 몰래 입어 보다가 실수로 망가뜨리고 말았다. 시타가 돌아오기 전까지 필사적으로 수복한다던데, 결과는 과연……."
-  ],
-  W07:[
-    "오늘 가흠의 레코드샵에는 손님이 한 명도 없었다. 하루 종일 주인장 취향의 오래된 노래가 흘러나왔다.",
-    "가흠이 심각한 얼굴로 꽃집에서 꽃다발을 골랐다. 특별한 날은 아닌 것 같았는데….",
-    "원탁 상사의 부름을 받고 나간 가흠은 하루 종일 자리를 비웠다. 조금 지친 표정으로 귀가했다.",
-    "오늘 가흠은 분과회원들과 MT를 갔다. 시작부터 자동차 타이어가 펑크 났다던데, 이래저래 험난했던 모양이다."
-  ],
-  W08:[
-    "리온은 대청소를 했다. 네로가 들어가지 말라는 방에 실수로 들어갔다가 새파래진 얼굴로 뛰쳐나왔다.",
-    "오늘 리온은 분과회원들과 MT를 갔다. 간신히 강릉 숙소에 도착해서 기진맥진해 뻗고 말았다. 원래 가려던 곳은 포천이었던 것 같은데….",
-    "리온은 고모의 강권에 못 이겨 슬램덩크를 읽기 시작했다. 처음에는 심드렁하더니 결국 식음을 전폐하며 독서 삼매경에 빠지고 말았다.",
-    "리온은 하루 종일 꾸벅꾸벅 졸았다. 어제 밤 늦게까지 서공 마법을 익혔던 모양이다."
-  ],
-  W09:[
-    "네로가 업로드한 유튜브가 알고리즘을 탔다. 세계의 음모론이 조금 짙어졌지만, 아무튼 마법계의 비밀은 지켜냈다.",
-    "네로는 하루 종일 카페에 앉아 사람을 구경했다. 어느 때보다 즐거운 표정이었다.",
-    "네로는 방에 틀어박힌 하루를 보냈다. 방에서는 인간의 귀로 포착할 수 없는 소리들이 들려온다… 착각이겠지.",
-    "네로는 분과회원들과 MT를 다녀왔다. 괴담 영상의 새로운 소재를 찾아냈다며 즐거운 듯 웃었다."
-  ]
+  W01:["시그너스는 서가에서 오래된 고서를 찾아냈다. 조금 복잡한 표정으로 그것을 쓰다듬었다. 무슨 사연이 있었을까?","시그너스가 전서구에 매달린 편지를 받았다. 읽고 난 그의 표정이 조금 부드러워졌다.","시그너스는 하루 종일 안락의자에서 느긋한 하루를 보낸 것 같다.","시그너스는 오랜만에 외출한 모양이다. 금방 올 것 같았는데, 왠지 지친 표정으로 밤 늦게 귀가했다. 누군가에게 시달린 걸까?"],
+  W02:["호타루는 오랜만에 스바루와 드럼을 연습했다. 곧 라이브 일정이 있을지도?","호타루는 재기발랄한 학원생들 덕분에 하루 종일 학원을 동분서주했다. 귀가하자마자 풀썩 쓰러졌다.","호타루는 대법전의 서공과 진지한 대화를 나누었던 모양이다. 평소보다 조금 어두운 얼굴로 돌아나왔다.","호타루는 한참 동안 옷을 고르며 외출 준비를 했다. 오늘은 늦을지도 모른다고 어딘지 비장한 표정으로 말하고 나갔다."],
+  W03:["릴리메이는 며칠 동안 전화를 붙잡고 씨름하더니, 드디어 분과회원을 불러내는 데 성공한 모양이다. 오늘은 조금 늦는다며 기뻐 보이는 얼굴로 나갔다.","릴리메이는 예언서에 꽂아둔 책갈피를 한참이나 물끄러미 바라보았다. 어떤 미래를 보고 있는 걸까?","오늘 릴리메이는 쇼핑을 마치고 행복한 표정으로 돌아왔다. 데보라를 잔뜩 괴롭혔다며 즐거워했다. ...그래도 되는 거야?","오늘은 릴리메이의 신작 발표회가 있었다. 세상이 온통 대여배우의 화려한 복귀로 들썩였다."],
+  W04:["시타는 오랜만에 학원에 방문했다. 어린 학생들의 동경 어린 시선이 부끄러우면서도 싫지만은 않았던 것 같다.","시타는 아침부터 엽귀의 소집 명령을 받고 다녀왔다. 돌아온 눈빛이 평소보다 어둡다.","놀이공원 성에 공주가 살고 있다는 유튜브가 게시되었다. 소문을 해명하기 위해 시타는 하루종일 진땀을 빼야 했다.","시타는 영화관에서 수상한 마력을 감지하고 온종일 추격전을 벌였다. 엉망이 된 옷차림보다도 신작 영화를 놓쳐 우울해 보인다."],
+  W05:["데네브가 무언가를 끄적이더니 전서구에 매달아 보냈다. 의기양양해 보인다.","데네브는 하루 종일 나무 위에서 낮잠을 잤다. 간신히 찾아낸 분과회원들이 잔소리를 하지만 건성으로 들은 게 틀림없지.","데네브가 용의 형상으로 꿈을 꾼 모양이다. 잠꼬대를 하며 작은 불꽃을 내뱉는 바람에 커튼 한쪽이 조금 그슬리고 말았다.","한밤중, 데네브는 훌쩍 창문 너머로 뛰어내리더니 잠시 후 거대한 용이 되어 하늘을 날아올랐다. 근사한 야간 비행을 했다."],
+  W06:["초롱은 놀이공원에서 꼬마 손님들과 한바탕 술래잡기를 했다. 돌아와 탈을 벗자마자 김이 날 정도로 온 힘을 다한 모양이다.","초롱은 학원의 친구들과 비밀 회동을 했다. 무슨 모의를 했는지, 가방 안에서 수상한 마법 폭죽들이 잔뜩 쏟아져 나왔다.","초롱은 분과회원들과 유행한다는 과자 만들기를 했다. 코코아 가루를 묻힌 경단이 대량 생산되었다.","초롱은 시타가 뜨던 옷을 몰래 입어 보다가 실수로 망가뜨리고 말았다. 시타가 돌아오기 전까지 필사적으로 수복한다던데, 결과는 과연…."],
+  W07:["오늘 가흠의 레코드샵에는 손님이 한 명도 없었다. 하루 종일 주인장 취향의 오래된 노래가 흘러나왔다.","가흠이 심각한 얼굴로 꽃집에서 꽃다발을 골랐다. 특별한 날은 아닌 것 같았는데….","원탁 상사의 부름을 받고 나간 가흠은 하루 종일 자리를 비웠다. 조금 지친 표정으로 귀가했다.","오늘 가흠은 분과회원들과 MT를 갔다. 시작부터 자동차 타이어가 펑크 났다던데, 이래저래 험난했던 모양이다."],
+  W08:["리온은 대청소를 했다. 네로가 들어가지 말라는 방에 실수로 들어갔다가 새파래진 얼굴로 뛰쳐나왔다.","오늘 리온은 분과회원들과 MT를 갔다. 간신히 강릉 숙소에 도착해서 기진맥진해 뻗고 말았다. 원래 가려던 곳은 포천이었던 것 같은데….","리온은 고모의 강권에 못 이겨 슬램덩크를 읽기 시작했다. 처음에는 심드렁하더니 결국 식음을 전폐하며 독서 삼매경에 빠지고 말았다.","리온은 하루 종일 꾸벅꾸벅 졸았다. 어제 밤 늦게까지 서공 마법을 익혔던 모양이다."],
+  W09:["네로가 업로드한 유튜브가 알고리즘을 탔다. 세계의 음모론이 조금 짙어졌지만, 아무튼 마법계의 비밀은 지켜냈다.","네로는 하루 종일 카페에 앉아 사람을 구경했다. 어느 때보다 즐거운 표정이었다.","네로는 방에 틀어박힌 하루를 보냈다. 방에서는 인간의 귀로 포착할 수 없는 소리들이 들려온다… 착각이겠지.","네로는 분과회원들과 MT를 다녀왔다. 괴담 영상의 새로운 소재를 찾아냈다며 즐거운 듯 웃었다."],
+  W10:["유리디스는 앨범을 정리하다가 생각에 잠겼다. 기억나지 않는 누군가 있는 걸까?","유리디스는 쇼핑몰에서 힘든 시간을 보냈다. 토라진 앵커의 마음을 풀어줘야 하는 모양이다.","임무 배분 오류로, 유리디스는 하루 동안 다섯 건이나 임무를 처리해야 했다. 내색하지 않아서 아무도 눈치채지 못했다.","유리디스는 리디아와 모처럼 맛집에 다녀왔다. 혈당 스파이크로 유명한 디저트를 먹으며 간만에 휴식을 취한 것 같다."],
+  W11:["리디아는 신규 문호 마법사를 보살피느라 하루 종일 쉴 틈이 없었다. 목이 쉴 지경일 텐데, 표정만은 상냥하고 밝다.","리디아는 방에서 혼자 눈을 감고 손을 모으고 한참을 보냈다. 누군가에게 기도하는 걸까?","리디아는 유리디스와 모처럼 맛집에 갔다. 디저트는 너무 달아서 먹을 수 없었지만 녹차가 훌륭했기에 만족했다.","리디아의 동물병원은 하루 종일 바빴다. 물 마실 틈도 없는 리디아를 보고 묘묘가 혀를 찼지만 본인은 행복한 듯했다."],
 };
 
 // ── 모듈 레벨 게임 데이터 (동적 로드 후 업데이트) ────────────────────────────
@@ -538,7 +498,7 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
   var l1=<span>오늘 완료한 임무: <span style={{fontWeight:500,color:'#4A6060'}}>{doneCount}건</span></span>;
   var l2=<span>소지 마화: <span style={{fontWeight:500,color:'#4A6060'}}>{mahwa}닢</span></span>;
   return(
-    <div style={{padding:'80px 16px 20px',maxWidth:420,margin:'0 auto'}}>
+    <div style={{padding:'60px 16px 20px',maxWidth:420,margin:'0 auto'}}>
       <PageHeader title='오늘의 임무' line1={l1} line2={l2}/>
       <div style={{display:'flex',flexDirection:'column',gap:10}}>
         {slots.map((sl,i)=><SlotCard key={i} slot={sl} idx={i} confirmed={confirmed} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} onUpd={onUpd} usedWizIds={usedWizIds} wizards={wizards} tasks={tasks} onAskForfeit={idx=>setModal({type:'forfeit',idx})} onSlotReset={onSlotReset} allDone={allDone} onAskActivate={idx=>setModal({type:'activateSlot',idx})}/>)}
@@ -582,7 +542,7 @@ function CollectPage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,
   var l1=<span>현재 수집한 마법사: <span style={{fontWeight:500,color:'#4A6060'}}>{ownedCount}명</span></span>;
   var l2=<span>소지 마화: <span style={{fontWeight:500,color:'#4A6060'}}>{mahwa}닢</span></span>;
   return(
-    <div style={{padding:'80px 16px 20px',maxWidth:420,margin:'0 auto'}}>
+    <div style={{padding:'60px 16px 20px',maxWidth:420,margin:'0 auto'}}>
       <PageHeader title='수집' line1={l1} line2={l2}/>
       {!showDlg&&<div style={{display:'flex',justifyContent:'center',marginBottom:24}}><div style={{width:150,height:200,borderRadius:10,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',color:'#8A9AB0',gap:8}}><img src="https://raw.githubusercontent.com/wizforeden/wizards_today/refs/heads/main/image/slot.jpg" alt="마법사 도감" style={{width:120,height:120,borderRadius:'50%',objectFit:'cover',border:'0.5px solid #C2CAD6'}}/><div style={{fontSize:11,letterSpacing:'0.5px',marginTop:8}}>누구의 책일까?</div></div></div>}
       {phase==='idle'&&<div style={{textAlign:'center'}}><button onClick={()=>setPhase('confirming')} style={{background:'#4A6080',color:'white',border:'none',borderRadius:'var(--border-radius-lg)',padding:'12px 48px',fontSize:14,fontWeight:500,cursor:'pointer'}}>수집</button></div>}
@@ -617,7 +577,7 @@ function RecordPage({logs,wizards,onMarkRead,onTestFinalize}){
   }
   var selLog=selDate?(logs[selDate.toDateString()]||null):null;
   return(
-    <div style={{padding:'80px 16px 20px',maxWidth:420,margin:'0 auto'}}>
+    <div style={{padding:'60px 16px 20px',maxWidth:420,margin:'0 auto'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14,paddingTop:8}}>
         <button onClick={prevMonth} style={{width:32,height:32,border:'none',background:'none',cursor:'pointer',fontSize:20,color:'rgba(0,0,0,0.35)',display:'flex',alignItems:'center',justifyContent:'center'}}>‹</button>
         <div style={{fontSize:14,fontWeight:500,color:'var(--color-text-primary)'}}>{calYear}년 {calMonth+1}월</div>
