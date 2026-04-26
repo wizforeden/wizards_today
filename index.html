@@ -81,16 +81,18 @@ const FB_WIZARDS = [
   {id:"W09",name:"네로",club:"흉몽퇴치반",tags:["지성","작업"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w009.png",bg:"#E2E4E6",border:"#B0B6BC",accent:"#3C4048"},
   {id:"W10",name:"유리디스",club:"불꽃의 서약",tags:["생업","정리"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w010.png",bg:"#EFE4D8",border:"#C2A58A",accent:"#4B2E1F"},
   {id:"W11",name:"리디아",club:"불꽃의 서약",tags:["근육","지성"],josa:"는",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w011.png",bg:"#ECE9F7",border:"#B9B4E3",accent:"#3A3570"},
+  {id:"W12",name:"판",club:"낙원 여행자",tags:["생업","작업"],josa:"은",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w012.png",bg:"#EDF7FC",border:"#B0D4E6",accent:"#2C5F7A"},
+  {id:"W13",name:"캐럴",club:"낙원 여행자",tags:["생존","가정"],josa:"은",owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w013.png",bg:"#F8E6F3",border:"#E89BCF",accent:"#8A2C6A"},
 ];
 const FB_TASKS = [
-  {id:"T001",name:"운동(기타)",tag:"근육"},{id:"T002",name:"스트레칭",tag:"근육"},{id:"T027",name:"운동(근력)",tag:"근육"},{id:"T026",name:"운동(유산소)",tag:"생존"},
+  {id:"T001",name:"운동(기타)",tag:"근육"},{id:"T002",name:"스트레칭",tag:"근육"},{id:"T027",name:"운동(근력)",tag:"근육"},{id:"T026",name:"운동(유산소)",tag:"근육"},
   {id:"T003",name:"독서",tag:"지성"},{id:"T004",name:"공부",tag:"지성"},{id:"T005",name:"가계부",tag:"지성"},
   {id:"T006",name:"약속 조정",tag:"정리"},{id:"T007",name:"정리정돈",tag:"정리"},{id:"T008",name:"메일 확인",tag:"정리"},{id:"T009",name:"연락",tag:"정리"},
   {id:"T010",name:"설거지",tag:"가정"},{id:"T011",name:"청소",tag:"가정"},{id:"T012",name:"빨래",tag:"가정"},{id:"T028",name:"요리",tag:"가정"},{id:"T029",name:"쓰레기 버리기",tag:"가정"},
   {id:"T013",name:"업무",tag:"생업"},{id:"T014",name:"마감",tag:"생업"},{id:"T015",name:"계획 짜기",tag:"생업"},
-  {id:"T016",name:"물 마시기",tag:"생존"},{id:"T017",name:"영양제 먹기",tag:"생존"},{id:"T018",name:"환기하기",tag:"생존"},{id:"T025",name:"장 보기",tag:"생존"},{id:"T030",name:"씻기",tag:"생존"},
+  {id:"T016",name:"물 마시기",tag:"생존"},{id:"T017",name:"씻기",tag:"생존"},{id:"T018",name:"환기하기",tag:"생존"},{id:"T025",name:"장 보기",tag:"가정"},{id:"T030",name:"디지털 디톡스(30분)",tag:"회복"},
   {id:"T019",name:"연성",tag:"작업"},{id:"T020",name:"세션 준비",tag:"작업"},{id:"T021",name:"뜨개질",tag:"작업"},
-  {id:"T022",name:"일기",tag:"회복"},{id:"T023",name:"산책",tag:"회복"},{id:"T024",name:"명상",tag:"회복"},
+  {id:"T022",name:"일기",tag:"회복"},{id:"T023",name:"산책",tag:"회복"},{id:"T024",name:"명상",tag:"회복"},{id:"T031",name:"일어나기",tag:"생존"},{id:"T032",name:"외출 준비",tag:"생업"}
 ].sort((a,b)=>a.name.localeCompare(b.name,'ko'));
 const FB_DLG = {
   W01:{MEET:["원탁의 서경, 『하늘과 땅을 가르는 무한선』 시그너스입니다. 잘 부탁드립니다."],MEET_AGAIN:["여기 계셨군요. 찾고 있었습니다. ……무슨 일이 있으신가요?"],TASK_MATCH:["제가 도움을 드릴 수 있을 것 같군요."],TASK_UNMATCH:["자신 있는 분야는 아니지만, 최선을 다해 보죠."],TASK_SUCCESS:["수고했어요. 나쁘지 않은 성과네요."],TASK_FAILURE:["……무슨 일이죠?"],LV_UP:{1:["수고했습니다. 다음에 또 뵙죠."],2:["…"],3:["…"],4:["…"]}},
@@ -104,7 +106,9 @@ const FB_DLG = {
   W09:{MEET:["당신이 부른 건가요? ……흐응."],MEET_AGAIN:["저런, 꽝이네요. 하하."],TASK_MATCH:["제가요?"],TASK_UNMATCH:["헤에."],TASK_SUCCESS:["뭐, 수고하셨네요."],TASK_FAILURE:["아하하… 끝인가요?"],LV_UP:{1:["그러고 보니 이름을 안 물어봤네요. 아뇨, 알고는 있지만요."],2:["…"],3:["…"],4:["…"]}},
   W10:{MEET:["『행동이 부른 결과』다. 분과회는 … 「불꽃의 서약」."],MEET_AGAIN:["또 만났군. …….? 왜 그런 표정이지?"],TASK_MATCH:["당연히 해야 할 일이야."],TASK_UNMATCH:["적절한 인선이 없었나 보지?"],TASK_SUCCESS:["수고했어."],TASK_FAILURE:["……."],LV_UP:{1:["인계의 이름? 유리디스 앳우드다. 편한 쪽으로 불러."],2:["…"],3:["…"],4:["…"]}},
   W11:{MEET:["『푸른 불길이 지나간 곳에 그을음은 없으리라』, 리디아 지브란입니다. 문호에서 일하고 있어요."],MEET_AGAIN:["후후, 이것도 인연이네요. 마침 따뜻한 차를 내려 두었는데 드시겠어요?"],TASK_MATCH:["기대되네요!"],TASK_UNMATCH:["네, 바로 시작하겠습니다."],TASK_SUCCESS:["정말 대단해요!"],TASK_FAILURE:["다시 한번 해 볼까요?"],LV_UP:{1:["아, 유리와는 인사해 보셨나요? 후후, 무뚝뚝해 보여도 괜찮은 친구죠?"],2:["…"],3:["…"],4:["…"]}},
-};
+  W12:{MEET:["…… 누구?"],MEET_AGAIN:["또 만났네."],TASK_MATCH:["이게 문제야?"],TASK_UNMATCH:["…… 해 볼게."],TASK_SUCCESS:["됐지? 보완 사항은 나중에 정리해서 줄 테니까……."],TASK_FAILURE:["네가 그만둬 버리면 어떡해?!"],LV_UP:{1:["…… 나는 판. 서공이야. 시끄러운 녀석 하나 못 봤어?"],2:["…"],3:["…"],4:["…"]}},
+  W13:{MEET:["『아침이 올 때까지』 캐럴이에요! 〈별빛 기행〉의 승무원을 맡고 있어요. 어디로 모셔다 드릴까요?"],MEET_AGAIN:["또 만났네요! 여행은 즐거우셨나요? 다음은 어디로 가 볼까요?"],TASK_MATCH:["맡겨 주세요, 자신 있어요!"],TASK_UNMATCH:["열심히 해 볼게요!"],TASK_SUCCESS:["다음은 뭘 해 볼까요?"],TASK_FAILURE:["죄송해요… 죄송해요…!"],LV_UP:{1:["〈별빛 기행〉은 표만 있다면 언제든 탑승할 수 있어요. 가고 싶은 곳이 있으신가요?"],2:["…"],3:["…"],4:["…"]}},
+} ;
 const FB_JOURNALS = {
   W01:["시그너스는 서가에서 오래된 고서를 찾아냈다. 조금 복잡한 표정으로 그것을 쓰다듬었다. 무슨 사연이 있었을까?","시그너스가 전서구에 매달린 편지를 받았다. 읽고 난 그의 표정이 조금 부드러워졌다.","시그너스는 하루 종일 안락의자에서 느긋한 하루를 보낸 것 같다.","시그너스는 오랜만에 외출한 모양이다. 금방 올 것 같았는데, 왠지 지친 표정으로 밤 늦게 귀가했다. 누군가에게 시달린 걸까?"],
   W02:["호타루는 오랜만에 스바루와 드럼을 연습했다. 곧 라이브 일정이 있을지도?","호타루는 재기발랄한 학원생들 덕분에 하루 종일 학원을 동분서주했다. 귀가하자마자 풀썩 쓰러졌다.","호타루는 대법전의 서공과 진지한 대화를 나누었던 모양이다. 평소보다 조금 어두운 얼굴로 돌아나왔다.","호타루는 한참 동안 옷을 고르며 외출 준비를 했다. 오늘은 늦을지도 모른다고 어딘지 비장한 표정으로 말하고 나갔다."],
@@ -117,6 +121,8 @@ const FB_JOURNALS = {
   W09:["네로가 업로드한 유튜브가 알고리즘을 탔다. 세계의 음모론이 조금 짙어졌지만, 아무튼 마법계의 비밀은 지켜냈다.","네로는 하루 종일 카페에 앉아 사람을 구경했다. 어느 때보다 즐거운 표정이었다.","네로는 방에 틀어박힌 하루를 보냈다. 방에서는 인간의 귀로 포착할 수 없는 소리들이 들려온다… 착각이겠지.","네로는 분과회원들과 MT를 다녀왔다. 괴담 영상의 새로운 소재를 찾아냈다며 즐거운 듯 웃었다."],
   W10:["유리디스는 앨범을 정리하다가 생각에 잠겼다. 기억나지 않는 누군가 있는 걸까?","유리디스는 쇼핑몰에서 힘든 시간을 보냈다. 토라진 앵커의 마음을 풀어줘야 하는 모양이다.","임무 배분 오류로, 유리디스는 하루 동안 다섯 건이나 임무를 처리해야 했다. 내색하지 않아서 아무도 눈치채지 못했다.","유리디스는 리디아와 모처럼 맛집에 다녀왔다. 혈당 스파이크로 유명한 디저트를 먹으며 간만에 휴식을 취한 것 같다."],
   W11:["리디아는 신규 문호 마법사를 보살피느라 하루 종일 쉴 틈이 없었다. 목이 쉴 지경일 텐데, 표정만은 상냥하고 밝다.","리디아는 방에서 혼자 눈을 감고 손을 모으고 한참을 보냈다. 누군가에게 기도하는 걸까?","리디아는 유리디스와 모처럼 맛집에 갔다. 디저트는 너무 달아서 먹을 수 없었지만 녹차가 훌륭했기에 만족했다.","리디아의 동물병원은 하루 종일 바빴다. 물 마실 틈도 없는 리디아를 보고 묘묘가 혀를 찼지만 본인은 행복한 듯했다."],
+  W12:["판은 하루 종일 작업실에서 보냈다. 마감이 코앞에 다가온 담당자의 성화를 피하려고 핸드폰까지 꺼 둔 것 같다.","판은 공방을 정리하며 하루를 보냈다. 외전의 오래된 장정들을 한편에 가지런히 쌓아두었다.","판은 캐럴과 피크닉을 갔다. 사람이 너무 많아서 금세 지치고 말았지만 즐거운 하루였다.","판은 기다리던 새 마도서를 얻어서 모처럼 신이 난 것 같다. 길에서 마주치자 먼저 인사해 주었다."],
+  W13:["캐럴은 〈별빛 기행〉의 장거리 여행에서 돌아왔다. 신기한 특산물들을 잔뜩 사 돌린 덕분에 문호가 시끌벅적해졌다.","캐럴은 창가에 앉아 턱을 괴고 하염없이 우주의 풍경을 바라보았다. 어디를 보고 있을까?","캐럴은 마도서 장정을 조금 보수받았다. 신이 나서 하루 종일 종소리를 울리고 다녔다.","캐럴은 판과 피크닉을 갔다. 사진을 잔뜩 찍었지만 다른 사람에게는 보여주지 말라는 판의 신신당부를 들었다."],
 };
 
 // ── 모듈 레벨 게임 데이터 (동적 로드 후 업데이트) ────────────────────────────
@@ -595,7 +601,15 @@ function CollectPage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,
   },[phase]);
   useEffect(()=>{
     if(phase!=='dialogue')return;
-    if(typed.length>=full.length){var t=setTimeout(()=>{if(gNew){setWizards(p=>p.map(w=>w.id===gWiz.id?{...w,owned:true}:w));setPhase('resultNew');}else{applyAff(gWiz.id,20,'up');setMahwa(n=>n+30);addLogEntry({taskId:'__gacha__',taskName:'수집(중복)',wizardId:gWiz.id,wizardName:gWiz.name,delta:20,dir:'up',source:'gacha'});setPhase('resultDup');}},700);return()=>clearTimeout(t);}
+    if(typed.length>=full.length){var t=setTimeout(()=>{if(gNew){
+  setWizards(p=>{
+    var updated=p.map(w=>w.id===gWiz.id?{...w,owned:true}:w);
+    var om=Object.fromEntries(updated.map(w=>[w.id,w.owned]));
+    storeSet('app:wizards',JSON.stringify(om));
+    return updated;
+  });
+  setPhase('resultNew');
+}else{applyAff(gWiz.id,20,'up');setMahwa(n=>n+30);addLogEntry({taskId:'__gacha__',taskName:'수집(중복)',wizardId:gWiz.id,wizardName:gWiz.name,delta:20,dir:'up',source:'gacha'});setPhase('resultDup');}},700);return()=>clearTimeout(t);}
     var t=setTimeout(()=>setTyped(p=>full.slice(0,p.length+1)),45);return()=>clearTimeout(t);
   },[phase,typed,full,gNew,gWiz]);
   function startGacha(){setMahwa(n=>n-100);setPhase('loading');}
