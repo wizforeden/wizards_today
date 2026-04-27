@@ -794,6 +794,14 @@ function CollectPage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,
 
 // ── 기록 페이지 ───────────────────────────────────────────────────────────────
 function RecordPage({logs,wizards,onMarkRead,onTestFinalize}){
+  const toKey = (date) => {
+    if (!date) return null;
+    // 시간을 '오후 12시'로 고정하여 계산하면 오전 5시 루틴과 시차 오류를 모두 방지할 수 있습니다.
+    let d = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0);
+    const offset = d.getTimezoneOffset() * 60000;
+    return new Date(d.getTime() - offset).toISOString().slice(0, 10);
+  };
+
   var now=new Date();
   var[calYear,setCalYear]=useState(now.getFullYear());
   var[calMonth,setCalMonth]=useState(now.getMonth());
@@ -805,14 +813,19 @@ function RecordPage({logs,wizards,onMarkRead,onTestFinalize}){
   var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
   var firstDay=new Date(calYear,calMonth,1).getDay();
   var todayStr=gameDay();
-  function getLog(d){return logs[new Date(calYear,calMonth,d).toISOString().slice(0,10)]||null;}
+  function getLog(d){
+    const date = new Date(calYear, calMonth, d);
+    return logs[toKey(date)] || logs[date.toDateString()] || null;
+  }
   function handleDayClick(d){
-    var date=new Date(calYear,calMonth,d);setSelDate(date);
-    var ds=date.toISOString().slice(0,10);
-    if(logs[ds]&&logs[ds].journalUnread)onMarkRead(ds);
+    // 해당 날짜의 '오후 12시'로 설정하면 오전 5시 룰에 걸리지 않고 안전하게 그 날짜를 가져옵니다.
+    var date = new Date(calYear, calMonth, d, 12, 0, 0); 
+    setSelDate(date);
+    var ds = toKey(date); 
+    if(logs[ds] && logs[ds].journalUnread) onMarkRead(ds);
     setTimeout(()=>{if(detailRef.current)detailRef.current.scrollIntoView({behavior:'smooth',block:'start'});},80);
   }
-  var selLog=selDate?(logs[selDate.toISOString().slice(0,10)]||null):null;
+  var selLog=selDate?(logs[toKey(selDate)] || logs[selDate.toDateString()] || null):null;
   return(
     <div style={{padding:'60px 16px 20px',maxWidth:420,margin:'0 auto'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14,paddingTop:8}}>
@@ -827,8 +840,10 @@ function RecordPage({logs,wizards,onMarkRead,onTestFinalize}){
         {Array.from({length:firstDay}).map((_,i)=><div key={'e'+i}/>)}
         {Array.from({length:daysInMonth}).map((_,i)=>{
           var d=i+1,log=getLog(d),cnt=log?log.completedCount||0:0;
-          var dateStr=new Date(calYear,calMonth,d).toISOString().slice(0,10);
-          var isToday=dateStr===todayStr,isSel=selDate&&dateStr===selDate.toISOString().slice(0,10),hasUnread=log&&log.journalUnread;
+          var dateObj=new Date(calYear,calMonth,d);
+          var dateStr=toKey(dateObj); 
+          // 현재 그리는 날짜(dateStr)와 클릭해서 저장된 날짜(toKey(selDate))가 일치하는지 확인
+          var isToday=dateStr===todayStr,isSel=selDate&&(dateStr===toKey(selDate)),hasUnread=log&&log.journalUnread;
           var spark=cnt>=3?{sz:13,c:'#C8A030'}:cnt>=1?{sz:9,c:'rgba(0,0,0,0.22)'}:null;
           return(
             <div key={d} onClick={()=>handleDayClick(d)} style={{position:'relative',display:'flex',flexDirection:'column',alignItems:'center',padding:'5px 1px 4px',borderRadius:8,cursor:'pointer',background:isSel?'rgba(74,96,128,0.12)':isToday?'rgba(74,96,128,0.05)':'transparent',border:isToday&&!isSel?'0.5px solid rgba(74,96,128,0.18)':'0.5px solid transparent',minHeight:44,userSelect:'none'}}>
