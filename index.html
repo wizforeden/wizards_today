@@ -1022,7 +1022,11 @@ function AppInner({onForceReset}){
       setLevel(initLv);
       setLvTransitions(Object.fromEntries(wList.map(w=>[w.id,null])));
       setMahwa(mahwaVal);
-      if(vals[4]!==null){var dd=JSON.parse(vals[4]);if(dd.date===day)setDoneCount(dd.count);}
+      if(vals[4]!==null){
+  var dd=JSON.parse(vals[4]);
+  if(dd.date===day) setDoneCount(dd.count);
+  else setDoneCount(0); // 날짜가 다르면 명시적으로 0으로 초기화
+}
       if(vals[5]!==null)setGachaDate(vals[5]);
       if(vals[6]!==null){var ss=JSON.parse(vals[6]);if(ss.date===day){setSlots(ss.slots);setConfirmed(ss.confirmed);}}
       if(vals[7]==='1')setFirstRunDone(true);
