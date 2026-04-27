@@ -150,7 +150,13 @@ function storeGet(k){try{return Promise.resolve(localStorage.getItem(k));}catch(
 function storeDel(k){try{localStorage.removeItem(k);}catch(e){}return Promise.resolve();}
 
 // ── 게임 유틸 ─────────────────────────────────────────────────────────────────
-function gameDay(){var now=new Date();if(now.getHours()<5)now=new Date(now.getTime()-864e5);return now.toISOString().slice(0,10);}
+function gameDay(){
+  var now = new Date();
+  if(now.getHours()<5) now = new Date(now.getTime()-864e5);
+  return new Date(now.getTime() - now.getTimezoneOffset()*60000)
+    .toISOString()
+    .slice(0,10);
+}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 function getLine(wId,key){var a=_dlg[wId]&&_dlg[wId][key];return Array.isArray(a)&&a.length?pick(a):null;}
 function getLvUpLine(wId,lv){var a=_dlg[wId]&&_dlg[wId].LV_UP&&_dlg[wId].LV_UP[lv];return a&&a.length?pick(a):'…';}
@@ -799,14 +805,14 @@ function RecordPage({logs,wizards,onMarkRead,onTestFinalize}){
   var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
   var firstDay=new Date(calYear,calMonth,1).getDay();
   var todayStr=gameDay();
-  function getLog(d){return logs[new Date(calYear,calMonth,d).toDateString()]||null;}
+  function getLog(d){return logs[new Date(calYear,calMonth,d).toISOString().slice(0,10)]||null;}
   function handleDayClick(d){
     var date=new Date(calYear,calMonth,d);setSelDate(date);
-    var ds=date.toDateString();
+    var ds=date.toISOString().slice(0,10);
     if(logs[ds]&&logs[ds].journalUnread)onMarkRead(ds);
     setTimeout(()=>{if(detailRef.current)detailRef.current.scrollIntoView({behavior:'smooth',block:'start'});},80);
   }
-  var selLog=selDate?(logs[selDate.toDateString()]||null):null;
+  var selLog=selDate?(logs[selDate.toISOString().slice(0,10)]||null):null;
   return(
     <div style={{padding:'60px 16px 20px',maxWidth:420,margin:'0 auto'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14,paddingTop:8}}>
@@ -821,8 +827,8 @@ function RecordPage({logs,wizards,onMarkRead,onTestFinalize}){
         {Array.from({length:firstDay}).map((_,i)=><div key={'e'+i}/>)}
         {Array.from({length:daysInMonth}).map((_,i)=>{
           var d=i+1,log=getLog(d),cnt=log?log.completedCount||0:0;
-          var dateStr=new Date(calYear,calMonth,d).toDateString();
-          var isToday=dateStr===todayStr,isSel=selDate&&dateStr===selDate.toDateString(),hasUnread=log&&log.journalUnread;
+          var dateStr=new Date(calYear,calMonth,d).toISOString().slice(0,10);
+          var isToday=dateStr===todayStr,isSel=selDate&&dateStr===selDate.toISOString().slice(0,10),hasUnread=log&&log.journalUnread;
           var spark=cnt>=3?{sz:13,c:'#C8A030'}:cnt>=1?{sz:9,c:'rgba(0,0,0,0.22)'}:null;
           return(
             <div key={d} onClick={()=>handleDayClick(d)} style={{position:'relative',display:'flex',flexDirection:'column',alignItems:'center',padding:'5px 1px 4px',borderRadius:8,cursor:'pointer',background:isSel?'rgba(74,96,128,0.12)':isToday?'rgba(74,96,128,0.05)':'transparent',border:isToday&&!isSel?'0.5px solid rgba(74,96,128,0.18)':'0.5px solid transparent',minHeight:44,userSelect:'none'}}>
