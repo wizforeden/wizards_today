@@ -978,6 +978,7 @@ function AppInner({onForceReset}){
   var[newClubQueue,setNewClubQueue]=useState([]);
   var[favTasks,setFavTasks]=useState([]);
   var[mahwaLog,setMahwaLog]=useState([]);
+  var currentDayRef = useRef(gameDay());
 
   // 설치 배너 및 초기 체크
   useEffect(()=>{
@@ -987,6 +988,23 @@ function AppInner({onForceReset}){
       if(!dismissed)setTimeout(()=>setShowInstallBanner(true),2000);
     }
   },[]);
+
+  // 날짜 변경 감지 (오전 5시 리셋)
+  useEffect(()=>{
+    if(!userLoaded)return;
+    function checkDayChange(){
+      var newDay=gameDay();
+      if(newDay!==currentDayRef.current){
+        currentDayRef.current=newDay;
+        setDoneCount(0);
+        setSlots([mkSlot(),mkSlot(),mkSlot()]);
+        setConfirmed(false);
+      }
+    }
+    document.addEventListener('visibilitychange',checkDayChange);
+    var iv=setInterval(checkDayChange,60000);
+    return()=>{document.removeEventListener('visibilitychange',checkDayChange);clearInterval(iv);};
+  },[userLoaded]);
 
   // 유저 데이터 로드
   useEffect(()=>{
