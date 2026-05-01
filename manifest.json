@@ -7,7 +7,7 @@
   "theme_color": "#f6f6f6",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/iconv2w.png",
+      "src": "./image/iconv2w.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
