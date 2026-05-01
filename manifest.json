@@ -4,7 +4,7 @@
   "display": "standalone",
   "start_url": "./index.html",
   "background_color": "#f6f6f6",
-  "theme_color": "#B8922A",
+  "theme_color": "#f6f6f6",
   "icons": [
     {
       "src": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/iconv2w.png",
