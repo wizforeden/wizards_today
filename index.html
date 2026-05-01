@@ -9,8 +9,8 @@
 <link rel="manifest" href="manifest.json">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/icon.png">
-<link rel="icon" href="https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/icon.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/iconv2w.png">
+<link rel="icon" href="https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/iconv2w.png">
 <title>오늘의 임무</title>
 <style>
   :root{--border-radius-lg:12px;--border-radius-md:8px;--color-text-primary:rgba(0,0,0,0.78);--color-text-secondary:rgba(0,0,0,0.5);--color-text-tertiary:rgba(0,0,0,0.35);--color-primary: #B8922A;}
@@ -89,6 +89,14 @@ const FB_WIZARDS = [
   {id:"W20",name:"로사",club:"악당들",tags:["생존","작업"],josa:"는",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w020.png",bg:"#E5F3EC",border:"#7FC8A9",accent:"#1B5E44"},
   {id:"W21",name:"핀",club:"악당들",tags:["생업","회복"],josa:"은",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w021.png",bg:"#F6F4FB",border:"#D8D2F4",accent:"#62539A"},
   {id:"W22",name:"타르",club:"악당들",tags:["생업","작업"],josa:"는",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w022.png",bg:"#F2EEE9",border:"#C4BBB1",accent:"#483F38"},
+  {id:"W23",name:"고요",club:"어게인",tags:["지성","회복"],josa:"는",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w023.png",bg:"#E6EDF4",border:"#AFC1D4",accent:"#34485C"},
+  {id:"W24",name:"데인티",club:"어게인",tags:["가정","생존"],josa:"는",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w024.png",bg:"#F4F5F7",border:"#D4D8DD",accent:"#6A6F75"},
+  {id:"W25",name:"준",club:"어게인",tags:["지성","작업"],josa:"은",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w025.png",bg:"#FFF7DB",border:"#FFD740",accent:"#4D3F00"},
+  {id:"W26",name:"에이미",club:"어게인",tags:["근육","생존"],josa:"는",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w026.png",bg:"#FFE9F3",border:"#FFA3CC",accent:"#94265F"},
+  {id:"W27",name:"리스",club:"A시",tags:["생존","지성"],josa:"는",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w027.png",bg:"#F0EDF4",border:"#C5BCD6",accent:"#4A405F"},
+  {id:"W28",name:"아키",club:"A시",tags:["지성","정리"],josa:"는",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w028.png",bg:"#FFE3DE",border:"#FF4A2A",accent:"#5C1208"},
+  {id:"W29",name:"치카",club:"A시",tags:["회복","정리"],josa:"는",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w029.png",bg:"#FFF2F8",border:"#FF8FC2",accent:"#B01863"},
+  {id:"W30",name:"레몬",club:"A시",tags:["근육","회복"],josa:"은",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w030.png",bg:"#FFF6D6",border:"#FFCA28",accent:"#6B5200"},
 ];
 
 const FB_TASKS = [
@@ -150,6 +158,14 @@ const FB_DLG = {
   W20:{MEET:["『만물의 정원』 로사 아르고스다. 무슨 일이지?"],MEET_AGAIN:["…왜 여기 있지?"],TASK_MATCH:["과연, 어렵지 않은 일이다."],TASK_UNMATCH:["…알겠다."],TASK_SUCCESS:["끝났군. 이만 돌아가 보지."],TASK_FAILURE:["…그 정도였군."],LV_UP:{1:["…너 정도면, 괜찮은 축이다."],2:["태어난 날이 언제지? 기억해 두지."],3:["좋은 환경으로 만들어 가고 있군."],4:["자연을 보고 있으면 마음에 안정이 찾아오지. 조금 쉬었다 가도 괜찮다."]}},
   W21:{MEET:["안녕? 자기소개부터 할까요? 『그대를 위해 기꺼이』, 핀 오데트가 여기에 왔답니다. "],MEET_AGAIN:["아하하, 웃긴 표정~ 내가 있을 줄은 몰랐나 봐?"],TASK_MATCH:["그러엄~ 이 핀이 가주실까나♡"],TASK_UNMATCH:["아앙~ 핀 바쁜데에~"],TASK_SUCCESS:["끝냈어요~ 이제 상으로는 뭘 줄 건가요~?"],TASK_FAILURE:["으흠~ 귀찮은 건 나중에 하고 우선 케이크라도 먹으러 갈까~?"]},
   W22:{MEET:["아방궁의 외전, 『물의 빈 자리』입니다. 지금은 아야메 님의 분과회에 신세를 지고 있네요. 타르라고 불러 주세요."],MEET_AGAIN:["또 찾아와 주셨군요. 기뻐요. 혹시 제가 실망을 드리지는 않을까요?"],TASK_MATCH:["당신이 주시는 일은 꽤 즐겁답니다."],TASK_UNMATCH:["믿어주셔서 기뻐요. 반드시 해낼게요."],TASK_SUCCESS:["조금이라도 도움이 되어드렸다면 기쁠 텐데요."],TASK_FAILURE:["휴식은 중요하니까요. 남은 일은 제가 마저 할게요."]},
+  W23:{MEET:["고요라고 불러 줘. 못 보던 얼굴이네."],MEET_AGAIN:["불렀다고 생각했는데, 아니었나?"],TASK_MATCH:["그래서 불렀구나?"],TASK_UNMATCH:["흠, 이 일에 날 찾은 거야?"],TASK_SUCCESS:["잘 마무리한 것 같네. 수고했어."],TASK_FAILURE:["그런 선택을 한 이유도 있겠지."],LV_UP:{1:[" 맞아, 『구름이 검어 비가 내린다』, 그것도 내 이름이야. 덕분인가 비가 언제 내릴지는 꽤 맞출 수 있네."],2:["내가 불편한가?"],3:["그냥 하는 건 조금 심심한가… 다음에는 먼저 끝내기 내기라도 해 볼까?"],4:["지나고 보면 다 아무것도 아니라고 하면서도, 또 하게 된단 말이지...음. 아무것도 아니야."]}},
+  W24:{MEET:["『강운의 파편』, 내 이름이야. 오늘의 운세를 점쳐 달라고? 으음~ 어디 보자~"],MEET_AGAIN:["오~ 럭키. 마침 찾고 있었어. 신경 쓰이는 운세가 나와서 말이야. 오늘 네가 기다리던 행운을 놓칠지도 모른다는…… 어어? 표정이 왜 그래? "],TASK_MATCH:["음~ 그럼 금방 하고 와 볼게."],TASK_UNMATCH:["글쎄~ 일단 한번 해 보지 뭐."],TASK_SUCCESS:["자, 임무 완수! 걱정할 필요 없었지?"],TASK_FAILURE:["아~ 너였구나? 난 또, 고요한테 들킨 줄 알았네. 하하."],LV_UP:{1:["으응? 계속 거기 있던 거야?"],2:["뭐 하고 있었냐고? 그냥… 너 끝나면 같이 갈까 하고 기다렸지. …왜 안 도와줬냐고? 음……"],3:["내 이런 모습을 보면 우리 보네비 여사가 그만 날 알아보지 못할지도 몰라. 음… 원래도 그런가? 뭐, 농담이야."],4:["아, 힘들었다… 이럴 땐 고요가 변신해 주면 좋을 텐데~ 아, 우리 집에 있는 강아지 친구야. 엄청 복실하거든~"]}},
+  W25:{MEET:["준이에요……. ……. ……저기, 다른 사람들 못 보셨어요?"],MEET_AGAIN:["미, 미안해요……."],TASK_MATCH:["해, 해 볼게요……."],TASK_UNMATCH:["어어…… 이건 그러니까……. 아, 아니, 해 볼게요!"],TASK_SUCCESS:["내가 해냈어!"],TASK_FAILURE:["어? 왜? 어라? 어디가 잘못됐지? 자, 잠깐만, 지금 확인해 볼 테니까!"],LV_UP:{1:["준 허니딜… 『부서진 것의 수복자』예요. 음, 또… 응? 편하게 말해도 돼? ……정말?"],2:["있잖아, 오늘은 에이미가 내가 사 뒀던 아이스크림을 훔쳐 먹었어. 그거 데인티가 사줬던 건데! 근데 고요가 에이미를 혼내줬어. 바보 같아! 에이미는 몇 살인 걸까? 근데 사실은 데인티가 그걸 왜 사줬냐면……."],3:["가끔─ 아주 가끔 뭔가가 잊어버린 것 같은 기분이 들어. 다들 그런다고 배웠어. …다들 그래도 슬프지 말았으면 좋겠따."],4:["사실은 임무하는 거… 좋아해. 다들 함께 있어 주고, 격려해 주니까… 너도 그렇고…. …헤헤, 비밀이야."]}},
+  W26:{MEET:["너 어디서 본 거 같은데! 아니라고?!"],MEET_AGAIN:["안녕! 근데 우리 전에 만났던가?"],TASK_MATCH:["당장 해치워 주지!"],TASK_UNMATCH:["흠. 해 봐야지."],TASK_SUCCESS:["나 이제 쉬러 가도 돼?"],TASK_FAILURE:["미안, 진짜 진짜 급한 일이 있어서!"],LV_UP:{1:["어디 놀러 갈래?"],2:["너 웃는 게 귀엽네~"],3:["오늘 스타일 좋은데? 뭐? 잠옷이야?!"],4:["시간 내 줄래? 같이 저녁 먹고 싶은데…"]}},
+  W27:{MEET:["〈엘사〉다. …너는 이곳의 사람인가?"],MEET_AGAIN:["자주 보는군. 궁금한 거라도 있나?"],TASK_MATCH:["음. 가지."],TASK_UNMATCH:["이런 일은 익숙하진 않지만, 해 보지."],TASK_SUCCESS:["수고했다. 쉬어도 좋아."],TASK_FAILURE:["힘에 좀 부쳤나 보지?"],LV_UP:{1:["일은 할 만한가."],2:["너는 항상 바쁘게 움직이는군."],3:["덕분에 많은 일을 해결했다. 네가 있어 다행이야. 그리고 이것들도 부탁한다."],4:["여기서부턴 내가 하지. 이렇게 자리를 잡을 수 있었던 건 네 덕분이 크다. 이곳에 적응하는데 큰 도움을 받았어. 아키가 질투할 정도였지. 슬슬 휴가를 보내줄 때가 되었나? …그래도 너무 좋아하는군. 너무 오래 자리를 비우진 않아줬으면 좋겠는데 말이야. …농담이다."]}},
+  W28:{MEET:["통성명은 그쪽부터 해 주면 고맙겠네요. 여긴 어딥니까?"],MEET_AGAIN:["헤에~ 저, 표정 읽는 건 자신 있는데요. 사람 앞에서 그런 표정을 지으면 원한을 산다고요? 뭐, 농담이지만."],TASK_MATCH:["흐응~ 도와드릴까요?"],TASK_UNMATCH:["하아? 저는 바쁜데요? 저기 멍청한 고양이한테나 시키시죠."],TASK_SUCCESS:["뭐, 저에겐 쉬운 일이었지만요."],TASK_FAILURE:["이봐요, 당신이 불렀잖아요!"],LV_UP:{1:["「마법」…… 생각만큼 쉬운 기술이 아니라는 건 인정해요. 솔직히 좀 열받네요. 하지만, 그래도 이제 이 정도는 쓸 수 있으니까… 뭔가요? 그 눈?"],2:["아, 네. 아키. 팬텀. 아무거나 부르세요. ……아뇨, 그냥 아키가 낫겠네요."],3:["당신 알고 보면 좀 바보 같다는 말 많이 듣죠? 왜요? 칭찬인데요?"],4:["이봐요, 얼마나 찾았는지 압니까? 다음 임무 해야죠. ……? 당연히 같이 가야지, 무슨 소릴 하는 겁니까? 뭐 혼자 팔자 좋게 땡땡이 치려고?"]}},
+  W29:{MEET:["안녕하세요! Sprite라고 불러주셔도 되고- 아이네 치카라고 불러주셔도 괜찮아요- 이곳은 평소에도 코드네임을 섞어서 잘 쓰시는 것 같더라구요?"],MEET_AGAIN:["와아- 이렇게 만나다니 좋은 일이 생길 것 같아-!"],TASK_MATCH:["잘할 수 있을 것 같네요!"],TASK_UNMATCH:["해 보겠어요!"],TASK_SUCCESS:["굉장해! 하이파이브!"],TASK_FAILURE:["우웃.. 실패..라니... ... . ....그렇지만 다음 기회가 있으니까..!"],LV_UP:{1:["익숙치 않은 일도 많아서 걱정했는데, 잘 하고 있나봐요. 함께 힘내요!"],2:["혹시 오늘 임무 끝나고 나서 할 일 있어요? 없으면 같이 데이트하자~! 쇼핑도 하고 카페도 가고 노래방도 가고~"],3:["사실 마법사라는 말은 아직 어색한걸- 마법 소녀는 좀 더 귀여울지도? 마법 소녀 스프라이트 치카! 어때? 아니 피ㅇ츄는 아니라구-! 피ㅇ츄도 귀엽긴 하지만!"],4:["자 이렇게 포즈 취해줘- ...좋아......좋아! 잘나왔다! 이 사진- 내 SNS에 올려도 괜찮아? 원한다면 얼굴은 가려줄게! 귀여운 이모지로♫"]}},
+  W30:{MEET:["안녕, 잘 부탁해."],MEET_AGAIN:["…너 자주 보이네, 이름이 뭐라고?"],TASK_MATCH:["그거라면 빨리 해 줄게."],TASK_UNMATCH:["부탁이라면 어쩔 수 없지."],TASK_SUCCESS:["됐지? 이제 길고양이 밥 주러 갈게."],TASK_FAILURE:["미안, 영화 보다가 까먹었어."],LV_UP:{1:["너는 꽤 번거로운 타입이구나."],2:["딱히 귀찮은 건 아니야."],3:["나 대신 길고양이 밥 좀 줘."],4:["네가 좋아하는 거라면 관심 있어."]}},
 };
 
 const FB_JOURNALS = {
@@ -175,6 +191,14 @@ const FB_JOURNALS = {
   W20:["로사의 정원에 불청객이 찾아왔다. 불운하게 마법문을 넘었던 이경의 침입자들은 대법전 정원사의 냉혹함을 맛봐야 했다."],
   W21:["핀은 저녁부터 단골 바에 들어가 혼자서 멍하니 시간을 보냈다. 칵테일 잔을 쓰다듬으며 무언가를 고민하는 듯했다."],
   W22:["타르는 오랜만에 사요의 집에 방문했다. 다소 시끄러운 군식구가 한 명 더 있었지만 그럭저럭 만족스러운 시간이었다."],
+  W23:["모처럼 고요가 낮잠을 자는 동안 준과 에이미, 데인티가 하나둘씩 모여들더니 단체로 옹기종기 낮잠을 잤다. 먼저 깬 고요가 몸을  움직일 수 없어 난감해 했다.","고요는 혼자 산에 다녀온 모양이다. 분과회원들은 모두 거절했던 걸까?","원탁의 복도에서 고요와 마주쳤다. 기분 탓인지 평소와는 조금 다른 분위기가 느껴져서 함부로 말을 걸기 어려웠다.","에이미와 준이 한국의 '경주시'에 관심을 가졌다. 하루 종일 기상천외한 질문을 고요에게 쏟아냈다."],
+  W24:["새벽에 데인티가 주방에서 밀크티 우리는 모습을 보고 깜짝 놀란 에이미가 한바탕 소동을 벌였다. 밀크티는 결국 먹지 못했다.","시장을 구경한다고 나갔던 데인티가 야바위장에서 발견됐다. 이미 한탕 한 모양인지 주머니가… 아주 허름했다. ","찻잔 속의 찻잎을 살피던 데인티가 묘한 표정을 지었다. 뭔가 보였던 걸까?","모처럼 아무도 없는 캠벨가, 데인티는 평소 꺼내보지 않던 물건을 만지작거리며 멍하니 침대를 굴러다녔다."],
+  W25:["준은 마도서를 해독하다가 막혔는지, 하루 종일 어항 속 금붕어를 바라보며 멍하니 머리를 비웠다.","준이 서고 위험 구역에 특별 허가를 얻었다. 너무 흥분한 나머지 들어가자마자 대뜸 금서를 집어들어 쫓겨날 뻔했다.","한동안 두문불출하던 준이 분과회원들을 닮은 강아지 인형을 만들어서 선물했다. 인형은 조금 못생겼지만 다들 기뻐했다.","준이 개발한 마법 약물이 원탁의 판매 허가를 얻었다. 다 같이 축하 파티를 했는데, 와인 대신 약을 따르는 바람에 큰 사고가 날 뻔했다."],
+  W26:["에이미는 새벽부터 덤벨을 들다가, 갑자기 뛰어들어 온 코하네 덕분에 중심을 잃어 집 바닥을 움푹 패게 만들었다.","에이미가 요즘 핫한 데이트 스팟에 출몰한다고 주변이 술렁거렸다. 정작 본인은 길거리 양아치들을 훈계하느라 데이트는 뒷전이었다.","에이미가 물고기며 조개를 한가득 들고 왔다. '보이길래 잡았어'라고 하는데, 대체 어디서?","에이미가 밀린 집안일을 하겠다며 대청소를 시작했다. 실수로 준의 연구 일지를 깨끗하게 분리수거할 뻔했다. "],
+  W27:["리스가 누구와 함께 임무할지를 두고 아키와 아리엘이 왁왁 싸워댔다. 팔 한 쪽씩 붙잡힌 리스는 돌부처처럼 체념한 표정이었다.","우연히 게임 센터를 돌아다니던 누군가 리스가 코인 노래방에 들어가는 것을 보았다며 혼란스러워했다. 모두가 그의 수면 부족을 걱정해 주었다.","아키의 보고를 듣던 리스가 '3줄로 요약해줘' 라고 말했다가 3시간 동안 잔소리를 들었다.","에어컨이 고장난 덕분에 지부에 비상이 걸릴 뻔했다. 리스가 수제 빙수를 만들어 주며 간신히 폭동의 위기를 잠재웠다."],
+  W28:["아키는 뒷골목에서 수상한 밀담을 엿듣다가 한바탕 추격전을 벌였다. 옷자락의 그을음을 들켜 레몬에게 놀림받았다.","게임 센터의 기기에 '팬텀'이라는 닉네임이 신기록을 도배했다. 수군대는 사람들 뒤로 아키가 기분 좋은 듯 걸어나왔다.","아키는 치카를 놀리다가 너무 당황한 치카에게 그만 한 대 맞고 말았다. 세 시간 후 간신히 정신을 차리곤 침울해졌다.","아키는 게임 센터를 지나가다가 노래방 기계로 들어가는 익숙한 뒷모습을 발견했다. 설마……. 아니겠지… ?"],
+  W29:["치카는 노래방에서 신곡을 연습하다가 마법 소녀로 변신하는 연출을 시도했다. 너무 몰입한 나머지 방 안의 미러볼을 깨뜨려 변상해야 했다.","치카가 소품 편집샵에서 한정판 인형을 뽑기 위해 전 재산을 탕진했다. 아키에게 잔소리를 듣고 카드를 압수당했지만, 인형을 안고 행복해 보였다.","비가 오는 탓이었을까? 오늘따라 치카는 조금 센티멘털한 표정으로 창가에 기대 있었다. 고양이로 변한 레몬이 고롱고롱 안겨 주었다.","치카가 촬영한 일상 사진이 SNS에서 화제가 되었다. 정작 사진의 주인공인 아키가 삭제를 요구하며 치카를 추격하는 진풍경이 벌어졌다."],
+  W30:["산책을 나갔던 레몬은 조용한 명당을 발견했다. 실컷 낮잠을 잤다고 생각했는데 이틀 동안 안 보여서 걱정했다며 치카가 꽉 안고 엉엉 울었다.","레몬이 뒷골목에서 고양이들에게 밥을 주던 중, 불행한 양아치들이 시비를 걸었다. 살벌한 소리가 뒷골목에 울려퍼졌다. ","레몬은 치카의 권유에 못 이겨 블로그에 영화 리뷰를 올렸다. SNS에서 묘한 화제가 되어 댓글이 수십 개나 달리자 귀찮다고 글을 지워 버렸다.","뒷골목을 산책하던 레몬은 아키가 시시한 녀석들에게 쫓겨다니는 것을 보았다. 재미있어 보여서 구경하다가 아키가 탈출한 것을 확인하고 녀석들을 마무리해 주었다."],
 };
 
 // ── 모듈 레벨 게임 데이터 (동적 로드 후 업데이트) ────────────────────────────
@@ -346,7 +370,7 @@ function SettingsPanel({onClose,onReset,onBackup,onRestore,clubFilter,onChangeCl
   var[showFavEdit,setShowFavEdit]=useState(false);
   var[editFavs,setEditFavs]=useState(favTasks||[]);
   var currentColor=getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
-  var allClubs=[...new Set(allWizards.map(w=>w.club))];
+  var allClubs=[...new Set(allWizards.map(w=>w.club))].sort((a,b)=>a.localeCompare(b,'ko'));
 
   // 변경 가능 여부 확인
   var canChangeClubs=true;
@@ -584,7 +608,7 @@ function IntroScreen({wizards,setWizards,onComplete}){
   var[selectedClubs,setSelectedClubs]=useState([]);
 
   // 전체 club 목록 추출
-  var allClubs=[...new Set(wizards.map(w=>w.club))];
+  var allClubs=[...new Set(wizards.map(w=>w.club))].sort((a,b)=>a.localeCompare(b,'ko'));
 
   useEffect(()=>{
     if(phase!=='text')return;
@@ -978,6 +1002,11 @@ function AppInner({onForceReset}){
   var[newClubQueue,setNewClubQueue]=useState([]);
   var[favTasks,setFavTasks]=useState([]);
   var[mahwaLog,setMahwaLog]=useState([]);
+  var[betaModal,setBetaModal]=useState(null);
+  var[betaGWiz,setBetaGWiz]=useState(null);
+  var[betaIsNew,setBetaIsNew]=useState(false);
+  var[betaFull,setBetaFull]=useState('');
+  var[betaTyped,setBetaTyped]=useState('');
   var currentDayRef = useRef(gameDay());
 
   // 설치 배너 및 초기 체크
@@ -1005,6 +1034,17 @@ function AppInner({onForceReset}){
     var iv=setInterval(checkDayChange,60000);
     return()=>{document.removeEventListener('visibilitychange',checkDayChange);clearInterval(iv);};
   },[userLoaded]);
+
+  // 베타 보상 수집 타이핑 애니메이션
+  useEffect(()=>{
+    if(betaModal!=='dialogue')return;
+    if(betaTyped.length>=betaFull.length){
+      var t=setTimeout(()=>setBetaModal(betaIsNew?'resultNew':'resultDup'),700);
+      return()=>clearTimeout(t);
+    }
+    var t=setTimeout(()=>setBetaTyped(p=>betaFull.slice(0,p.length+1)),45);
+    return()=>clearTimeout(t);
+  },[betaModal,betaTyped,betaFull,betaIsNew]);
 
   // 유저 데이터 로드
   useEffect(()=>{
@@ -1045,6 +1085,12 @@ function AppInner({onForceReset}){
       if(vals[11]!==null){try{setClubFilter(JSON.parse(vals[11]));}catch(e){}}
       if(vals[12]!==null){try{setFavTasks(JSON.parse(vals[12]));}catch(e){}}
       if(vals[13]!==null){try{setMahwaLog(JSON.parse(vals[13]));}catch(e){}}
+      var betaDone=localStorage.getItem('app:betaReward2026');
+      var firstGacha=localStorage.getItem('app:firstGachaDone');
+      var tod=gameDay();
+      if(!betaDone&&firstGacha==='1'&&tod>='2026-05-01'&&tod<='2026-05-02'){
+        setBetaModal('announcement');
+      }
       setUserLoaded(true);
     }).catch(()=>setUserLoaded(true));
   },[]);
@@ -1075,6 +1121,33 @@ function AppInner({onForceReset}){
       })));
     }
   },[userLoaded]);
+
+  // 마화 트랜잭션 로그
+  // 베타 보상 수집 실행
+  function startBetaGacha(){
+    var targetClubs=['어게인','A시'];
+    var inFilter=clubFilter&&clubFilter.clubs&&clubFilter.clubs.some(c=>targetClubs.includes(c));
+    if(!inFilter){setBetaModal('missed');return;}
+    var pool=wizards.filter(w=>targetClubs.includes(w.club));
+    if(pool.length===0){setBetaModal('missed');return;}
+    var wiz=pool[Math.floor(Math.random()*pool.length)];
+    var isNew=!wiz.owned;
+    setBetaGWiz(wiz);setBetaIsNew(isNew);
+    var txt=getLine(wiz.id,isNew?'MEET':'MEET_AGAIN')||'…';
+    setBetaFull(txt);setBetaTyped('');
+    localStorage.setItem('app:betaReward2026','1');
+    if(isNew){
+      setWizards(p=>{
+        var updated=p.map(w=>w.id===wiz.id?{...w,owned:true}:w);
+        storeSet('app:wizards',JSON.stringify(Object.fromEntries(updated.map(w=>[w.id,w.owned]))));
+        return updated;
+      });
+    }else{
+      applyAff(wiz.id,20,'up');
+      addLogEntry({taskId:'__beta_gacha__',taskName:'베타 보상 수집(중복)',wizardId:wiz.id,wizardName:wiz.name,delta:20,dir:'up',source:'gacha'});
+    }
+    setBetaModal('dialogue');
+  }
 
   // 마화 트랜잭션 로그
   function addMahwaLog(type,amount,balance,desc,extra){
@@ -1325,6 +1398,43 @@ if(to>=LV_REQ[curLv]&&curLv<maxLv){
               <button onClick={()=>handleNewClubDecision(newClubQueue[0].club,true)} style={{flex:1,padding:'9px 0',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>예</button>
             </div>
           </div>
+        </Overlay>
+      )}
+      {betaModal&&newClubQueue.length===0&&(
+        <Overlay>
+          {betaModal==='announcement'&&(
+            <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:300,width:'88%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+              <div style={{fontSize:12,fontWeight:600,color:'var(--color-primary)',textAlign:'center',marginBottom:16,letterSpacing:'0.3px'}}>베타테스터 이용 보상</div>
+              <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:2,marginBottom:8,textAlign:'center'}}>밤낮 임무에 매진하여 주시는<br/>여러분께 감사의 뜻을 담아<br/>신규 분과회 한정 수집 기회를<br/>드립니다.</div>
+              <div style={{fontSize:11,color:'var(--color-text-tertiary)',textAlign:'center',marginBottom:20}}>대상 분과회: A시 · 어게인</div>
+              <button onClick={startBetaGacha} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>수집하기</button>
+            </div>
+          )}
+          {betaModal==='missed'&&(
+            <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:300,width:'88%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+              <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:20,textAlign:'center',fontFamily:"Georgia,'Nanum Myeongjo',serif",fontStyle:'italic'}}>신규 마법사? 누구지? ……돌아보려는 순간 사라졌다. 아무 일도 일어나지 않았다.</div>
+              <button onClick={()=>{localStorage.setItem('app:betaReward2026','1');setBetaModal(null);}} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>확인</button>
+            </div>
+          )}
+          {(betaModal==='dialogue'||betaModal==='resultNew'||betaModal==='resultDup')&&betaGWiz&&(
+            <div style={{maxWidth:320,width:'88%'}}>
+              <div style={{display:'flex',gap:12,alignItems:'flex-start',padding:'14px',background:betaGWiz.bg,borderRadius:12,border:'0.5px solid '+betaGWiz.border}}>
+                <Avatar wiz={betaGWiz} size={48}/>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:12,fontWeight:600,color:betaGWiz.accent,marginBottom:6}}>{betaGWiz.name}</div>
+                  <div style={{fontSize:13,color:'rgba(0,0,0,0.65)',lineHeight:1.75,minHeight:40}}>{betaTyped}{betaTyped.length<betaFull.length&&<span style={{opacity:0.4}}>▌</span>}</div>
+                </div>
+              </div>
+              {(betaModal==='resultNew'||betaModal==='resultDup')&&(
+                <div style={{marginTop:12}}>
+                  <div style={{textAlign:'center',padding:'11px',background:'rgba(255,255,255,0.7)',borderRadius:10,border:'0.5px solid rgba(0,0,0,0.07)',marginBottom:8}}>
+                    <div style={{fontSize:13,color:'rgba(0,0,0,0.55)',fontFamily:"Georgia,'Nanum Myeongjo',serif"}}>{betaModal==='resultNew'?betaGWiz.name+' 수집 성공!':betaGWiz.name+'의 호감도가 상승했습니다.'}</div>
+                  </div>
+                  <button onClick={()=>setBetaModal(null)} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>확인</button>
+                </div>
+              )}
+            </div>
+          )}
         </Overlay>
       )}
       {showMahwaLimit&&(
