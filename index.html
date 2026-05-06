@@ -58,7 +58,7 @@ const { useState, useEffect, useRef } = React;
 
 // ── 상수 ──────────────────────────────────────────────────────────────────────
 const LV_REQ = [0, 100, 200, 300, 400];
-const STORAGE_KEYS = ['app:mahwa','app:wizards','app:affinity','app:level','app:doneCount','app:gachaDate','app:slotSession','app:firstRunDone','app:logs','app:playerName','app:firstGachaDone','app:clubFilter','app:favTasks','app:mahwaLog','app:betaReward2026a'];
+const STORAGE_KEYS = ['app:mahwa','app:wizards','app:affinity','app:level','app:doneCount','app:gachaDate','app:slotSession','app:firstRunDone','app:logs','app:playerName','app:firstGachaDone','app:clubFilter','app:favTasks','app:mahwaLog','app:betaReward2026a','app:storeDate','app:inventory','app:customTasks'];
 const TASK_TAG_ORDER = ['근육','가정','회복','작업','지성','정리','생업','생존'];
 
 // 시스템 슬롯 텍스트 상수
@@ -237,6 +237,14 @@ function gameDay(){
   var d=String(now.getDate()).padStart(2,'0');
   return y+'-'+m+'-'+d;
 }
+function weekKey(){
+  var now=new Date();
+  if(now.getHours()<5)now=new Date(now.getTime()-864e5);
+  var day=now.getDay();
+  var diff=now.getDate()-(day===0?6:day-1);
+  var mon=new Date(now.getFullYear(),now.getMonth(),diff);
+  return mon.getFullYear()+'-'+String(mon.getMonth()+1).padStart(2,'0')+'-'+String(mon.getDate()).padStart(2,'0');
+}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 function getLine(wId,key){var a=_dlg[wId]&&_dlg[wId][key];return Array.isArray(a)&&a.length?pick(a):null;}
 function getLvUpLine(wId,lv){var a=_dlg[wId]&&_dlg[wId].LV_UP&&_dlg[wId].LV_UP[lv];return a&&a.length?pick(a):'…';}
@@ -312,8 +320,13 @@ function LvUpBanner({event,onClose}){
 // ── 임무 선택 모달 ────────────────────────────────────────────────────────────
 function TaskPickerModal({tasks,favTasks,selected,onSelect,onClose}){
   var favIds=favTasks||[];
-  var favList=tasks.filter(t=>favIds.includes(t.id)).sort((a,b)=>a.name.localeCompare(b.name,'ko'));
-  var otherList=TASK_TAG_ORDER.flatMap(tag=>tasks.filter(t=>!favIds.includes(t.id)&&t.tag===tag));
+  var favList=tasks.filter(t=>!t.isCustom&&favIds.includes(t.id)).sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  var customList=tasks.filter(t=>t.isCustom).sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  var otherList=TASK_TAG_ORDER.flatMap(tag=>tasks.filter(t=>!t.isCustom&&!favIds.includes(t.id)&&t.tag===tag));
+  function chip(t,keyPfx){
+    var sel=selected===t.id;
+    return<span key={(keyPfx||'')+t.id} onClick={()=>{onSelect(t.id);onClose();}} style={{fontSize:12,padding:'5px 12px',borderRadius:20,border:'0.5px solid '+(sel?'var(--color-primary)':'rgba(0,0,0,0.13)'),background:sel?'var(--color-primary)':'rgba(255,255,255,0.9)',color:sel?'white':'var(--color-text-primary)',cursor:'pointer',transition:'all 0.12s',fontWeight:sel?500:400}}>{t.name}</span>;
+  }
   return(
     <Overlay>
       <div style={{background:'white',borderRadius:14,padding:'20px 18px',maxWidth:310,width:'92%',border:'0.5px solid #D8D8D8',boxShadow:'0 6px 28px rgba(0,0,0,0.10)',maxHeight:'78vh',overflowY:'auto'}}>
@@ -323,20 +336,44 @@ function TaskPickerModal({tasks,favTasks,selected,onSelect,onClose}){
         </div>
         {favList.length>0&&(
           <>
+            <div style={{fontSize:10,color:'var(--color-primary)',marginBottom:6,letterSpacing:'0.3px',fontWeight:600}}>즐겨찾기</div>
             <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:10}}>
-              {favList.map(t=>{
-                var sel=selected===t.id;
-                return<span key={'fav_'+t.id} onClick={()=>{onSelect(t.id);onClose();}} style={{fontSize:12,padding:'5px 12px',borderRadius:20,border:'0.5px solid '+(sel?'var(--color-primary)':'rgba(0,0,0,0.13)'),background:sel?'var(--color-primary)':'rgba(255,255,255,0.9)',color:sel?'white':'var(--color-text-primary)',cursor:'pointer',transition:'all 0.12s',fontWeight:sel?500:400}}>{t.name}</span>;
-              })}
+              {favList.map(t=>chip(t,'fav_'))}
+            </div>
+            <div style={{borderTop:'0.5px solid rgba(0,0,0,0.07)',marginBottom:10}}/>
+          </>
+        )}
+        {customList.length>0&&(
+          <>
+            <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:10}}>
+              {customList.map(t=>chip(t,'c_'))}
             </div>
             <div style={{borderTop:'0.5px solid rgba(0,0,0,0.07)',marginBottom:10}}/>
           </>
         )}
         <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-          {otherList.map(t=>{
-            var sel=selected===t.id;
-            return<span key={t.id} onClick={()=>{onSelect(t.id);onClose();}} style={{fontSize:12,padding:'5px 12px',borderRadius:20,border:'0.5px solid '+(sel?'var(--color-primary)':'rgba(0,0,0,0.13)'),background:sel?'var(--color-primary)':'rgba(255,255,255,0.9)',color:sel?'white':'var(--color-text-primary)',cursor:'pointer',transition:'all 0.12s',fontWeight:sel?500:400}}>{t.name}</span>;
-          })}
+          {otherList.map(t=>chip(t,''))}
+        </div>
+      </div>
+    </Overlay>
+  );
+}
+
+// ── 포기 확인 모달 (포기권 지원) ─────────────────────────────────────────────
+function ForfeitModal({onForfeit,onForfeitTicket,onCancel,forfeitTickets}){
+  return(
+    <Overlay>
+      <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'86%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+        <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:6,textAlign:'center'}}>정말 포기하시겠어요?</div>
+        <div style={{fontSize:11,color:'var(--color-text-tertiary)',textAlign:'center',marginBottom:18}}>소지 사유서: {forfeitTickets}매</div>
+        <div style={{display:'flex',flexDirection:'column',gap:7}}>
+          <div style={{display:'flex',gap:7}}>
+            <button onClick={onCancel} style={{flex:1,padding:'9px 0',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-secondary)'}}>아니오</button>
+            <button onClick={onForfeit} style={{flex:1,padding:'9px 0',borderRadius:8,border:'none',background:'#8A3030',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>포기하기</button>
+          </div>
+          {forfeitTickets>0&&(
+            <button onClick={onForfeitTicket} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'0.5px solid var(--color-primary)',background:'rgba(184,146,42,0.06)',color:'var(--color-primary)',fontSize:13,fontWeight:500,cursor:'pointer'}}><div>사유서 제출</div><div style={{fontSize:10,fontWeight:400,marginTop:2}}>포기하더라도 인연이 하락하지 않습니다.</div></button>
+          )}
         </div>
       </div>
     </Overlay>
@@ -417,19 +454,18 @@ function PageHeader({title,line1,line2}){
 }
 
 // ── 설정 패널 ─────────────────────────────────────────────────────────────────
-function SettingsPanel({onClose,onReset,onBackup,onRestore,clubFilter,onChangeClubs,allWizards,mahwa,onInstantChange,favTasks,onChangeFavTasks,allTasks}){
+function SettingsPanel({onClose,onReset,onBackup,onRestore,clubFilter,onChangeClubs,allWizards,mahwa,onInstantChange,favTasks,onChangeFavTasks,allTasks,customTasks,onDeleteCustomTask}){
   var fileRef=useRef(null);
   var[msg,setMsg]=useState('');
   var[customHex,setCustomHex]=useState('');
-  var[showClubEdit,setShowClubEdit]=useState(false);
-  var[editClubs,setEditClubs]=useState(clubFilter?clubFilter.clubs:[]);
-  var[showInstantConfirm,setShowInstantConfirm]=useState(false);
-  var[showFavEdit,setShowFavEdit]=useState(false);
+  var[subModal,setSubModal]=useState(null); // 'fav' | 'club' | 'custom'
   var[editFavs,setEditFavs]=useState(favTasks||[]);
+  var[editClubs,setEditClubs]=useState(clubFilter?clubFilter.clubs:[]);
+  var[deleteConfirm,setDeleteConfirm]=useState(null); // taskId
+  var[showInstantConfirm,setShowInstantConfirm]=useState(false);
   var currentColor=getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
   var allClubs=[...new Set(allWizards.map(w=>w.club))].sort((a,b)=>a.localeCompare(b,'ko'));
 
-  // 변경 가능 여부 확인
   var canChangeClubs=true;
   var nextChangeDate=null;
   if(clubFilter&&clubFilter.changedAt){
@@ -446,21 +482,18 @@ function SettingsPanel({onClose,onReset,onBackup,onRestore,clubFilter,onChangeCl
     var f=e.target.files[0];if(!f)return;
     var reader=new FileReader();
     reader.onload=ev=>{try{onRestore(JSON.parse(ev.target.result));}catch{setMsg('파일을 읽을 수 없습니다.');}};
-    reader.readAsText(f);
-    e.target.value='';
+    reader.readAsText(f);e.target.value='';
   }
   function handleCustomInput(){
     var hex=customHex.trim();
     if(!/^#[0-9A-Fa-f]{6}$/.test(hex)){setMsg('올바른 색상 코드를 입력하세요. 예: #A07828');return;}
     applyPrimaryColor(hex);setMsg('');setCustomHex('');
   }
-  function toggleEditClub(club){
-    setEditClubs(prev=>prev.includes(club)?prev.filter(c=>c!==club):[...prev,club]);
-  }
+  function toggleEditClub(club){setEditClubs(prev=>prev.includes(club)?prev.filter(c=>c!==club):[...prev,club]);}
   function handleSaveClubs(){
     if(editClubs.length===0)return;
     onChangeClubs(editClubs);
-    setShowClubEdit(false);
+    setSubModal(null);
     setMsg('✓ 수집 필터가 업데이트되었습니다');
     setTimeout(()=>setMsg(''),2000);
   }
@@ -473,10 +506,12 @@ function SettingsPanel({onClose,onReset,onBackup,onRestore,clubFilter,onChangeCl
   }
   function handleSaveFavs(){
     onChangeFavTasks(editFavs);
-    setShowFavEdit(false);
+    setSubModal(null);
     setMsg('✓ 즐겨찾기가 저장되었습니다');
     setTimeout(()=>setMsg(''),2000);
   }
+
+  var btnStyle={padding:'11px 0',borderRadius:8,border:'0.5px solid #D8D8D8',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-primary)',textAlign:'left',paddingLeft:14,display:'flex',justifyContent:'space-between',alignItems:'center',paddingRight:14};
 
   return(<>
     <Overlay>
@@ -485,10 +520,9 @@ function SettingsPanel({onClose,onReset,onBackup,onRestore,clubFilter,onChangeCl
           <span style={{fontSize:13,fontWeight:500,color:'var(--color-text-secondary)'}}>설정</span>
           <button onClick={onClose} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',color:'rgba(0,0,0,0.35)',lineHeight:1}}>✕</button>
         </div>
-        {/* 상태 메시지 - 제목과 색상 사이 */}
-        {msg&&<div style={{fontSize:11,color:msg.startsWith('✓')?'#3A6A28':'#8A3030',textAlign:'center',marginBottom:12,transition:'opacity 0.3s'}}>{msg}</div>}
+        {msg&&<div style={{fontSize:11,color:msg.startsWith('✓')?'#3A6A28':'#8A3030',textAlign:'center',marginBottom:12}}>{msg}</div>}
         <div style={{display:'flex',flexDirection:'column',gap:10}}>
-          {/* 컬러 팔레트 */}
+          {/* 테마 색상 */}
           <div>
             <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginBottom:8}}>테마 색상</div>
             <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:6,marginBottom:8}}>
@@ -504,61 +538,23 @@ function SettingsPanel({onClose,onReset,onBackup,onRestore,clubFilter,onChangeCl
             </div>
           </div>
 
-          {/* 즐겨찾기 임무 */}
-          <div style={{borderTop:'0.5px solid #EBEBEB',paddingTop:10}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-              <div style={{fontSize:11,color:'var(--color-text-tertiary)'}}>즐겨찾기 임무</div>
-              <button onClick={()=>{setEditFavs(favTasks||[]);setShowFavEdit(true);}} style={{fontSize:11,color:'var(--color-primary)',background:'none',border:'none',cursor:'pointer',padding:0}}>설정</button>
-            </div>
-            {favTasks&&favTasks.length>0
-              ?<div style={{display:'flex',flexWrap:'wrap',gap:5}}>
-                {favTasks.map(id=>{var t=allTasks.find(t=>t.id===id);return t?<span key={id} style={{fontSize:11,padding:'3px 9px',borderRadius:20,background:'rgba(184,146,42,0.1)',color:'var(--color-primary)',border:'0.5px solid rgba(184,146,42,0.3)'}}>{t.name}</span>:null;})}
-              </div>
-              :<div style={{fontSize:11,color:'var(--color-text-tertiary)'}}>설정된 즐겨찾기가 없습니다</div>
-            }
+          {/* 설정 버튼 3개 */}
+          <div style={{borderTop:'0.5px solid #EBEBEB',paddingTop:10,display:'flex',flexDirection:'column',gap:7}}>
+            <button onClick={()=>{setEditFavs(favTasks||[]);setSubModal('fav');}} style={btnStyle}>
+              <span>즐겨찾는 임무</span>
+              <span style={{fontSize:11,color:'var(--color-text-tertiary)'}}>{(favTasks||[]).length}개 ›</span>
+            </button>
+            <button onClick={()=>{setEditClubs(clubFilter?[...clubFilter.clubs]:allClubs);setSubModal('club');}} style={btnStyle}>
+              <span>수집 필터</span>
+              <span style={{fontSize:11,color:'var(--color-text-tertiary)'}}>{clubFilter?clubFilter.clubs.length+'개 분과회':'전체'} ›</span>
+            </button>
+            <button onClick={()=>setSubModal('custom')} style={btnStyle}>
+              <span>창작 임무</span>
+              <span style={{fontSize:11,color:'var(--color-text-tertiary)'}}>{(customTasks||[]).length}/5 ›</span>
+            </button>
           </div>
 
-          {/* 수집 필터 */}
-          <div style={{borderTop:'0.5px solid #EBEBEB',paddingTop:10}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-              <div style={{fontSize:11,color:'var(--color-text-tertiary)'}}>수집 필터</div>
-              {canChangeClubs
-                ?<button onClick={()=>{setEditClubs(clubFilter?[...clubFilter.clubs]:allClubs);setShowClubEdit(v=>!v);}} style={{fontSize:11,color:'var(--color-primary)',background:'none',border:'none',cursor:'pointer',padding:0}}>{showClubEdit?'닫기':'변경'}</button>
-                :<div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:4}}>
-                  <span style={{fontSize:10,color:'var(--color-text-tertiary)'}}>{nextChangeDate} 변경 가능</span>
-                  <button onClick={()=>setShowInstantConfirm(true)} style={{fontSize:10,color:'var(--color-primary)',background:'none',border:'0.5px solid var(--color-primary)',borderRadius:4,cursor:'pointer',padding:'2px 6px'}}>즉시 변경</button>
-                </div>
-              }
-            </div>
-            {!showClubEdit&&clubFilter&&(
-              <div style={{display:'flex',flexWrap:'wrap',gap:5}}>
-                {allClubs.map(club=>{
-                  var included=clubFilter.clubs.includes(club);
-                  return<span key={club} style={{fontSize:11,padding:'3px 9px',borderRadius:20,background:included?'rgba(184,146,42,0.1)':'rgba(0,0,0,0.04)',color:included?'var(--color-primary)':'rgba(0,0,0,0.3)',border:'0.5px solid '+(included?'rgba(184,146,42,0.3)':'rgba(0,0,0,0.1)')}}>{club}</span>;
-                })}
-              </div>
-            )}
-            {showClubEdit&&(
-              <div>
-                <div style={{display:'flex',flexDirection:'column',gap:6,marginBottom:10}}>
-                  {allClubs.map(club=>{
-                    var checked=editClubs.includes(club);
-                    return(
-                      <div key={club} onClick={()=>toggleEditClub(club)} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 12px',borderRadius:8,border:'0.5px solid '+(checked?'var(--color-primary)':'rgba(0,0,0,0.1)'),background:checked?'rgba(184,146,42,0.05)':'transparent',cursor:'pointer'}}>
-                        <span style={{fontSize:12,color:checked?'var(--color-primary)':'var(--color-text-primary)',fontWeight:checked?500:400}}>{club}</span>
-                        <div style={{width:16,height:16,borderRadius:'50%',border:'1.5px solid '+(checked?'var(--color-primary)':'rgba(0,0,0,0.2)'),background:checked?'var(--color-primary)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                          {checked&&<span style={{color:'white',fontSize:9,lineHeight:1}}>✓</span>}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                <button onClick={handleSaveClubs} disabled={editClubs.length===0} style={{width:'100%',padding:'8px 0',borderRadius:8,border:'none',background:editClubs.length>0?'var(--color-primary)':'rgba(0,0,0,0.07)',color:editClubs.length>0?'white':'rgba(0,0,0,0.3)',fontSize:12,fontWeight:500,cursor:editClubs.length>0?'pointer':'not-allowed'}}>저장</button>
-                <div style={{fontSize:10,color:'var(--color-text-tertiary)',textAlign:'center',marginTop:6}}>변경 후 30일간 재설정 불가</div>
-              </div>
-            )}
-          </div>
-
+          {/* 데이터 */}
           <div style={{borderTop:'0.5px solid #EBEBEB',paddingTop:10,display:'flex',flexDirection:'column',gap:10}}>
             <button onClick={onBackup} style={{padding:'10px 0',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-primary)'}}>데이터 백업</button>
             <button onClick={()=>fileRef.current.click()} style={{padding:'10px 0',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-primary)'}}>데이터 복구</button>
@@ -569,17 +565,17 @@ function SettingsPanel({onClose,onReset,onBackup,onRestore,clubFilter,onChangeCl
       </div>
     </Overlay>
 
-    {/* 즐겨찾기 편집 모달 */}
-    {showFavEdit&&(
+    {/* 즐겨찾기 서브모달 */}
+    {subModal==='fav'&&(
       <Overlay>
         <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:300,width:'90%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)',maxHeight:'80vh',overflowY:'auto'}}>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
-            <span style={{fontSize:13,fontWeight:500,color:'var(--color-text-secondary)'}}>즐겨찾기 임무</span>
-            <button onClick={()=>setShowFavEdit(false)} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',color:'rgba(0,0,0,0.35)',lineHeight:1}}>✕</button>
+            <span style={{fontSize:13,fontWeight:500,color:'var(--color-text-secondary)'}}>즐겨찾는 임무</span>
+            <button onClick={()=>setSubModal(null)} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',color:'rgba(0,0,0,0.35)',lineHeight:1}}>✕</button>
           </div>
           <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginBottom:14}}>{editFavs.length}/10 선택됨</div>
           <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:16}}>
-            {allTasks.sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(t=>{
+            {allTasks.filter(t=>!t.isCustom).sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(t=>{
               var sel=editFavs.includes(t.id);
               var full=!sel&&editFavs.length>=10;
               return<span key={t.id} onClick={()=>{if(!full)toggleFav(t.id);}} style={{fontSize:12,padding:'5px 11px',borderRadius:20,border:'0.5px solid '+(sel?'var(--color-primary)':'rgba(0,0,0,0.12)'),background:sel?'var(--color-primary)':full?'rgba(0,0,0,0.03)':'white',color:sel?'white':full?'rgba(0,0,0,0.25)':'var(--color-text-primary)',cursor:full?'not-allowed':'pointer',transition:'all 0.15s'}}>{t.name}</span>;
@@ -590,13 +586,85 @@ function SettingsPanel({onClose,onReset,onBackup,onRestore,clubFilter,onChangeCl
       </Overlay>
     )}
 
+    {/* 수집 필터 서브모달 */}
+    {subModal==='club'&&(
+      <Overlay>
+        <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:300,width:'90%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)',maxHeight:'80vh',overflowY:'auto'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
+            <span style={{fontSize:13,fontWeight:500,color:'var(--color-text-secondary)'}}>수집 필터</span>
+            <button onClick={()=>setSubModal(null)} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',color:'rgba(0,0,0,0.35)',lineHeight:1}}>✕</button>
+          </div>
+          {!canChangeClubs&&(
+            <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginBottom:12,textAlign:'center'}}>
+              {nextChangeDate} 변경 가능
+              <button onClick={()=>setShowInstantConfirm(true)} style={{display:'block',margin:'6px auto 0',fontSize:10,color:'var(--color-primary)',background:'none',border:'0.5px solid var(--color-primary)',borderRadius:4,cursor:'pointer',padding:'2px 8px'}}>즉시 변경 (300닢)</button>
+            </div>
+          )}
+          <div style={{display:'flex',flexDirection:'column',gap:6,marginBottom:12}}>
+            {allClubs.map(club=>{
+              var checked=editClubs.includes(club);
+              var disabled=!canChangeClubs;
+              return(
+                <div key={club} onClick={disabled?undefined:()=>toggleEditClub(club)} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 12px',borderRadius:8,border:'0.5px solid '+(checked?'var(--color-primary)':'rgba(0,0,0,0.1)'),background:checked?'rgba(184,146,42,0.05)':'transparent',cursor:disabled?'default':'pointer',opacity:disabled?0.5:1}}>
+                  <span style={{fontSize:12,color:checked?'var(--color-primary)':'var(--color-text-primary)',fontWeight:checked?500:400}}>{club}</span>
+                  <div style={{width:16,height:16,borderRadius:'50%',border:'1.5px solid '+(checked?'var(--color-primary)':'rgba(0,0,0,0.2)'),background:checked?'var(--color-primary)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                    {checked&&<span style={{color:'white',fontSize:9,lineHeight:1}}>✓</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {canChangeClubs&&<>
+            <button onClick={handleSaveClubs} disabled={editClubs.length===0} style={{width:'100%',padding:'8px 0',borderRadius:8,border:'none',background:editClubs.length>0?'var(--color-primary)':'rgba(0,0,0,0.07)',color:editClubs.length>0?'white':'rgba(0,0,0,0.3)',fontSize:12,fontWeight:500,cursor:editClubs.length>0?'pointer':'not-allowed',marginBottom:6}}>저장</button>
+            <div style={{fontSize:10,color:'var(--color-text-tertiary)',textAlign:'center'}}>변경 후 30일간 재설정 불가</div>
+          </>}
+        </div>
+      </Overlay>
+    )}
+
+    {/* 창작 임무 서브모달 */}
+    {subModal==='custom'&&(
+      <Overlay>
+        <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:300,width:'90%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)',maxHeight:'80vh',overflowY:'auto'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
+            <span style={{fontSize:13,fontWeight:500,color:'var(--color-text-secondary)'}}>창작 임무</span>
+            <button onClick={()=>{setSubModal(null);setDeleteConfirm(null);}} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',color:'rgba(0,0,0,0.35)',lineHeight:1}}>✕</button>
+          </div>
+          <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginBottom:14}}>{(customTasks||[]).length}/5</div>
+          {(customTasks||[]).length===0
+            ?<div style={{fontSize:12,color:'var(--color-text-tertiary)',textAlign:'center',padding:'20px 0'}}>등록된 창작 임무가 없습니다.</div>
+            :<div>
+              <div style={{display:'flex',flexWrap:'wrap',gap:10,alignItems:'center',marginBottom:10}}>
+                {(customTasks||[]).map(t=>(
+                  <div key={t.id} style={{display:'flex',alignItems:'center',gap:3}}>
+                    <span style={{fontSize:12,padding:'5px 11px',borderRadius:20,border:'0.5px solid rgba(0,0,0,0.12)',background:'white',color:'var(--color-text-primary)'}}>{t.name}</span>
+                    <button onClick={()=>setDeleteConfirm(deleteConfirm===t.id?null:t.id)} style={{width:18,height:18,borderRadius:'50%',border:'none',background:'var(--color-primary)',color:'white',fontSize:10,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',padding:0,flexShrink:0,lineHeight:1}}>✕</button>
+                  </div>
+                ))}
+              </div>
+              {deleteConfirm&&(customTasks||[]).find(t=>t.id===deleteConfirm)&&(
+                <div style={{padding:'10px 12px',borderRadius:8,border:'0.5px solid #D0A0A0',background:'#FDF5F5'}}>
+                  <div style={{fontSize:11,color:'#8A3030',marginBottom:8}}>"{(customTasks||[]).find(t=>t.id===deleteConfirm).name}"을 삭제할까요?</div>
+                  <div style={{display:'flex',gap:7}}>
+                    <button onClick={()=>setDeleteConfirm(null)} style={{flex:1,padding:'6px 0',borderRadius:6,border:'0.5px solid #D0D0D0',background:'white',fontSize:12,cursor:'pointer',color:'var(--color-text-secondary)'}}>취소</button>
+                    <button onClick={()=>{onDeleteCustomTask(deleteConfirm);setDeleteConfirm(null);}} style={{flex:1,padding:'6px 0',borderRadius:6,border:'none',background:'#8A3030',color:'white',fontSize:12,fontWeight:500,cursor:'pointer'}}>삭제</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          }
+        </div>
+      </Overlay>
+    )}
+
+    {/* 즉시 변경 확인 모달 */}
     {showInstantConfirm&&(
       <Overlay>
         <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'86%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
           <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:20,textAlign:'center'}}>마화 300닢을 지불하여{'\n'}즉시 수집 필터 설정을 변경할까요?</div>
           <div style={{display:'flex',gap:8}}>
             <button onClick={()=>setShowInstantConfirm(false)} style={{flex:1,padding:'9px 0',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-secondary)'}}>아니오</button>
-            <button onClick={()=>{if(mahwa<300){setShowInstantConfirm(false);setMsg('마화가 부족합니다.');setTimeout(()=>setMsg(''),2000);return;}onInstantChange();setShowInstantConfirm(false);setShowClubEdit(true);setEditClubs(clubFilter?[...clubFilter.clubs]:allClubs);}} disabled={mahwa<300} style={{flex:1,padding:'9px 0',borderRadius:8,border:'none',background:mahwa>=300?'var(--color-primary)':'rgba(0,0,0,0.07)',color:mahwa>=300?'white':'rgba(0,0,0,0.3)',fontSize:13,fontWeight:500,cursor:mahwa>=300?'pointer':'not-allowed'}}>예</button>
+            <button onClick={()=>{if(mahwa<300){setShowInstantConfirm(false);setMsg('마화가 부족합니다.');setTimeout(()=>setMsg(''),2000);return;}onInstantChange();setShowInstantConfirm(false);setEditClubs(clubFilter?[...clubFilter.clubs]:allClubs);}} disabled={mahwa<300} style={{flex:1,padding:'9px 0',borderRadius:8,border:'none',background:mahwa>=300?'var(--color-primary)':'rgba(0,0,0,0.07)',color:mahwa>=300?'white':'rgba(0,0,0,0.3)',fontSize:13,fontWeight:500,cursor:mahwa>=300?'pointer':'not-allowed'}}>예</button>
           </div>
           {mahwa<300&&<div style={{fontSize:11,color:'#8A3030',textAlign:'center',marginTop:8}}>마화가 부족합니다. (현재 {mahwa}닢)</div>}
         </div>
@@ -788,8 +856,9 @@ function IntroScreen({wizards,setWizards,onComplete}){
 }
 
 // ── 임무 페이지 ───────────────────────────────────────────────────────────────
-function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,level,lvTransitions,lvUpEvent,setLvUpEvent,onUpd,onConfirmMission,onReset,onSlotReset,slots,confirmed,favTasks}){
+function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,level,lvTransitions,lvUpEvent,setLvUpEvent,onUpd,onConfirmMission,onReset,onSlotReset,slots,confirmed,favTasks,inventory,logs}){
   var[modal,setModal]=useState(null);
+  var[diceMsg,setDiceMsg]=useState('');
   function formatElapsed(startedAt){
     if(!startedAt)return '알 수 없는 시간';
     var mins=Math.floor((Date.now()-startedAt)/60000);
@@ -798,11 +867,52 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
     var h=Math.floor(mins/60),m=mins%60;
     return m>0?h+'시간 '+m+'분':h+'시간';
   }
+
+  function handleRandomAssign(){
+    var idleSlots=slots.map((sl,i)=>({sl,i})).filter(({sl})=>!sl.isSystem&&sl.status==='idle'&&!sl.wizardId);
+    if(idleSlots.length===0)return;
+    var targets=idleSlots.filter(({sl})=>sl.taskId);
+    if(targets.length===0){setDiceMsg('error:먼저 임무를 설정해 주세요.');setTimeout(()=>setDiceMsg(''),3000);return;}
+    var lastDone={};
+    Object.keys(logs||{}).sort().forEach(dateStr=>{
+      (logs[dateStr].entries||[]).filter(e=>e.dir==='up'&&e.source==='task').forEach(e=>{
+        if(e.wizardId)lastDone[e.wizardId]=dateStr;
+      });
+    });
+    var usedIds=slots.map(s=>s.wizardId).filter(Boolean);
+    var owned=wizards.filter(w=>w.owned&&!usedIds.includes(w.id));
+    if(owned.length===0)return;
+    owned.sort((a,b)=>{
+      var da=lastDone[a.id]||'0000-00-00';
+      var db=lastDone[b.id]||'0000-00-00';
+      return da<db?-1:da>db?1:0;
+    });
+    var assignCount=Math.min(targets.length,owned.length);
+    var remaining=[...owned];
+    targets.slice(0,assignCount).forEach(({i})=>{
+      if(remaining.length===0)return;
+      var pool=remaining.slice(0,Math.min(5,remaining.length));
+      var picked=pool[Math.floor(Math.random()*pool.length)];
+      remaining=remaining.filter(w=>w.id!==picked.id);
+      var t=tasks.find(t=>t.id===slots[i].taskId);
+      var tm=!!(picked&&t&&picked.tags.includes(t.tag));
+      onUpd(i,{wizardId:picked.id,tagMatch:tm,dialogue:getLine(picked.id,tm?'TASK_MATCH':'TASK_UNMATCH')});
+    });
+    setDiceMsg('ok:마법사를 자동으로 배치했습니다.');
+    setTimeout(()=>setDiceMsg(''),3000);
+  }
+
   var canConfirm=!confirmed&&slots.some(s=>!s.isSystem&&s.taskId&&s.wizardId);
   var hasEmpty=slots.some(s=>!s.isSystem&&(!s.taskId||!s.wizardId));
   var userSlots=slots.filter(s=>!s.isSystem&&s.taskId&&s.wizardId);
   var allDone=confirmed&&userSlots.length>0&&userSlots.every(s=>s.status==='done'||s.status==='forfeited');
   var usedWizIds=slots.map(s=>s.wizardId).filter(Boolean);
+
+  var idleSlotsNoWiz=slots.filter(s=>!s.isSystem&&s.status==='idle'&&!s.wizardId);
+  var hasTaskNoWiz=idleSlotsNoWiz.some(s=>s.taskId);
+  var hasIdleNoTask=idleSlotsNoWiz.length>0&&!hasTaskNoWiz;
+  var hasAssignableSlot=!confirmed&&(hasTaskNoWiz||hasIdleNoTask);
+
   function handleConfirmClick(){
     if(hasEmpty)setModal({type:'confirmWithEmpty'});
     else{onConfirmMission(false);setModal(null);}
@@ -810,6 +920,7 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
   function handleOk(){
     if(modal.type==='confirmWithEmpty'){onConfirmMission(true);setModal(null);}
     else if(modal.type==='forfeit'){onUpd(modal.idx,'forfeit');setModal(null);}
+    else if(modal.type==='forfeit_ticket'){onUpd(modal.idx,'forfeit_ticket');setModal(null);}
     else if(modal.type==='activateSlot'){onUpd(modal.idx,'activate');setModal(null);}
     else if(modal.type==='confirmComplete'){onUpd(modal.idx,'complete');setModal(null);}
     else if(modal.type==='sysReset'){onSlotReset(modal.idx);setModal(null);}
@@ -819,6 +930,11 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
   return(
     <div style={{padding:'60px 16px 20px',maxWidth:420,margin:'0 auto'}}>
       <PageHeader title='오늘의 임무' line1={l1} line2={l2}/>
+      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
+        <button onClick={hasAssignableSlot?handleRandomAssign:undefined} title="마법사 무작위 배치"
+          style={{width:34,height:34,borderRadius:'50%',border:'0.5px solid rgba(0,0,0,0.13)',background:'white',cursor:hasAssignableSlot?'pointer':'not-allowed',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,opacity:hasAssignableSlot?1:0.35,transition:'all 0.15s',flexShrink:0}}>🎲</button>
+        {diceMsg&&<span style={{fontSize:11,color:diceMsg.startsWith('error:')?'#8A3030':'#3A6A28'}}>{diceMsg.replace(/^(error:|ok:)/,'')}</span>}
+      </div>
       <div style={{display:'flex',flexDirection:'column',gap:10}}>
         {slots.map((sl,i)=><SlotCard key={i} slot={sl} idx={i} confirmed={confirmed} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} onUpd={onUpd} usedWizIds={usedWizIds} wizards={wizards} tasks={tasks} onAskForfeit={idx=>setModal({type:'forfeit',idx})} onSlotReset={onSlotReset} allDone={allDone} onAskActivate={idx=>setModal({type:'activateSlot',idx})}
 onAskComplete={(idx,startedAt)=>setModal({type:'confirmComplete',idx,elapsed:formatElapsed(startedAt),startedAt})}
@@ -826,7 +942,7 @@ onAskSysReset={(idx,wizName)=>setModal({type:'sysReset',idx,wizName})} favTasks=
         {!confirmed&&<button onClick={handleConfirmClick} disabled={!canConfirm} style={{marginTop:4,background:canConfirm?'var(--color-primary)':'rgba(0,0,0,0.07)',color:canConfirm?'white':'var(--color-text-tertiary)',border:'none',borderRadius:'var(--border-radius-lg)',padding:'11px 0',fontSize:13,fontWeight:500,cursor:canConfirm?'pointer':'not-allowed',transition:'background 0.2s'}}>임무 확정</button>}
         {allDone&&<div style={{textAlign:'center',padding:'18px 16px',marginTop:4,background:'#EAEAEA',borderRadius:'var(--border-radius-lg)',border:'0.5px solid #D0D0D0'}}><div style={{fontSize:14,fontWeight:500,color:'#3A4A40',marginBottom:10,fontFamily:"Georgia,'Nanum Myeongjo',serif",letterSpacing:'0.3px'}}>당신의 임무, 세계를 구했다!</div><button onClick={onReset} style={{background:'white',color:'var(--color-text-secondary)',border:'0.5px solid #C8C8C8',borderRadius:'var(--border-radius-md)',padding:'6px 20px',fontSize:12,cursor:'pointer'}}>Reset</button></div>}
       </div>
-      {modal&&<ConfirmModal
+      {modal&&modal.type!=='forfeit'&&<ConfirmModal
         msg={modal.type==='confirmWithEmpty'?'빈 임무 슬롯이 있어요.\n이대로 임무를 확정할까요?':modal.type==='activateSlot'?'이대로 새 임무를 시작할까요?':modal.type==='sysReset'?modal.wizName+'의 자유 행동을 종료할까요?':
 modal.type==='sysReset'?modal.wizName+'의 자유 행동을 종료할까요?':
 modal.type==='confirmComplete'?(modal.startedAt&&(Date.now()-modal.startedAt)>=18000000?'꽤 시간이 필요한 임무였군요!\n완료 보고서를 제출하시겠어요?':'임무를 수령한 지 '+modal.elapsed+'이 경과하였네요.\n완료 보고서를 제출하시겠어요?'):'정말 포기하시겠어요?'}
@@ -834,6 +950,12 @@ modal.type==='confirmComplete'?(modal.startedAt&&(Date.now()-modal.startedAt)>=1
         onConfirm={handleOk}
         onCancel={modal.type==='activateSlot'?()=>{onUpd(modal.idx,{wizardId:null,dialogue:null,tagMatch:false});setModal(null);}:()=>setModal(null)}
         confirmDisabled={false}
+      />}
+      {modal&&modal.type==='forfeit'&&<ForfeitModal
+        forfeitTickets={(inventory&&inventory.forfeitTickets)||0}
+        onForfeit={handleOk}
+        onForfeitTicket={()=>{onUpd(modal.idx,'forfeit_ticket');setModal(null);}}
+        onCancel={()=>setModal(null)}
       />}
       <div style={{textAlign:'center',marginTop:24,paddingBottom:8}}>
         <span style={{fontSize:10,color:'rgba(0,0,0,0.2)',lineHeight:1.8}}>브라우저 캐시·쿠키 삭제 전 데이터를 백업해 두세요 (우상단 A → 데이터 백업)</span>
@@ -843,88 +965,226 @@ modal.type==='confirmComplete'?(modal.startedAt&&(Date.now()-modal.startedAt)>=1
 }
 
 
-// ── 수집 페이지 ───────────────────────────────────────────────────────────────
-function CollectPage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,ownedCount,gachaDate,setGachaDate,addLogEntry,clubFilter,addMahwaLog}){
+// ── 상점 페이지 ───────────────────────────────────────────────────────────────
+function StorePage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,ownedCount,storeDate,setStoreDate,addLogEntry,clubFilter,addMahwaLog,inventory,setInventory,customTasks,setCustomTasks}){
   var[phase,setPhase]=useState('idle');
   var[gWiz,setGWiz]=useState(null);
   var[gNew,setGNew]=useState(false);
   var[full,setFull]=useState('');
   var[typed,setTyped]=useState('');
+  var[gType,setGType]=useState('normal');
+  var[customName,setCustomName]=useState('');
+  var[flash,setFlash]=useState('');
   var[showFirstBonus,setShowFirstBonus]=useState(false);
-  useEffect(()=>{if(gachaDate===gameDay())setPhase('done');},[gachaDate]);
+  var[forfeitConfirm,setForfeitConfirm]=useState(false);
+
+  var today=gameDay();
+  var gachaDone=storeDate.gacha===today;
+  var thisWeek=weekKey();
+  var forfeitWeekCount=storeDate.forfeitWeekKey===thisWeek?(storeDate.forfeitWeekCount||0):0;
+  var forfeitDone=forfeitWeekCount>=3;
+
+  // 타이핑 애니메이션
+  useEffect(()=>{
+    if(phase!=='dialogue')return;
+    if(typed.length>=full.length){
+      var t=setTimeout(()=>{
+        if(gNew){
+          setWizards(p=>{
+            var up=p.map(w=>w.id===gWiz.id?{...w,owned:true}:w);
+            storeSet('app:wizards',JSON.stringify(Object.fromEntries(up.map(w=>[w.id,w.owned]))));
+            return up;
+          });
+          addMahwaLog('gacha_new',0,mahwa,'신규 수집: '+gWiz.name,{wizardId:gWiz.id,wizardName:gWiz.name});
+          setPhase('resultNew');
+        }else{
+          applyAff(gWiz.id,20,'up');
+          setMahwa(n=>{var nx=n+30;addMahwaLog('gacha_dup',+30,nx,'중복 수집: '+gWiz.name+' (마화 30 환급)',{wizardId:gWiz.id,wizardName:gWiz.name});return nx;});
+          addLogEntry({taskId:'__gacha__',taskName:'수집(중복)',wizardId:gWiz.id,wizardName:gWiz.name,delta:20,dir:'up',source:'gacha'});
+          setPhase('resultDup');
+        }
+      },700);
+      return()=>clearTimeout(t);
+    }
+    var t=setTimeout(()=>setTyped(p=>full.slice(0,p.length+1)),45);
+    return()=>clearTimeout(t);
+  },[phase,typed,full,gNew,gWiz,gType]);
+
+  // 로딩 후 마법사 추첨
   useEffect(()=>{
     if(phase!=='loading')return;
     var t=setTimeout(()=>{
-      // clubFilter가 있으면 선택된 분과회 마법사만 대상, 없으면 전체
       var pool=clubFilter&&clubFilter.clubs&&clubFilter.clubs.length>0
         ?wizards.filter(w=>clubFilter.clubs.includes(w.club))
         :wizards;
-      var wiz=pool[Math.floor(Math.random()*pool.length)];
-      if(!wiz)wiz=wizards[Math.floor(Math.random()*wizards.length)];
-      var isNew=!wiz.owned,txt=getLine(wiz.id,isNew?'MEET':'MEET_AGAIN')||'…';
-      setGWiz(wiz);setGNew(isNew);setFull(txt);setTyped('');setPhase('dialogue');
-    },3000);return()=>clearTimeout(t);
+      var wiz=pool.length>0?pool[Math.floor(Math.random()*pool.length)]:wizards[Math.floor(Math.random()*wizards.length)];
+      var isNew=!wiz.owned;
+      setGWiz(wiz);setGNew(isNew);
+      setFull(getLine(wiz.id,isNew?'MEET':'MEET_AGAIN')||'…');
+      setTyped('');setPhase('dialogue');
+    },3000);
+    return()=>clearTimeout(t);
   },[phase]);
-  useEffect(()=>{
-    if(phase!=='dialogue')return;
-    if(typed.length>=full.length){var t=setTimeout(()=>{if(gNew){
-  setWizards(p=>{
-    var updated=p.map(w=>w.id===gWiz.id?{...w,owned:true}:w);
-    var om=Object.fromEntries(updated.map(w=>[w.id,w.owned]));
-    storeSet('app:wizards',JSON.stringify(om));
-    return updated;
-  });
-  addMahwaLog('gacha_new',0,mahwa-100,`신규 수집: ${gWiz.name}`,{wizardId:gWiz.id,wizardName:gWiz.name});
-  setPhase('resultNew');
-}else{
-  applyAff(gWiz.id,20,'up');
-  setMahwa(n=>{var next=n+30;addMahwaLog('gacha_dup',+30,next,`중복 수집: ${gWiz.name} (마화 30 환급)`,{wizardId:gWiz.id,wizardName:gWiz.name});return next;});
-  addLogEntry({taskId:'__gacha__',taskName:'수집(중복)',wizardId:gWiz.id,wizardName:gWiz.name,delta:20,dir:'up',source:'gacha'});
-  setPhase('resultDup');
-}},700);return()=>clearTimeout(t);}
-    var t=setTimeout(()=>setTyped(p=>full.slice(0,p.length+1)),45);return()=>clearTimeout(t);
-  },[phase,typed,full,gNew,gWiz]);
-  function startGacha(){
-    setMahwa(n=>{
-      var next=n-100;
-      addMahwaLog('gacha_cost',-100,next,'수집 시도');
-      return next;
-    });
-    setPhase('loading');
+
+  function doFlash(msg){setFlash(msg);setTimeout(()=>setFlash(''),3000);}
+
+  function startNormalGacha(){
+    setMahwa(n=>{var nx=n-100;addMahwaLog('gacha_cost',-100,nx,'수집 시도');return nx;});
+    setStoreDate(p=>{var u={...p,gacha:today};storeSet('app:storeDate',JSON.stringify(u));return u;});
+    setGType('normal');setPhase('loading');
   }
+
+  function buyForfeit(){
+    var wk=weekKey();
+    var cnt=storeDate.forfeitWeekKey===wk?(storeDate.forfeitWeekCount||0):0;
+    if(cnt>=3)return;
+    setMahwa(n=>{var nx=n-30;addMahwaLog('forfeit_cost',-30,nx,'포기 사유서 구매');return nx;});
+    setStoreDate(p=>{var u={...p,forfeitWeekKey:wk,forfeitWeekCount:cnt+1};storeSet('app:storeDate',JSON.stringify(u));return u;});
+    setInventory(p=>{var u={...p,forfeitTickets:(p.forfeitTickets||0)+1};storeSet('app:inventory',JSON.stringify(u));return u;});
+    doFlash('포기 사유서 1매를 구입했습니다.');
+  }
+
+  function confirmCustomTask(){
+    var name=customName.trim();if(!name)return;
+    var tag=TASK_TAG_ORDER[Math.floor(Math.random()*TASK_TAG_ORDER.length)];
+    var newTask={id:'CT'+Date.now(),name,tag,isCustom:true};
+    setCustomTasks(p=>{var u=[...p,newTask];storeSet('app:customTasks',JSON.stringify(u));return u;});
+    setMahwa(n=>{var nx=n-100;addMahwaLog('custom_task_cost',-200,nx,'창작 임무 추가: '+name);return nx;});
+    setPhase('idle');setCustomName('');
+    doFlash('"'+name+'" 임무가 추가되었습니다.');
+  }
+
+  function finishGacha(){
+    if(gType==='normal'&&!localStorage.getItem('app:firstGachaDone')){
+      localStorage.setItem('app:firstGachaDone','1');
+      setShowFirstBonus(true);
+    }
+    setGWiz(null);setPhase('idle');
+  }
+
+  var items=[
+    {id:'gacha',sym:'✦',name:'마법사 수집',desc:'어쩌면 당신의 진정한 임무',price:100,done:gachaDone,active:!gachaDone&&mahwa>=100,onBuy:startNormalGacha,btnLabel:'수집'},
+    {id:'forfeit',sym:'⬡',name:'포기 사유서',desc:'잔소리는 듣겠지만 미움은 덜할 것이다',price:30,done:forfeitDone,active:!forfeitDone&&mahwa>=30,onBuy:()=>setForfeitConfirm(true),info:'이번 주 ('+forfeitWeekCount+'/3)매 구매'},
+    {id:'custom',sym:'❖',name:'창작 임무 추가',desc:customTasks.length>=5?'임무 창작 한도에 도달했습니다 (5/5)':'원하는 임무를 작성하여 목록에 추가한다',price:100,done:false,active:mahwa>=100&&customTasks.length<5,onBuy:()=>{setCustomName('');setPhase('custom_input');},info:'('+customTasks.length+'/5)개 창작 완료'},
+  ];
+
   var showDlg=phase==='dialogue'||phase==='resultNew'||phase==='resultDup';
-  var l1=<span>수집 완료 마법사: <span style={{fontWeight:500,color:'var(--color-primary)'}}>{ownedCount}명</span></span>;
-  var l2=<span>소지 마화: <span style={{fontWeight:500,color:'var(--color-primary)'}}>{mahwa}닢</span></span>;
-  return(
+
+  return(<>
     <div style={{padding:'60px 16px 20px',maxWidth:420,margin:'0 auto'}}>
-      <PageHeader title='수집' line1={l1} line2={l2}/>
-      {!showDlg&&<div style={{display:'flex',justifyContent:'center',marginBottom:24}}><div style={{width:150,height:200,borderRadius:10,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',color:'#8A9AB0',gap:8}}><img src="https://raw.githubusercontent.com/wizforeden/wizards_today/refs/heads/main/image/slot.jpg" alt="마법사 도감" style={{width:120,height:120,borderRadius:'50%',objectFit:'cover',border:'0.5px solid #C2CAD6'}}/><div style={{fontSize:11,letterSpacing:'0.5px',marginTop:8}}>누구의 책일까?</div></div></div>}
-      {phase==='idle'&&<div style={{textAlign:'center'}}><button onClick={()=>setPhase('confirming')} style={{background:'var(--color-primary)',color:'white',border:'none',borderRadius:'var(--border-radius-lg)',padding:'12px 48px',fontSize:14,fontWeight:500,cursor:'pointer'}}>수집</button></div>}
-      {phase==='done'&&<div style={{textAlign:'center',padding:'13px 16px',background:'#F0F0F0',borderRadius:'var(--border-radius-lg)',border:'0.5px solid #DCDCDC',fontSize:12,color:'var(--color-text-secondary)'}}>오늘 가능한 수집이 완료되었습니다.</div>}
-      {phase==='loading'&&<SparkleLoader msg="소환 중..."/>}
-      {showDlg&&gWiz&&<div style={{display:'flex',gap:12,alignItems:'flex-start',padding:'14px',background:gWiz.bg,borderRadius:'var(--border-radius-lg)',border:'0.5px solid '+gWiz.border}}><Avatar wiz={gWiz} size={48}/><div style={{flex:1}}><div style={{fontSize:12,fontWeight:600,color:gWiz.accent,marginBottom:6}}>{gWiz.name}</div><div style={{fontSize:13,color:'rgba(0,0,0,0.65)',lineHeight:1.75,minHeight:40}}>{typed}{typed.length<full.length&&<span style={{opacity:0.4}}>▌</span>}</div></div></div>}
-      {(phase==='resultNew'||phase==='resultDup')&&gWiz&&<Overlay><div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:290,width:'88%',textAlign:'center',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}><div style={{fontSize:13,fontWeight:500,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:18,whiteSpace:'pre-line'}}>{phase==='resultNew'?gWiz.name+' 수집 성공!':gWiz.name+'과 더 가까워졌다!\n인연이 20 상승했다.\n마화 30닢을 돌려받았다.'}</div><button onClick={()=>{
-  var today=gameDay();setGachaDate(today);storeSet('app:gachaDate',today);setGWiz(null);setPhase('done');
-  var isFirst=!localStorage.getItem('app:firstGachaDone');
-          if(isFirst){localStorage.setItem('app:firstGachaDone','1');setShowFirstBonus(true);}
-}} style={{background:'var(--color-primary)',color:'white',border:'none',borderRadius:8,padding:'8px 28px',fontSize:13,cursor:'pointer'}}>확인</button></div></Overlay>}
-      {showFirstBonus&&(
-        <Overlay>
-          <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'86%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
-            <div style={{fontSize:13,fontWeight:600,color:'var(--color-text-primary)',marginBottom:14,textAlign:'center'}}>최초 수집 보너스</div>
-            <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:2,marginBottom:6}}>
-              일일 수집 한도 1회 리셋<br/>
-              수집 축하금 마화 20닢<br/>
-              앞으로도 많은 이용 부탁드립니다.<br/>
+      <div style={{textAlign:'center',marginBottom:20}}>
+        <div style={{fontSize:17,fontWeight:500,color:'var(--color-text-primary)',letterSpacing:'-0.3px'}}>상점</div>
+        <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginTop:6}}>
+          수집한 마법사: <span style={{fontWeight:500,color:'var(--color-primary)'}}>{ownedCount}명</span>
+          <span style={{marginLeft:14}}>소지 마화: <span style={{fontWeight:500,color:'var(--color-primary)'}}>{mahwa}닢</span></span>
+        </div>
+      </div>
+
+      {flash&&<div style={{textAlign:'center',fontSize:12,color:'#3A6A28',marginBottom:12,padding:'8px 12px',background:'rgba(90,154,72,0.08)',borderRadius:8,border:'0.5px solid rgba(90,154,72,0.2)'}}>{flash}</div>}
+
+      {/* 아이템 목록 */}
+      {phase==='idle'&&(
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          {items.map(item=>(
+            <div key={item.id} style={{background:'white',borderRadius:12,padding:'14px 16px',border:'0.5px solid #D8D8D8',display:'flex',alignItems:'center',gap:14}}>
+              <div style={{fontSize:24,width:36,textAlign:'center',color:'var(--color-primary)',flexShrink:0,opacity:item.done?0.4:1}}>{item.sym}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:3}}>
+                  <span style={{fontSize:13,fontWeight:500,color:item.done?'var(--color-text-tertiary)':'var(--color-text-primary)'}}>{item.name}</span>
+                  {item.badge&&<span style={{fontSize:10,color:'var(--color-primary)',background:'rgba(184,146,42,0.10)',borderRadius:10,padding:'1px 7px',border:'0.5px solid rgba(184,146,42,0.25)'}}>{item.badge}</span>}
+                </div>
+                <div style={{fontSize:11,color:'var(--color-text-tertiary)'}}>{item.desc}</div>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:4}}>
+                  <div style={{fontSize:11,color:item.active?'var(--color-primary)':'var(--color-text-tertiary)',fontWeight:item.active?500:400}}>마화 {item.price}닢</div>
+                  {item.info&&<div style={{fontSize:10,color:'var(--color-text-tertiary)'}}>{item.info}</div>}
+                </div>
+              </div>
+              <button
+                onClick={item.active?item.onBuy:undefined}
+                style={{flexShrink:0,padding:'7px 14px',borderRadius:8,border:'none',
+                  background:item.done?'rgba(0,0,0,0.05)':item.active?'var(--color-primary)':'rgba(0,0,0,0.07)',
+                  color:item.done?'var(--color-text-tertiary)':item.active?'white':'var(--color-text-tertiary)',
+                  fontSize:12,fontWeight:500,cursor:item.active?'pointer':'not-allowed'}}
+              >{item.done?'매진':item.btnLabel||'구매'}</button>
             </div>
-            <div style={{fontSize:11,color:'var(--color-text-tertiary)',textAlign:'right',marginBottom:20}}><br/>by 의문의 서적경</div>
-            <button onClick={()=>{setGachaDate('');storeSet('app:gachaDate','');setMahwa(n=>{var next=n+20;addMahwaLog('bonus',+20,next,'최초 수집 보너스');return next;});setShowFirstBonus(false);}} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>확인</button>
-          </div>
-        </Overlay>
+          ))}
+        </div>
       )}
-      {phase==='confirming'&&<ConfirmModal msg={'소환권을 사용할까요?\n(마화 100닢 소모)'} onConfirm={startGacha} onCancel={()=>setPhase('idle')} confirmDisabled={mahwa<100} confirmLabel='예' cancelLabel='취소'/>}
+
+      {/* 가챠 로딩 */}
+      {phase==='loading'&&<SparkleLoader msg="소환 중..."/>}
+
+      {/* 가챠 대화 */}
+      {showDlg&&gWiz&&(
+        <div>
+          <div style={{display:'flex',gap:12,alignItems:'flex-start',padding:'14px',background:gWiz.bg,borderRadius:'var(--border-radius-lg)',border:'0.5px solid '+gWiz.border}}>
+            <Avatar wiz={gWiz} size={48}/>
+            <div style={{flex:1}}>
+              <div style={{fontSize:12,fontWeight:600,color:gWiz.accent,marginBottom:6}}>{gWiz.name}</div>
+              <div style={{fontSize:13,color:'rgba(0,0,0,0.65)',lineHeight:1.75,minHeight:40}}>{typed}{typed.length<full.length&&<span style={{opacity:0.4}}>▌</span>}</div>
+            </div>
+          </div>
+          {(phase==='resultNew'||phase==='resultDup')&&(
+            <Overlay>
+              <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:290,width:'88%',textAlign:'center',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+                <div style={{fontSize:13,fontWeight:500,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:18,whiteSpace:'pre-line'}}>
+                  {phase==='resultNew'?gWiz.name+' 수집 성공!':gWiz.name+'과 더 가까워졌다!\n인연이 20 상승했다.\n마화 30닢을 돌려받았다.'}
+                </div>
+                <button onClick={finishGacha} style={{background:'var(--color-primary)',color:'white',border:'none',borderRadius:8,padding:'8px 28px',fontSize:13,cursor:'pointer'}}>확인</button>
+              </div>
+            </Overlay>
+          )}
+        </div>
+      )}
+
+      {/* 창작 임무 입력 */}
+      {phase==='custom_input'&&(
+        <div style={{background:'white',borderRadius:12,padding:'24px 20px',border:'0.5px solid #D8D8D8'}}>
+          <div style={{fontSize:13,color:'var(--color-text-primary)',marginBottom:4,textAlign:'center'}}>임무 이름을 등록하세요.</div>
+          <div style={{fontSize:11,color:'var(--color-text-tertiary)',textAlign:'center',marginBottom:16}}>어떤 마법사의 특기가 될지는 랜덤으로 정해집니다.</div>
+          <input value={customName} onChange={e=>setCustomName(e.target.value)}
+            onKeyDown={e=>{if(e.key==='Enter'&&customName.trim())confirmCustomTask();}}
+            autoFocus placeholder="임무 이름"
+            style={{width:'100%',padding:'8px 12px',borderRadius:8,border:'0.5px solid #D0D0D0',fontSize:13,outline:'none',marginBottom:12,boxSizing:'border-box',fontFamily:'inherit',color:'var(--color-text-primary)'}}/>
+          <div style={{display:'flex',gap:8}}>
+            <button onClick={()=>setPhase('idle')} style={{flex:1,padding:'9px 0',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-secondary)'}}>취소</button>
+            <button onClick={confirmCustomTask} disabled={!customName.trim()}
+              style={{flex:1,padding:'9px 0',borderRadius:8,border:'none',background:customName.trim()?'var(--color-primary)':'rgba(0,0,0,0.07)',color:customName.trim()?'white':'rgba(0,0,0,0.3)',fontSize:13,fontWeight:500,cursor:customName.trim()?'pointer':'not-allowed'}}>
+              추가 (100닢)
+            </button>
+          </div>
+        </div>
+      )}
     </div>
-  );
+    {forfeitConfirm&&(
+      <Overlay>
+        <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'86%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+          <div style={{fontSize:13,fontWeight:500,color:'var(--color-text-primary)',textAlign:'center',marginBottom:8}}>포기 사유서를 구매할까요?</div>
+          <div style={{fontSize:11,color:'var(--color-text-tertiary)',textAlign:'center',marginBottom:20,lineHeight:1.7}}>구매한 사유서는 이번 주 일요일까지만 사용 가능합니다.</div>
+          <div style={{display:'flex',gap:8}}>
+            <button onClick={()=>setForfeitConfirm(false)} style={{flex:1,padding:'9px 0',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-secondary)'}}>취소</button>
+            <button onClick={()=>{buyForfeit();setForfeitConfirm(false);}} style={{flex:1,padding:'9px 0',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>구매</button>
+          </div>
+        </div>
+      </Overlay>
+    )}
+    {showFirstBonus&&(
+      <Overlay>
+        <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:280,width:'86%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
+          <div style={{fontSize:13,fontWeight:600,color:'var(--color-text-primary)',marginBottom:14,textAlign:'center'}}>최초 수집 보너스</div>
+          <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:2,marginBottom:6}}>
+            일일 수집 한도 1회 리셋<br/>
+            앞으로도 많은 이용 부탁드립니다.<br/>
+          </div>
+          <div style={{fontSize:11,color:'var(--color-text-tertiary)',textAlign:'right',marginBottom:20}}>by 의문의 서적경</div>
+          <button onClick={()=>{
+            setStoreDate(p=>{var u={...p,gacha:''};storeSet('app:storeDate',JSON.stringify(u));return u;});
+            setShowFirstBonus(false);
+          }} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>확인</button>
+        </div>
+      </Overlay>
+    )}
+  </>);
 }
 
 // ── 기록 페이지 ───────────────────────────────────────────────────────────────
@@ -1031,7 +1291,7 @@ function RecordPage({logs,wizards,onMarkRead,onTestFinalize}){
 function BottomNav({page,setPage}){
   return(
     <div style={{position:'fixed',bottom:0,left:0,right:0,height:54,background:'white',borderTop:'0.5px solid #DCDCDC',display:'flex',zIndex:200}}>
-      {[{id:'mission',label:'임무'},{id:'collect',label:'수집'},{id:'record',label:'기록'}].map(tab=>{
+      {[{id:'mission',label:'임무'},{id:'store',label:'상점'},{id:'record',label:'기록'}].map(tab=>{
         var active=page===tab.id;
         return<button key={tab.id} onClick={()=>setPage(tab.id)} style={{flex:1,border:'none',borderTop:active?'2px solid var(--color-primary)':'2px solid transparent',background:'transparent',fontSize:13,cursor:'pointer',color:active?'var(--color-primary)':'rgba(0,0,0,0.38)',fontWeight:active?500:400,transition:'color 0.2s'}}>{tab.label}</button>;
       })}
@@ -1065,19 +1325,22 @@ function AppInner({onForceReset}){
   var[lvUpEvent,setLvUpEvent]=useState(null);
   var[logs,setLogs]=useState({});
   var[playerName,setPlayerName]=useState('');
-  var tasks=FB_TASKS;
   var[showInstallBanner,setShowInstallBanner]=useState(false);
   var[showMahwaLimit,setShowMahwaLimit]=useState(false);
   var[clubFilter,setClubFilter]=useState(null);
   var[newClubQueue,setNewClubQueue]=useState([]);
   var[favTasks,setFavTasks]=useState([]);
   var[mahwaLog,setMahwaLog]=useState([]);
-  var[betaModal,setBetaModal]=useState(null);
-  var[betaGWiz,setBetaGWiz]=useState(null);
+  var[betaModal,setBetaModal]=useState(null);  var[betaGWiz,setBetaGWiz]=useState(null);
   var[betaIsNew,setBetaIsNew]=useState(false);
   var[betaFull,setBetaFull]=useState('');
   var[betaTyped,setBetaTyped]=useState('');
+  var[storeDate,setStoreDate]=useState({gacha:'',forfeitWeekKey:'',forfeitWeekCount:0});
+  var[inventory,setInventory]=useState({forfeitTickets:0});
+  var[customTasks,setCustomTasks]=useState([]);
+  var tasks=[...customTasks,...FB_TASKS];
   var currentDayRef = useRef(gameDay());
+
 
   // 설치 배너 및 초기 체크
   useEffect(()=>{
@@ -1155,6 +1418,30 @@ function AppInner({onForceReset}){
       if(vals[11]!==null){try{setClubFilter(JSON.parse(vals[11]));}catch(e){}}
       if(vals[12]!==null){try{setFavTasks(JSON.parse(vals[12]));}catch(e){}}
       if(vals[13]!==null){try{setMahwaLog(JSON.parse(vals[13]));}catch(e){}}
+      // storeDate 로드 (gachaDate 마이그레이션 포함)
+      var oldGachaDate=vals[5]||'';
+      if(vals[15]!==null){
+        try{
+          var sd=JSON.parse(vals[15]);
+          if(!sd.gacha&&oldGachaDate===day)sd={...sd,gacha:day};
+          if(sd.forfeit&&!sd.forfeitWeekKey){sd={...sd,forfeitWeekKey:weekKey(),forfeitWeekCount:1};delete sd.forfeit;}
+          if(!sd.forfeitWeekKey)sd={...sd,forfeitWeekKey:'',forfeitWeekCount:0};
+          setStoreDate(sd);
+        }catch(e){}
+      }else if(oldGachaDate===day){
+        setStoreDate({gacha:day,forfeitWeekKey:'',forfeitWeekCount:0});
+      }
+      if(vals[16]!==null){
+  try{
+    var inv=JSON.parse(vals[16]);
+    var sd2=vals[15]?JSON.parse(vals[15]):{};
+    if(sd2.forfeitWeekKey&&sd2.forfeitWeekKey!==weekKey()){
+      inv={...inv,forfeitTickets:0};
+    }
+    setInventory(inv);
+  }catch(e){}
+}
+      if(vals[17]!==null){try{setCustomTasks(JSON.parse(vals[17]));}catch(e){}}
       var betaDone=localStorage.getItem('app:betaReward2026a');
       var firstGacha=localStorage.getItem('app:firstGachaDone');
       var tod=gameDay();
@@ -1177,6 +1464,9 @@ function AppInner({onForceReset}){
   useEffect(()=>{if(!userLoaded||clubFilter===null)return;storeSet('app:clubFilter',JSON.stringify(clubFilter));},[clubFilter,userLoaded]);
   useEffect(()=>{if(!userLoaded)return;storeSet('app:favTasks',JSON.stringify(favTasks));},[favTasks,userLoaded]);
   useEffect(()=>{if(!userLoaded)return;storeSet('app:mahwaLog',JSON.stringify(mahwaLog));},[mahwaLog,userLoaded]);
+  useEffect(()=>{if(!userLoaded)return;storeSet('app:storeDate',JSON.stringify(storeDate));},[storeDate,userLoaded]);
+  useEffect(()=>{if(!userLoaded)return;storeSet('app:inventory',JSON.stringify(inventory));},[inventory,userLoaded]);
+  useEffect(()=>{if(!userLoaded)return;storeSet('app:customTasks',JSON.stringify(customTasks));},[customTasks,userLoaded]);
 
   // 신규 분과회 감지
   useEffect(()=>{
@@ -1289,6 +1579,13 @@ if(to>=LV_REQ[curLv]&&curLv<maxLv){
       applyAff(s2.wizardId,20,'down');
       setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'forfeited',dialogue:getLine(s2.wizardId,'TASK_FAILURE')}:sl));
       addLogEntry({taskId:s2.taskId,taskName:task2?task2.name:'?',wizardId:s2.wizardId,wizardName:wiz2?wiz2.name:'?',delta:20,dir:'down',source:'task'});
+    }else if(patch==='forfeit_ticket'){
+      var s3=slots[idx];
+      var wiz3=wizards.find(w=>w.id===s3.wizardId);
+      var task3=tasks.find(t=>t.id===s3.taskId);
+      // 인연 하락 없음, 기록에도 남기지 않음
+      setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'forfeited',dialogue:getLine(s3.wizardId,'TASK_FAILURE')}:sl));
+      setInventory(p=>{var u={...p,forfeitTickets:Math.max(0,(p.forfeitTickets||0)-1)};storeSet('app:inventory',JSON.stringify(u));return u;});
     }else if(patch==='activate'){
       setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'active',editing:false,startedAt:Date.now()}:sl));
     }else{
@@ -1386,6 +1683,7 @@ if(to>=LV_REQ[curLv]&&curLv<maxLv){
     setLevel(Object.fromEntries(_wizardDefs.map(w=>[w.id,1])));
     setLvTransitions(Object.fromEntries(_wizardDefs.map(w=>[w.id,null])));
     setLvUpEvent(null);setFirstRunDone(false);setLogs({});setPlayerName('');setClubFilter(null);setFavTasks([]);setMahwaLog([]);
+    setStoreDate({gacha:'',forfeitWeekKey:'',forfeitWeekCount:0});setInventory({forfeitTickets:0});setCustomTasks([]);
     localStorage.removeItem('app:primaryColor');
     applyPrimaryColor('#B8922A');
   }
@@ -1410,8 +1708,8 @@ var cf={clubs:clubs||[],knownClubs:allKnown,changedAt:new Date().toISOString().s
       {/* 설정 버튼 (A) */}
       <button onClick={()=>setShowSettings(true)} style={{position:'fixed',top:14,right:14,width:28,height:28,borderRadius:'50%',border:'0.5px solid rgba(0,0,0,0.15)',background:'rgba(255,255,255,0.9)',fontSize:11,fontWeight:600,color:'rgba(0,0,0,0.4)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:150,boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>A</button>
 
-      {page==='mission'&&<MissionPage wizards={wizards} tasks={tasks} mahwa={mahwa} doneCount={doneCount} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} lvUpEvent={lvUpEvent} setLvUpEvent={setLvUpEvent} onUpd={onUpd} onConfirmMission={onConfirmMission} onReset={onReset} onSlotReset={onSlotReset} slots={slots} confirmed={confirmed} favTasks={favTasks}/>}
-      {page==='collect'&&<CollectPage wizards={wizards} setWizards={setWizards} mahwa={mahwa} setMahwa={setMahwa} affinity={affinity} level={level} applyAff={applyAff} ownedCount={ownedCount} gachaDate={gachaDate} setGachaDate={setGachaDate} addLogEntry={addLogEntry} clubFilter={clubFilter} addMahwaLog={addMahwaLog}/>}
+      {page==='mission'&&<MissionPage wizards={wizards} tasks={tasks} mahwa={mahwa} doneCount={doneCount} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} lvUpEvent={lvUpEvent} setLvUpEvent={setLvUpEvent} onUpd={onUpd} onConfirmMission={onConfirmMission} onReset={onReset} onSlotReset={onSlotReset} slots={slots} confirmed={confirmed} favTasks={favTasks} inventory={inventory} logs={logs}/>}
+      {page==='store'&&<StorePage wizards={wizards} setWizards={setWizards} mahwa={mahwa} setMahwa={setMahwa} affinity={affinity} level={level} applyAff={applyAff} ownedCount={ownedCount} storeDate={storeDate} setStoreDate={setStoreDate} addLogEntry={addLogEntry} clubFilter={clubFilter} addMahwaLog={addMahwaLog} inventory={inventory} setInventory={setInventory} customTasks={customTasks} setCustomTasks={setCustomTasks}/>}
       {page==='record'&&<RecordPage logs={logs} wizards={wizards} onMarkRead={onMarkRead} onTestFinalize={onTestFinalize}/>}
       {showInstallBanner&&(
   <div style={{position:'fixed',bottom:62,left:12,right:12,background:'white',borderRadius:12,padding:'14px 16px',boxShadow:'0 4px 20px rgba(0,0,0,0.12)',border:'0.5px solid #D8D8D8',zIndex:190,display:'flex',alignItems:'center',gap:12}}>
@@ -1444,6 +1742,8 @@ var cf={clubs:clubs||[],knownClubs:allKnown,changedAt:new Date().toISOString().s
         favTasks={favTasks}
         onChangeFavTasks={setFavTasks}
         allTasks={tasks}
+        customTasks={customTasks}
+        onDeleteCustomTask={id=>{setCustomTasks(p=>{var u=p.filter(t=>t.id!==id);storeSet('app:customTasks',JSON.stringify(u));return u;});}}
       />}
       {lvUpEvent&&(
         <Overlay>
