@@ -58,7 +58,7 @@ const { useState, useEffect, useRef } = React;
 
 // ── 상수 ──────────────────────────────────────────────────────────────────────
 const LV_REQ = [0, 100, 200, 300, 400];
-const STORAGE_KEYS = ['app:mahwa','app:wizards','app:affinity','app:level','app:doneCount','app:gachaDate','app:slotSession','app:firstRunDone','app:logs','app:playerName','app:firstGachaDone','app:clubFilter','app:favTasks','app:mahwaLog','app:betaReward2026a','app:storeDate','app:inventory','app:customTasks'];
+const STORAGE_KEYS = ['app:mahwa','app:wizards','app:affinity','app:level','app:doneCount','app:gachaDate','app:slotSession','app:firstRunDone','app:logs','app:playerName','app:firstGachaDone','app:clubFilter','app:favTasks','app:mahwaLog','app:betaReward2026a','app:storeDate','app:inventory','app:customTasks','app:reportInfo'];
 const TASK_TAG_ORDER = ['근육','가정','회복','작업','지성','정리','생업','생존'];
 
 // 시스템 슬롯 텍스트 상수
@@ -162,13 +162,13 @@ const FB_DLG = {
   W14:{MEET:["후지와라 사요, 원탁의 서공입니다. 상의가 필요하면 찾아 주셔요."],MEET_AGAIN:["뭔가요? 그 표정은. 할 말이 있어서 찾아왔습니다. 자리에 앉으세요."],TASK_MATCH:["이 사요에게 맡겨 주세요. "],TASK_UNMATCH:["어쩔 수 없으니 이 사요가 나서야겠군요."],TASK_SUCCESS:["호들갑 떨 일은 아닙니다. 하지만 수고하였어요."],TASK_FAILURE:["잠깐, 진심인가요?!"]},
   W15:{MEET:["『잠들지 않는 자』, 세르비 랜더입니다. 이건 제 명함이고요, 앞으로 잘 부탁해요."],MEET_AGAIN:["저번에도 보지 않았나요? 신기한 우연이네요~"],TASK_MATCH:["그런 일이라면 어렵지 않죠~"],TASK_UNMATCH:["정말 인력이 부족한가 보네요. 네-."],TASK_SUCCESS:["와아~ 잘 끝났네요!"],TASK_FAILURE:["…저쪽 다른분들에게 들키지만 말죠. -아, 늦었나? "],LV_UP:{1:["오늘 즐거웠어요, 다음에 식사 한번 같이 해요!"],2:["자- 휴식도 중요하다구요? 유명하다는 베이커리에서 사 왔거든요- 같이 먹어요. 차는 어때요?"],3:["후…… 저… 고민이 있는데 …들어주실 수 있나요? 여기 이것과.... 이것..중에서 어떤 것이 더 예쁠까요?"],4:["당신은 저를 믿어주는군요. 정말 기뻐요. 그 믿음에 보답할 수 있으면 좋겠네요."]}},
   W16:{MEET:["이런, 골치 아픈 녀석이 하나 더 늘었군."],MEET_AGAIN:["왜? 할 말 있어?"],TASK_MATCH:["금방 다녀올게~"],TASK_UNMATCH:["호오. 나한테 일을 시키다니, 배짱이 괜찮네."],TASK_SUCCESS:["잘했어."],TASK_FAILURE:["각오는 됐겠지?"]},
-  W17:{MEET:["……이름? 알아서 뭐하게. …재이라고 부르든가."],MEET_AGAIN:["불렀으면 말을 해. "],TASK_MATCH:["하아…… 후딱 해치우면 되잖아."],TASK_UNMATCH:["나?"],TASK_SUCCESS:["…….(재이는 이미 사라지고 없다.)"],TASK_FAILURE:["야."]},
+  W17:{MEET:["……이름? 알아서 뭐하게. …재이라고 부르든가."],MEET_AGAIN:["불렀으면 말을 해. "],TASK_MATCH:["…… 하면 되잖아."],TASK_UNMATCH:["나?"],TASK_SUCCESS:["…….(재이는 이미 사라지고 없다.)"],TASK_FAILURE:["야."]},
   W18:{MEET:["내 이름은 타토! 도깨비야! 『끝까지 혼신을』, 내 마법명이자 좌우명이라구~!"],MEET_AGAIN:["오옷! 또 만났잖아! 뒤에 숨긴 거 뭐야, 응?"],TASK_MATCH:["좋았어~ 내 실력을 보라구!"],TASK_UNMATCH:["어? 임무? 좀만 이따 하면 안 돼?"],TASK_SUCCESS:["야호! 이겼다! 내가 이긴 거야, 그치?!"],TASK_FAILURE:["뭐야! 비겁해! 중간에 그만두는 게 어딨어?!"]},
   W19:{MEET:["앗, 새로운 얼굴이네? 나는 아야메. 잘 모르는 게 있으면 언제든 불러…… 아앗, 거기! 그쪽으로 가면 안 돼! 미안, 잠깐 다녀올게!"],MEET_AGAIN:["어? 혹시 길을 헤매고 있었어? 이렇게 만나서 다행이네~ 데려다 줄게!"],TASK_MATCH:["중요한 일이네! 『천상 우화』가 도와줄게!"],TASK_UNMATCH:["나 정도면 우수한 실력의 마법사거든? 어떤 일에든 뒤쳐지지 않는다구!"],TASK_SUCCESS:["와~! 우리가 해냈어!"],TASK_FAILURE:["잠깐… 포기하기엔 이르지 않았어?! "]},
   W20:{MEET:["『만물의 정원』 로사 아르고스다. 무슨 일이지?"],MEET_AGAIN:["…왜 여기 있지?"],TASK_MATCH:["과연, 어렵지 않은 일이다."],TASK_UNMATCH:["…알겠다."],TASK_SUCCESS:["끝났군. 이만 돌아가 보지."],TASK_FAILURE:["…그 정도였군."],LV_UP:{1:["…너 정도면, 괜찮은 축이다."],2:["태어난 날이 언제지? 기억해 두지."],3:["좋은 환경으로 만들어 가고 있군."],4:["자연을 보고 있으면 마음에 안정이 찾아오지. 조금 쉬었다 가도 괜찮다."]}},
   W21:{MEET:["안녕? 자기소개부터 할까요? 『그대를 위해 기꺼이』, 핀 오데트가 여기에 왔답니다. "],MEET_AGAIN:["아하하, 웃긴 표정~ 내가 있을 줄은 몰랐나 봐?"],TASK_MATCH:["그러엄~ 이 핀이 가주실까나♡"],TASK_UNMATCH:["아앙~ 핀 바쁜데에~"],TASK_SUCCESS:["끝냈어요~ 이제 상으로는 뭘 줄 건가요~?"],TASK_FAILURE:["으흠~ 귀찮은 건 나중에 하고 우선 케이크라도 먹으러 갈까~?"]},
   W22:{MEET:["아방궁의 외전, 『물의 빈 자리』입니다. 지금은 아야메 님의 분과회에 신세를 지고 있네요. 타르라고 불러 주세요."],MEET_AGAIN:["또 찾아와 주셨군요. 기뻐요. 혹시 제가 실망을 드리지는 않을까요?"],TASK_MATCH:["당신이 주시는 일은 꽤 즐겁답니다."],TASK_UNMATCH:["믿어주셔서 기뻐요. 반드시 해낼게요."],TASK_SUCCESS:["조금이라도 도움이 되어드렸다면 기쁠 텐데요."],TASK_FAILURE:["휴식은 중요하니까요. 남은 일은 제가 마저 할게요."]},
-  W23:{MEET:["고요라고 불러 줘. 못 보던 얼굴이네."],MEET_AGAIN:["불렀다고 생각했는데, 아니었나?"],TASK_MATCH:["그래서 불렀구나?"],TASK_UNMATCH:["흠, 이 일에 날 찾은 거야?"],TASK_SUCCESS:["잘 마무리한 것 같네. 수고했어."],TASK_FAILURE:["그런 선택을 한 이유도 있겠지."],LV_UP:{1:[" 맞아, 『구름이 검어 비가 내린다』, 그것도 내 이름이야. 덕분인가 비가 언제 내릴지는 꽤 맞출 수 있네."],2:["내가 불편한가?"],3:["그냥 하는 건 조금 심심한가… 다음에는 먼저 끝내기 내기라도 해 볼까?"],4:["지나고 보면 다 아무것도 아니라고 하면서도, 또 하게 된단 말이지...음. 아무것도 아니야."]}},
+  W23:{MEET:["고요라고 불러 줘. 못 보던 얼굴이네."],MEET_AGAIN:["불렀다고 생각했는데, 아니었나?","시공간에 퍼진 수많은 세계에서 '또 다른 나'가 있는 건 이상한 게 아냐. 그렇지만 직접 만나는 건 흔한 일은 아니지. 조금 기분이 이상할지도."],TASK_MATCH:["그래서 불렀구나?"],TASK_UNMATCH:["흠, 이 일에 날 찾은 거야?"],TASK_SUCCESS:["잘 마무리한 것 같네. 수고했어."],TASK_FAILURE:["그런 선택을 한 이유도 있겠지."],LV_UP:{1:[" 맞아, 『구름이 검어 비가 내린다』, 그것도 내 이름이야. 덕분인가 비가 언제 내릴지는 꽤 맞출 수 있네."],2:["내가 불편한가?"],3:["그냥 하는 건 조금 심심한가… 다음에는 먼저 끝내기 내기라도 해 볼까?"],4:["지나고 보면 다 아무것도 아니라고 하면서도, 또 하게 된단 말이지...음. 아무것도 아니야."]}},
   W24:{MEET:["『강운의 파편』, 내 이름이야. 오늘의 운세를 점쳐 달라고? 으음~ 어디 보자~"],MEET_AGAIN:["오~ 럭키. 마침 찾고 있었어. 신경 쓰이는 운세가 나와서 말이야. 오늘 네가 기다리던 행운을 놓칠지도 모른다는…… 어어? 표정이 왜 그래? "],TASK_MATCH:["음~ 그럼 금방 하고 와 볼게."],TASK_UNMATCH:["글쎄~ 일단 한번 해 보지 뭐."],TASK_SUCCESS:["자, 임무 완수! 걱정할 필요 없었지?"],TASK_FAILURE:["아~ 너였구나? 난 또, 고요한테 들킨 줄 알았네. 하하."],LV_UP:{1:["으응? 계속 거기 있던 거야?"],2:["뭐 하고 있었냐고? 그냥… 너 끝나면 같이 갈까 하고 기다렸지. …왜 안 도와줬냐고? 음……"],3:["내 이런 모습을 보면 우리 보네비 여사가 그만 날 알아보지 못할지도 몰라. 음… 원래도 그런가? 뭐, 농담이야."],4:["아, 힘들었다… 이럴 땐 고요가 변신해 주면 좋을 텐데~ 아, 우리 집에 있는 강아지 친구야. 엄청 복실하거든~"]}},
   W25:{MEET:["준이에요……. ……. ……저기, 다른 사람들 못 보셨어요?"],MEET_AGAIN:["미, 미안해요……."],TASK_MATCH:["해, 해 볼게요……."],TASK_UNMATCH:["어어…… 이건 그러니까……. 아, 아니, 해 볼게요!"],TASK_SUCCESS:["내가 해냈어!"],TASK_FAILURE:["어? 왜? 어라? 어디가 잘못됐지? 자, 잠깐만, 지금 확인해 볼 테니까!"],LV_UP:{1:["준 허니딜… 『부서진 것의 수복자』예요. 음, 또… 응? 편하게 말해도 돼? ……정말?"],2:["있잖아, 오늘은 에이미가 내가 사 뒀던 아이스크림을 훔쳐 먹었어. 그거 데인티가 사줬던 건데! 근데 고요가 에이미를 혼내줬어. 바보 같아! 에이미는 몇 살인 걸까? 근데 사실은 데인티가 그걸 왜 사줬냐면……."],3:["가끔─ 아주 가끔 뭔가가 잊어버린 것 같은 기분이 들어. 다들 그런다고 배웠어. …다들 그래도 슬프지 말았으면 좋겠따."],4:["사실은 임무하는 거… 좋아해. 다들 함께 있어 주고, 격려해 주니까… 너도 그렇고…. …헤헤, 비밀이야."]}},
   W26:{MEET:["너 어디서 본 거 같은데! 아니라고?!"],MEET_AGAIN:["안녕! 근데 우리 전에 만났던가?"],TASK_MATCH:["당장 해치워 주지!"],TASK_UNMATCH:["흠. 해 봐야지."],TASK_SUCCESS:["나 이제 쉬러 가도 돼?"],TASK_FAILURE:["미안, 진짜 진짜 급한 일이 있어서!"],LV_UP:{1:["어디 놀러 갈래?"],2:["너 웃는 게 귀엽네~"],3:["오늘 스타일 좋은데? 뭐? 잠옷이야?!"],4:["시간 내 줄래? 같이 저녁 먹고 싶은데…"]}},
@@ -180,8 +180,8 @@ const FB_DLG = {
   W32:{MEET:["안녕하세요, 로웬 코브예요. 잘 부탁해요- 자주 볼 거라면 좀 더 편하게 말하는 게 좋을까?"],MEET_AGAIN:["아, 누굴 찾고 있었…? 괜찮아…?"],TASK_MATCH:["이거라면 나도 잘할 수 있을 것 같네!"],TASK_UNMATCH:["아하하…… 같이 힘내보자."],TASK_SUCCESS:["굉장하구나! 이번에도 수고했어!"],TASK_FAILURE:["으으음 이건 좀 무리였나 봐- 거…걱정마, 다음엔 할 수 있을 거야. .… …응."],LV_UP:{1:["한동안 여러 일로 바쁘긴 했지만…… 일단은 『파랑새 연주가』 로 불리기도 하고. 바이올린 연주를 하고 있어. 관심 있으면 시간 될 때 들으러 와~"],2:["너무 귀엽지 않니……! 우리 집 막내 와플이야. 껴안고 있으면 정말 행복해져."],3:["우…… 힘들어… 어려워… 할 수 있을까? 할 수 있겠지? 응 버티다 보면 되긴 하더라…… 네가 있어서 다행이야."],4:["이곳에는 정말 대단하고 상상도 못한 존재들이 많잖아? 모두가 변하는데 계속 아이로 남아 있는 것 같은 기분이 이상할 때도 많지만… 그만큼 새로운 것들을 배우고 굉장한 사람들과 인연을 맺을 수 있다는 것이기도 하니까… 지금처럼 말이야~ 행운이라고 생각하고 있어."]}},
   W33:{MEET:["『Pathfinder』. 오도르 위버야. 그래서? 뭘 하면 되는데?"],MEET_AGAIN:["뭐야, 왜 그런 표정이야? 됐어. 말 안 해도 알아. 「중복 가챠」인가 대충 그런 거잖아? 아니, 누군 오고 싶어서 온 줄 알아?!"],TASK_MATCH:["하, 내가 할 테니까 거기서 잘 보기나 해."],TASK_UNMATCH:["뭐하고 있어, 빨리 해치워 버리라고!"],TASK_SUCCESS:["쉽네, 쉬워."],TASK_FAILURE:["리셋! 리셋해! 뭐야, 그런 기능도 없어?!"]},
   W34:{MEET:["안녕하세요? 저는 밀렌, 『이름 없는 이의 메아리 ~écho~』랍니다. 제가 당신께 해드릴 일이 있을까요?"],MEET_AGAIN:["저를 부르셨군요? 제가 필요하셨나요? 두 번이나 부를 정도로 필요하셨던 거네요? 아아…! 정말, 정말 기뻐요!"],TASK_MATCH:["그럼요, 완벽하게 봉사해 보이겠어요!"],TASK_UNMATCH:["이것은 혹시 시험일까요? 제가 누구보다 헌신적인 자동인형이란 것을 보여드려야겠군요!"],TASK_SUCCESS:["자……! (밀렌은 기대에 찬 눈으로 당신을 본다.)"],TASK_FAILURE:["네……? 포기……? 어째서죠……? 아뇨, 당신은 할 수 있어요. 다시 생각해 보세요. 제게 당신을 서포트할 기회를 다시 한번만…!"],LV_UP:{1:["혹시 말이죠, 당신은 제가 계속 곁에서 돌봐드려야 하는 분일까요?"],2:["참… 주인님만큼이나 제가 필요하신 분이군요. 정말 다행이죠? 제가 이렇게 함께하니까요!"],3:["요즘은 제 도움이 필요하지 않으신가요? 좀 더 자주 부르셔도 좋아요."],4:["이게 필요하셨죠? 미리 준비해 놨답니다- 그것도요! 네, 물론이죠. 저것들도요! 아, 당신과 함께하니 정말… 하루하루가 빛나고 가슴이 벅차오른답니다! 우리 또 뭘 할까요? 네? 호감도가 만렙이요? 그게 무슨 소리시죠? 설마 이제 다른 사람과 함께 하시겠다는건-……."]}},
-  W35:{MEET:["산타 코라의 사제-라는 것을 못 들어본 표정이니. …그냥 고요라고 불러주면 되겠네."],MEET_AGAIN:["혹시 내 동료를 못 봤나?"],TASK_MATCH:["도움을 줄 수 있을 것 같군."],TASK_UNMATCH:["내가…? 좋아, 해 보지."],TASK_SUCCESS:["수고했어."],TASK_FAILURE:["억지로 할 필요는 없겠지."],LV_UP:{1:["열심히 하는구나. 너무 무리하지는 말고."],2:["TV라니 마법- 아니 과학은 굉장한 것 같아. 냉장고도, 전자레인지도 말이야."],3:["어때- 이 옷은? 어울리는 것 같은가? 익숙하지 않아서 잘 모르겠으니 솔직하게 말해 주면 좋겠어."],4:["원기가 많이 부족해 보이는 것 같으니… 한번만이네. (한숨을 쉬고 나면 어느 순간 고요가 있던 자리에 뿔이 달린 개 한 마리가 앉아 당신을 바라본다.)"]}},
-  W36:{MEET:["나는~ 데인티. 그냥, 보시다시피 평범한 엘프야. 흐음, 너희는 '평범한 인간'은 아닌 것 같네."],MEET_AGAIN:["이쪽으로 온 사람? 전혀 모르겠는데. 급한 용건이라도 있어?"],TASK_MATCH:["쉽게 할 수 있을 것 같은데?"],TASK_UNMATCH:["음~ 어떻게든 해 볼게."],TASK_SUCCESS:["하하. 이 정도면 칭찬받을 수 있으려나?"],TASK_FAILURE:["어디서든 묘하게 취급이 험한 기분이 든단 말이지, 어쩐지…. 응? 아니, 아무것도 아냐."],LV_UP:{1:["임무지만 꽤 재밌었어. 또 보자고~"],2:["너무 자주 만나는 걸? 반갑다는 말이야~"],3:["어딜 가도 너랑 마주칠 것 같은 느낌인걸?"],4:["오늘은 별이 밝네. ...잘 모르겠어? 봐봐- 저건 도토리 나무 별, 저 별을 중심으로 이쪽은 예언의 말 자리, 저 별은 검은새전당의 제자, 그리고 저 별과 별자리를 이었을 때 중심에서 빛나는 것은-..."]}},
+  W35:{MEET:["산타 코라의 사제-라는 것을 못 들어본 표정이니. …그냥 고요라고 불러주면 되겠네."],MEET_AGAIN:["혹시 내 동료를 못 봤나?","너는 『구름이 검어 비가 내린다』를 알고 있는 건가?"],TASK_MATCH:["도움을 줄 수 있을 것 같군."],TASK_UNMATCH:["내가…? 좋아, 해 보지."],TASK_SUCCESS:["수고했어."],TASK_FAILURE:["억지로 할 필요는 없겠지."],LV_UP:{1:["열심히 하는구나. 너무 무리하지는 말고."],2:["TV라니 마법- 아니 과학은 굉장한 것 같아. 냉장고도, 전자레인지도 말이야."],3:["어때- 이 옷은? 어울리는 것 같은가? 익숙하지 않아서 잘 모르겠으니 솔직하게 말해 주면 좋겠어."],4:["원기가 많이 부족해 보이는 것 같으니… 한번만이네. (한숨을 쉬고 나면 어느 순간 고요가 있던 자리에 뿔이 달린 개 한 마리가 앉아 당신을 바라본다.)"]}},
+  W36:{MEET:["나는~ 데인티. 뭐 그냥, 보시다시피 평범한 엘프야. 흐음, 너희는 '평범한 인간'은 아닌 것 같네."],MEET_AGAIN:["이쪽으로 온 사람? 전혀 모르겠는데. 급한 용건이라도 있어?"],TASK_MATCH:["쉽게 할 수 있을 것 같은데?"],TASK_UNMATCH:["음~ 어떻게든 해 볼게."],TASK_SUCCESS:["하하. 이 정도면 칭찬받을 수 있으려나?"],TASK_FAILURE:["어디서든 묘하게 취급이 험한 기분이 든단 말이지, 어쩐지…. 응? 아니, 아무것도 아냐."],LV_UP:{1:["임무지만 꽤 재밌었어. 또 보자고~"],2:["너무 자주 만나는 걸? 반갑다는 말이야~"],3:["어딜 가도 너랑 마주칠 것 같은 느낌인걸?"],4:["오늘은 별이 밝네. ...잘 모르겠어? 봐봐- 저건 도토리 나무 별, 저 별을 중심으로 이쪽은 예언의 말 자리, 저 별은 검은새전당의 제자, 그리고 저 별과 별자리를 이었을 때 중심에서 빛나는 것은-..."]}},
   W37:{MEET:["굉장히 기다리고 있던 것 같은 기분인데, 너 혹시 수배범이던가?"],MEET_AGAIN:["찾고 있다고 들어서 왔다고. 나로는 안 돼?"],TASK_MATCH:["빨리 끝낼 수 있겠네! 야, 절대 대충 한 거 아니다?"],TASK_UNMATCH:["흠. 얼마나 어려운 일이야?"],TASK_SUCCESS:["하하, 이거 완전 누워서 노움 재우기네! 아 맞다, 준은 어디 있지?!"],TASK_FAILURE:["으악! 까먹었다!!! 내가 쫓던 녀석이 지나가는 바람에…!"],LV_UP:{1:["뭐야? 엘프마냥 풀떼기랑 버섯 구이 한 줌만 먹었잖아? 자, 얼른 고기도 먹고! 다 먹었으면 과일도 먹고...! (에2미는 '더는 먹을 수 없다'는 말을 이해하지 못하는 것 같다.)"],2:["오, 너는 좀 신경 쓰이게 만드는 타입인 것 같네?"],3:["(익숙한 흉기가 날아 와 아슬아슬한 곳에 박힌다. 돌아보니 에이미가 머리 위로 양 팔을… 내 머리를 반으로 쪼개겠다는 뜻인가?)"],4:["나 계속 네 옆에 있어도 돼?"]}},
   W38:{MEET:["저기, 여기는 어디에요? 저 사람들은 뭘 쓰는 거예요? 이곳의 마법은 어떤 수식을 쓰나요? 언어를 기반으로 작동하는 것 같은데 정말이에요? 그러면 혹시…… 아, 저, 저는 준이에요…….."],MEET_AGAIN:["이제 알겠어! 마소가 마법진 대신 매개체로 작용하는 거야. 그러니까 마법진이 없어도 마도서와 마소만으로 마법이 작동하는 거지! 하지만 그러면 수급할 수 있는 마소 양에 따라 마법의 기동 범위가 좌우되니까 상당히 불안정할 텐데 이곳 마법사들은 정말…… 아…… 미, 미안, 혹시 바쁜 일 중이었어?"],TASK_MATCH:["나! 내가 해 볼게! 자, 잘해낼 거야…!"],TASK_UNMATCH:["자, 잠깐만…… 이런 건 에이미가 잘할 것 같은데…….(두리번거리며 에이미를 찾는다)","으응? 고, 고요한테 물어보고 와도 돼…….?","데, 데인티보단 잘할 수 있을 거야……."],TASK_SUCCESS:["어때? 잘 된 것 같아? 응?"],TASK_FAILURE:["아, 안 돼……! 실수했다……!(거대한 폭발음이 들린다.)","나 혹시…… 여기선 도움이 안 되는 걸까……?"],LV_UP:{1:["언제까지 여기에 있을 수 있을까? 있는 동안 새로운 '마법'을 배우고 싶은데……. 여기는 다들 엄청나게 강하고 똑똑한 것 같아."],2:["고요랑- 다른 친구들은 잘 적응하고 있을까? 나한테는 잘 말해주지 않지만 내심 고생 중일지도 몰라…… 내가 익숙해져서 도와줄 수 있으면 좋을 텐데."],3:["있잖아, 다들 나한테 「요정」이냐는 말을 하는데, 내 생각에 「요정」은 노움과는 다른 것 같아. 이곳의 마법생물학적 분류에 따르면 「요정」의 특징은……. ……호, 혹시 재미 없어?"],4:["이곳에도 축제가 있다니 너무 기대 돼! 맥주도 마시겠지? 나, 예전에 드워프들이 만든 맥주를 먹어 본 적이 있어! 이곳의 맥주는 어떨까? 있잖아, 같이 가 줄 거지?"]}},
 };
@@ -393,15 +393,46 @@ function ForfeitModal({onForfeit,onForfeitTicket,onCancel,forfeitTickets}){
 
 // ── 마법사 선택 모달 ──────────────────────────────────────────────────────────
 function WizardPickerModal({wizards,disabledIds,affinity,level,onSelect,onClose}){
+  var[sortMode,setSortMode]=useState(0); // 0=기본(운명↑), 1=분과회, 2=이름
+  var[sortMsg,setSortMsg]=useState('');
+  var sortLabels=['','분과회 순 정렬','이름 순 정렬'];
+
+  function handleSortToggle(){
+    var next=(sortMode+1)%3;
+    setSortMode(next);
+    setSortMsg(next===0?'서먹한 순 정렬':sortLabels[next]);
+    setTimeout(()=>setSortMsg(''),1000);
+  }
+
+  var sorted=[...wizards].sort((a,b)=>{
+    if(sortMode===0){
+      var la=level[a.id]||1,lb=level[b.id]||1;
+      if(la!==lb)return la-lb;
+      var aa=affinity[a.id]||0,ab=affinity[b.id]||0;
+      if(aa!==ab)return aa-ab;
+      return a.name.localeCompare(b.name,'ko');
+    }
+    if(sortMode===1){
+      var cc=a.club.localeCompare(b.club,'ko');
+      return cc!==0?cc:a.name.localeCompare(b.name,'ko');
+    }
+    return a.name.localeCompare(b.name,'ko');
+  });
+
   return(
     <Overlay>
       <div style={{background:'white',borderRadius:14,padding:'20px 18px',maxWidth:310,width:'92%',border:'0.5px solid #D8D8D8',boxShadow:'0 6px 28px rgba(0,0,0,0.10)',maxHeight:'78vh',overflowY:'auto'}}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
-          <span style={{fontSize:12,fontWeight:600,letterSpacing:'0.3px',color:'var(--color-text-secondary)'}}>마법사 선택</span>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <span style={{fontSize:12,fontWeight:600,letterSpacing:'0.3px',color:'var(--color-text-secondary)'}}>마법사 선택</span>
+            <button onClick={handleSortToggle} title="정렬 변경"
+              style={{width:20,height:20,borderRadius:'50%',border:'0.5px solid rgba(0,0,0,0.15)',background:'white',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'rgba(0,0,0,0.4)',flexShrink:0,padding:0}}>⇅</button>
+            {sortMsg&&<span style={{fontSize:10,color:'#3A6A28'}}>{sortMsg}</span>}
+          </div>
           <button onClick={onClose} style={{background:'none',border:'none',fontSize:15,cursor:'pointer',color:'rgba(0,0,0,0.3)',lineHeight:1,padding:'2px 4px'}}>✕</button>
         </div>
         <div style={{display:'flex',flexDirection:'column',gap:5}}>
-          {wizards.map(w=>{
+          {sorted.map(w=>{
             var dis=disabledIds.includes(w.id);
             var lv=level[w.id]||1;
             var aff=affinity[w.id]||0;
@@ -682,6 +713,98 @@ function SettingsPanel({onClose,onReset,onBackup,onRestore,clubFilter,onChangeCl
       </Overlay>
     )}
   </>);
+}
+
+// ── 제보 모달 ────────────────────────────────────────────────────────────────
+var REPORT_ENDPOINT='https://wizforeden.harmful00.workers.dev/';
+var REPORT_SITUATIONS=[
+  {key:'TASK_MATCH',label:'임무 배정(특기)'},
+  {key:'TASK_UNMATCH',label:'임무 배정'},
+  {key:'TASK_SUCCESS',label:'임무 성공'},
+  {key:'TASK_FAILURE',label:'임무 포기'},
+  {key:'MEET_AGAIN',label:'재회'},
+  {key:'JOURNALTEXT',label:'일상 기록'},
+  {key:'etc',label:'기타'}
+];
+function ReportModal({onClose,wizards,playerName,reportInfo,onReportSuccess,addMahwaLog,setMahwa,clubFilter}){
+  var[selWiz,setSelWiz]=useState('');
+  var[selSit,setSelSit]=useState('');
+  var[text,setText]=useState('');
+  var[status,setStatus]=useState('idle');
+  var today=gameDay();
+  var todayCount=reportInfo.date===today?(reportInfo.count||0):0;
+  var canReport=todayCount<3;
+  var mahwaReward=5;
+
+  // owned와 clubFilter에 해당하는 캐릭터 전체
+  var available=wizards.filter(w=>w.owned||!clubFilter||!clubFilter.clubs||clubFilter.clubs.length===0||clubFilter.clubs.includes(w.club))
+    .sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+
+  async function handleSubmit(){
+    if(!selWiz||!selSit||!text.trim())return;
+    setStatus('sending');
+    try{
+      var sitLabel=REPORT_SITUATIONS.find(s=>s.key===selSit)?.label||selSit;
+      var res=await fetch(REPORT_ENDPOINT,{
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({'닉네임':playerName||'(익명)','캐릭터':selWiz,'상황':sitLabel,'대사':text.trim(),'반영':false})
+});
+      if(!res.ok)throw new Error('fail');
+      if(canReport){
+        setMahwa(n=>{var nx=n+mahwaReward;addMahwaLog('report',+mahwaReward,nx,'대사 제보 보상');return nx;});
+        onReportSuccess(today,todayCount+1);
+      }
+      setStatus('done');
+    }catch(e){setStatus('error');}
+  }
+
+  var selStyle={width:'100%',padding:'8px 10px',borderRadius:8,border:'0.5px solid #D0D0D0',fontSize:12,outline:'none',fontFamily:'inherit',color:'var(--color-text-primary)',background:'white',marginBottom:10,boxSizing:'border-box'};
+
+  return(
+    <Overlay>
+      <div style={{background:'white',borderRadius:14,padding:'24px 20px',maxWidth:310,width:'92%',border:'0.5px solid #D8D8D8',boxShadow:'0 6px 28px rgba(0,0,0,0.10)'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+          <span style={{fontSize:13,fontWeight:500,color:'var(--color-text-secondary)'}}>마법사 데이터 제보</span>
+          <button onClick={onClose} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',color:'rgba(0,0,0,0.35)',lineHeight:1}}>✕</button>
+        </div>
+        {status==='done'?(
+          <div style={{textAlign:'center',padding:'16px 0'}}>
+            <div style={{fontSize:13,color:'var(--color-text-primary)',marginBottom:6,lineHeight:1.8}}>수집에 협조해 주셔서 감사합니다.</div>
+            {todayCount<=3&&<div style={{fontSize:11,color:'#3A6A28',marginBottom:16}}>마화 {mahwaReward}닢을 받았습니다. (오늘 {todayCount}/3회)</div>}
+            <button onClick={onClose} style={{padding:'8px 28px',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,cursor:'pointer'}}>확인</button>
+          </div>
+        ):status==='error'?(
+          <div style={{textAlign:'center',padding:'16px 0'}}>
+            <div style={{fontSize:13,color:'#8A3030',marginBottom:16}}>전송에 실패했습니다. 잠시 후 다시 시도해 주세요.</div>
+            <button onClick={()=>setStatus('idle')} style={{padding:'8px 28px',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,cursor:'pointer'}}>다시 시도</button>
+          </div>
+        ):(
+          <>
+            <div style={{fontSize:11,color:canReport?'var(--color-text-tertiary)':'#8A3030',marginBottom:12,textAlign:'right'}}>제보 시 마화 {mahwaReward}닢 지급<br/>오늘 {todayCount}/3회 제보</div>
+            <select value={selWiz} onChange={e=>setSelWiz(e.target.value)} style={selStyle}>
+              <option value=''>마법사 선택</option>
+              {available.map(w=><option key={w.id} value={w.name}>{w.name} ({w.club})</option>)}
+            </select>
+            <select value={selSit} onChange={e=>setSelSit(e.target.value)} style={selStyle}>
+              <option value=''>상황 선택</option>
+              {REPORT_SITUATIONS.map(s=><option key={s.key} value={s.key}>{s.label}</option>)}
+            </select>
+            <textarea value={text} onChange={e=>setText(e.target.value)} placeholder="대사를 입력하세요" rows={4}
+              style={{width:'100%',padding:'8px 10px',borderRadius:8,border:'0.5px solid #D0D0D0',fontSize:12,outline:'none',fontFamily:'inherit',color:'var(--color-text-primary)',resize:'vertical',marginBottom:14,boxSizing:'border-box'}}/>
+            <button onClick={(selWiz&&selSit&&text.trim()&&canReport&&status!=='sending')?handleSubmit:undefined}
+              disabled={!selWiz||!selSit||!text.trim()||!canReport||status==='sending'}
+              style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',
+                background:(selWiz&&selSit&&text.trim()&&canReport)?'var(--color-primary)':'rgba(0,0,0,0.07)',
+                color:(selWiz&&selSit&&text.trim()&&canReport)?'white':'rgba(0,0,0,0.3)',
+                fontSize:13,fontWeight:500,cursor:(selWiz&&selSit&&text.trim()&&canReport)?'pointer':'not-allowed'}}>
+              {status==='sending'?'전송 중…':canReport?'제보하기':'오늘 제보 한도 도달'}
+            </button>
+          </>
+        )}
+      </div>
+    </Overlay>
+  );
 }
 
 // ── 슬롯 카드 ─────────────────────────────────────────────────────────────────
@@ -1075,7 +1198,7 @@ function StorePage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,ow
 
   var items=[
     {id:'gacha',sym:'✦',name:'마법사 수집',desc:'어쩌면 당신의 진정한 임무',price:100,done:gachaDone,active:!gachaDone&&mahwa>=100,onBuy:startNormalGacha,btnLabel:'수집'},
-    {id:'forfeit',sym:'⬡',name:'포기 사유서',desc:'잔소리는 듣겠지만 미움은 덜할 것이다',price:30,done:forfeitDone,active:!forfeitDone&&mahwa>=30,onBuy:()=>setForfeitConfirm(true),info:'이번 주 ('+forfeitWeekCount+'/3)매 구매'},
+    {id:'forfeit',sym:'⬡',name:'포기 사유서',desc:'잔소리는 듣겠지만 평판은 지킬 것이다',price:30,done:forfeitDone,active:!forfeitDone&&mahwa>=30,onBuy:()=>setForfeitConfirm(true),info:'이번 주 ('+forfeitWeekCount+'/3)매 구매'},
     {id:'custom',sym:'❖',name:'창작 임무 추가',desc:customTasks.length>=5?'임무 창작 한도에 도달했습니다 (5/5)':'원하는 임무를 작성하여 목록에 추가한다',price:100,done:false,active:mahwa>=100&&customTasks.length<5,onBuy:()=>{setCustomName('');setPhase('custom_input');},info:'('+customTasks.length+'/5)개 창작 완료'},
   ];
 
@@ -1349,6 +1472,8 @@ function AppInner({onForceReset}){
   var[storeDate,setStoreDate]=useState({gacha:'',forfeitWeekKey:'',forfeitWeekCount:0});
   var[inventory,setInventory]=useState({forfeitTickets:0});
   var[customTasks,setCustomTasks]=useState([]);
+  var[reportInfo,setReportInfo]=useState({date:'',count:0});
+  var[showReport,setShowReport]=useState(false);
   var tasks=[...customTasks,...FB_TASKS];
   var currentDayRef = useRef(gameDay());
 
@@ -1453,6 +1578,7 @@ function AppInner({onForceReset}){
   }catch(e){}
 }
       if(vals[17]!==null){try{setCustomTasks(JSON.parse(vals[17]));}catch(e){}}
+      if(vals[18]!==null){try{setReportInfo(JSON.parse(vals[18]));}catch(e){}}
       var betaDone=localStorage.getItem('app:betaReward2026a');
       var firstGacha=localStorage.getItem('app:firstGachaDone');
       var tod=gameDay();
@@ -1478,6 +1604,7 @@ function AppInner({onForceReset}){
   useEffect(()=>{if(!userLoaded)return;storeSet('app:storeDate',JSON.stringify(storeDate));},[storeDate,userLoaded]);
   useEffect(()=>{if(!userLoaded)return;storeSet('app:inventory',JSON.stringify(inventory));},[inventory,userLoaded]);
   useEffect(()=>{if(!userLoaded)return;storeSet('app:customTasks',JSON.stringify(customTasks));},[customTasks,userLoaded]);
+  useEffect(()=>{if(!userLoaded)return;storeSet('app:reportInfo',JSON.stringify(reportInfo));},[reportInfo,userLoaded]);
 
   // 신규 분과회 감지
   useEffect(()=>{
@@ -1718,6 +1845,7 @@ var cf={clubs:clubs||[],knownClubs:allKnown,changedAt:new Date().toISOString().s
     <div style={{paddingBottom:54}}>
       {/* 설정 버튼 (A) */}
       <button onClick={()=>setShowSettings(true)} style={{position:'fixed',top:14,right:14,width:28,height:28,borderRadius:'50%',border:'0.5px solid rgba(0,0,0,0.15)',background:'rgba(255,255,255,0.9)',fontSize:11,fontWeight:600,color:'rgba(0,0,0,0.4)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:150,boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>A</button>
+      <button onClick={()=>setShowReport(true)} title="대사 제보" style={{position:'fixed',top:14,right:50,width:28,height:28,borderRadius:'50%',border:'0.5px solid rgba(0,0,0,0.15)',background:'rgba(255,255,255,0.9)',fontSize:13,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:150,boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>✉️</button>
 
       {page==='mission'&&<MissionPage wizards={wizards} tasks={tasks} mahwa={mahwa} doneCount={doneCount} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} lvUpEvent={lvUpEvent} setLvUpEvent={setLvUpEvent} onUpd={onUpd} onConfirmMission={onConfirmMission} onReset={onReset} onSlotReset={onSlotReset} slots={slots} confirmed={confirmed} favTasks={favTasks} inventory={inventory} logs={logs}/>}
       {page==='store'&&<StorePage wizards={wizards} setWizards={setWizards} mahwa={mahwa} setMahwa={setMahwa} affinity={affinity} level={level} applyAff={applyAff} ownedCount={ownedCount} storeDate={storeDate} setStoreDate={setStoreDate} addLogEntry={addLogEntry} clubFilter={clubFilter} addMahwaLog={addMahwaLog} inventory={inventory} setInventory={setInventory} customTasks={customTasks} setCustomTasks={setCustomTasks}/>}
@@ -1740,6 +1868,16 @@ var cf={clubs:clubs||[],knownClubs:allKnown,changedAt:new Date().toISOString().s
 )}
       <BottomNav page={page} setPage={setPage}/>
 
+      {showReport&&<ReportModal
+        onClose={()=>setShowReport(false)}
+        wizards={wizards}
+        playerName={playerName}
+        reportInfo={reportInfo}
+        onReportSuccess={(date,count)=>{var u={date,count};setReportInfo(u);storeSet('app:reportInfo',JSON.stringify(u));}}
+        addMahwaLog={addMahwaLog}
+        setMahwa={setMahwa}
+        clubFilter={clubFilter}
+      />}
       {showSettings&&<SettingsPanel
         onClose={()=>setShowSettings(false)}
         onBackup={handleBackup}
