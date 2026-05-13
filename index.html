@@ -58,7 +58,7 @@ const { useState, useEffect, useRef } = React;
 
 // ── 상수 ──────────────────────────────────────────────────────────────────────
 const LV_REQ = [0, 100, 200, 300, 400];
-const STORAGE_KEYS = ['app:mahwa','app:wizards','app:affinity','app:level','app:doneCount','app:gachaDate','app:slotSession','app:firstRunDone','app:logs','app:playerName','app:firstGachaDone','app:clubFilter','app:favTasks','app:mahwaLog','app:betaReward2026a','app:storeDate','app:inventory','app:customTasks','app:reportInfo'];
+const STORAGE_KEYS = ['app:mahwa','app:wizards','app:affinity','app:level','app:doneCount','app:gachaDate','app:slotSession','app:firstRunDone','app:logs','app:playerName','app:firstGachaDone','app:clubFilter','app:favTasks','app:mahwaLog','app:betaReward2026b','app:storeDate','app:inventory','app:customTasks','app:reportInfo'];
 const TASK_TAG_ORDER = ['근육','가정','회복','작업','지성','정리','생업','생존'];
 
 // 시스템 슬롯 텍스트 상수
@@ -1591,10 +1591,10 @@ function AppInner({onForceReset}){
 }
       if(vals[17]!==null){try{setCustomTasks(JSON.parse(vals[17]));}catch(e){}}
       if(vals[18]!==null){try{setReportInfo(JSON.parse(vals[18]));}catch(e){}}
-      var betaDone=localStorage.getItem('app:betaReward2026a');
+      var betaDone=localStorage.getItem('app:betaReward2026b')||vals[14];
       var firstGacha=localStorage.getItem('app:firstGachaDone');
       var tod=gameDay();
-      if(!betaDone&&firstGacha==='1'&&tod>='2026-05-01'&&tod<='2026-05-02'){
+      if(!betaDone&&firstGacha==='1'&&tod>='2026-05-13'&&tod<='2026-05-14'){
         setBetaModal('announcement');
       }
       setUserLoaded(true);
@@ -1635,7 +1635,7 @@ function AppInner({onForceReset}){
   // 마화 트랜잭션 로그
   // 베타 보상 수집 실행
   function startBetaGacha(){
-    var targetClubs=['웬수들','악당들','바보들'];
+    var targetClubs=['볼프 탐정사무소'];
     var inFilter=clubFilter&&clubFilter.clubs&&clubFilter.clubs.some(c=>targetClubs.includes(c));
     if(!inFilter){setBetaModal('missed');return;}
     var pool=wizards.filter(w=>targetClubs.includes(w.club));
@@ -1645,7 +1645,8 @@ function AppInner({onForceReset}){
     setBetaGWiz(wiz);setBetaIsNew(isNew);
     var txt=getLine(wiz.id,isNew?'MEET':'MEET_AGAIN')||'…';
     setBetaFull(txt);setBetaTyped('');
-    localStorage.setItem('app:betaReward2026a','1');
+    localStorage.setItem('app:betaReward2026b','1');
+    storeSet('app:betaReward2026b','1');
     if(isNew){
       setWizards(p=>{
         var updated=p.map(w=>w.id===wiz.id?{...w,owned:true}:w);
@@ -1936,16 +1937,17 @@ var cf={clubs:clubs||[],knownClubs:allKnown,changedAt:new Date().toISOString().s
         <Overlay>
           {betaModal==='announcement'&&(
             <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:300,width:'88%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
-              <div style={{fontSize:12,fontWeight:600,color:'var(--color-primary)',textAlign:'center',marginBottom:16,letterSpacing:'0.3px'}}>신규 분과회 추가 보상</div>
-              <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:2,marginBottom:8,textAlign:'center'}}>새로운 분과회가 대거 포착되었습니다.<br/>지금이라면 특별히 1명<br/>무료로 수집할 기회!</div>
-              <div style={{fontSize:11,color:'var(--color-text-tertiary)',textAlign:'center',marginBottom:20}}>대상 분과회: 웬수들 · 악당들 · 바보들</div>
+              <div style={{fontSize:12,fontWeight:600,color:'var(--color-primary)',textAlign:'center',marginBottom:16,letterSpacing:'0.3px'}}>신규 분과회(?) 추가 보상</div>
+              <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:2,marginBottom:8,textAlign:'center'}}>새로운 분과회…?가 포착되었습니다.<br/>지금이라면 특별히 1명<br/>무료로 수집할 기회!</div>
+              <div style={{fontSize:11,color:'var(--color-text-tertiary)',textAlign:'center',marginBottom:20}}>대상 분과회: 볼프 탐정사무소</div>
               <button onClick={startBetaGacha} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>수집하기</button>
+<button onClick={()=>{localStorage.setItem('app:betaReward2026a','1');storeSet('app:betaReward2026a','1');setBetaModal(null);}} style={{width:'100%',marginTop:8,padding:'9px 0',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,cursor:'pointer',color:'var(--color-text-secondary)'}}>무시하기</button>
             </div>
           )}
           {betaModal==='missed'&&(
             <div style={{background:'white',borderRadius:12,padding:'24px 20px',maxWidth:300,width:'88%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
               <div style={{fontSize:13,color:'var(--color-text-primary)',lineHeight:1.9,marginBottom:20,textAlign:'center',fontFamily:"Georgia,'Nanum Myeongjo',serif",fontStyle:'italic'}}>신규 마법사? 누구지? ……돌아보려는 순간 사라졌다. 아무 일도 일어나지 않았다.</div>
-              <button onClick={()=>{localStorage.setItem('app:betaReward2026a','1');setBetaModal(null);}} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>확인</button>
+              <button onClick={()=>{localStorage.setItem('app:betaReward2026b','1');storeSet('app:betaReward2026b','1');setBetaModal(null);}} style={{width:'100%',padding:'9px 0',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer'}}>확인</button>
             </div>
           )}
           {(betaModal==='dialogue'||betaModal==='resultNew'||betaModal==='resultDup')&&betaGWiz&&(
