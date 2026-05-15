@@ -1984,9 +1984,9 @@ function StorePage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,ow
                     <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginBottom:3,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{item.description}</div>
                     <div style={{fontSize:11,color:'var(--color-text-tertiary)'}}>마화 {item.cost}닢</div>
                   </div>
-                  <button onClick={()=>!sold&&onDailyStart(item)} disabled={sold}
-                    style={{flexShrink:0,padding:'7px 14px',borderRadius:8,border:'0.5px solid rgba(0,0,0,0.12)',background:sold?'rgba(0,0,0,0.04)':'white',fontSize:12,color:sold?'rgba(0,0,0,0.28)':'var(--color-text-primary)',cursor:sold?'default':'pointer',fontWeight:500}}>
-                    {sold?'매진':'구매'}
+                  <button onClick={()=>!sold&&mahwa>=item.cost&&onDailyStart(item)} disabled={sold||mahwa<item.cost}
+                    style={{flexShrink:0,padding:'7px 14px',borderRadius:8,border:'0.5px solid rgba(0,0,0,0.12)',background:(sold||mahwa<item.cost)?'rgba(0,0,0,0.04)':'white',fontSize:12,color:(sold||mahwa<item.cost)?'rgba(0,0,0,0.28)':'var(--color-text-primary)',cursor:(sold||mahwa<item.cost)?'default':'pointer',fontWeight:500}}>
+                    {sold?'매진':mahwa<item.cost?'부족':'구매'}
                   </button>
                 </div>
               );
@@ -2003,7 +2003,10 @@ function StorePage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,ow
               <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginBottom:3}}>선물받을 마법사는 운에 달려 있다</div>
               <div style={{fontSize:11,color:'var(--color-text-tertiary)'}}>마화 {GIFT_RANDOM_PRICE}닢</div>
             </div>
-            <button onClick={onRandomStart} style={{flexShrink:0,padding:'7px 14px',borderRadius:8,border:'0.5px solid rgba(0,0,0,0.12)',background:'white',fontSize:12,color:'var(--color-text-primary)',cursor:'pointer',fontWeight:500}}>구매</button>
+            <button onClick={onRandomStart} disabled={mahwa<GIFT_RANDOM_PRICE}
+              style={{flexShrink:0,padding:'7px 14px',borderRadius:8,border:'0.5px solid rgba(0,0,0,0.12)',background:mahwa<GIFT_RANDOM_PRICE?'rgba(0,0,0,0.04)':'white',fontSize:12,color:mahwa<GIFT_RANDOM_PRICE?'rgba(0,0,0,0.28)':'var(--color-text-primary)',cursor:mahwa<GIFT_RANDOM_PRICE?'default':'pointer',fontWeight:500}}>
+              {mahwa<GIFT_RANDOM_PRICE?'부족':'구매'}
+            </button>
           </div>
         </div>
 
@@ -2035,9 +2038,9 @@ function StorePage({wizards,setWizards,mahwa,setMahwa,affinity,level,applyAff,ow
                       <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginBottom:3,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{item.description}</div>
                       <div style={{fontSize:11,color:'var(--color-text-tertiary)'}}>마화 {ONLY_PRICE}닢</div>
                     </div>
-                    <button onClick={()=>!sold&&onOnlyStart(item,wiz)} disabled={sold}
-                      style={{flexShrink:0,padding:'7px 14px',borderRadius:8,border:'0.5px solid rgba(0,0,0,0.12)',background:sold?'rgba(0,0,0,0.04)':'white',fontSize:12,color:sold?'rgba(0,0,0,0.28)':'var(--color-text-primary)',cursor:sold?'default':'pointer',fontWeight:500}}>
-                      {sold?'매진':'구매'}
+                    <button onClick={()=>!sold&&mahwa>=ONLY_PRICE&&onOnlyStart(item,wiz)} disabled={sold||mahwa<ONLY_PRICE}
+                      style={{flexShrink:0,padding:'7px 14px',borderRadius:8,border:'0.5px solid rgba(0,0,0,0.12)',background:(sold||mahwa<ONLY_PRICE)?'rgba(0,0,0,0.04)':'white',fontSize:12,color:(sold||mahwa<ONLY_PRICE)?'rgba(0,0,0,0.28)':'var(--color-text-primary)',cursor:(sold||mahwa<ONLY_PRICE)?'default':'pointer',fontWeight:500}}>
+                      {sold?'매진':mahwa<ONLY_PRICE?'부족':'구매'}
                     </button>
                   </div>
                 );
@@ -3227,7 +3230,7 @@ function EventPage({meta,story,prog,setProg,wizards,mahwa,setMahwa,applyAff,setR
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontSize:13,fontWeight:500,color:'var(--color-text-primary)',marginBottom:2}}>프롤로그</div>
                   <div style={{fontSize:11,color:'var(--color-text-tertiary)'}}>
-                    {prologueItem?prologueItem.name+' 지급':'이벤트 시작 시 자동 해금'}
+                    {prologueItem?prologueItem.name:'이벤트 시작 시 자동 해금'}
                   </div>
                 </div>
                 <button onClick={function(){openStory(0);}}
@@ -3542,23 +3545,25 @@ function AppInner({onForceReset}){
             wsVal[e.wizardId].taskBreakdown[e.taskName]=(wsVal[e.wizardId].taskBreakdown[e.taskName]||0)+1;
           });
         });
-        // firstMet: mahwaLog gacha_new에서 추출
-        var ml3=[];try{if(vals[13]!==null)ml3=JSON.parse(vals[13]);}catch(e){}
-        ml3.filter(e=>e.type==='gacha_new'&&e.wizardId).forEach(e=>{
-          var ds=new Date(e.ts).toISOString().slice(0,10);
-          if(!wsVal[e.wizardId])wsVal[e.wizardId]={firstMet:null,taskCount:0,taskBreakdown:{}};
-          if(!wsVal[e.wizardId].firstMet||ds<wsVal[e.wizardId].firstMet)wsVal[e.wizardId].firstMet=ds;
-        });
-        // 최초 2명(firstRunDone 시점에 owned된 마법사)의 firstMet이 없으면 logs 최초 기록일로 보완
-        var ownedMap={};try{if(vals[1]!==null)ownedMap=JSON.parse(vals[1]);}catch(e){}
-        var allLogDays=Object.keys(savedLogs3).sort();
-        var firstLogDay=allLogDays.length>0?allLogDays[0]:gameDay();
-        Object.keys(ownedMap).filter(wid=>ownedMap[wid]).forEach(wid=>{
-          if(!wsVal[wid])wsVal[wid]={firstMet:null,taskCount:0,taskBreakdown:{}};
-          if(!wsVal[wid].firstMet)wsVal[wid].firstMet=firstLogDay;
-        });
-        storeSet('app:wizardStats',JSON.stringify(wsVal));
       }
+      // firstMet 보완 — 기존/신규 모두 적용 (null인 항목 채우기)
+      var savedLogs4={};try{if(vals[8]!==null)savedLogs4=JSON.parse(vals[8]);}catch(e){}
+      var ml3=[];try{if(vals[13]!==null)ml3=JSON.parse(vals[13]);}catch(e){}
+      // mahwaLog gacha_new에서 날짜 추출
+      ml3.filter(e=>e.type==='gacha_new'&&e.wizardId).forEach(e=>{
+        var ds=new Date(e.ts).toISOString().slice(0,10);
+        if(!wsVal[e.wizardId])wsVal[e.wizardId]={firstMet:null,taskCount:0,taskBreakdown:{}};
+        if(!wsVal[e.wizardId].firstMet||ds<wsVal[e.wizardId].firstMet)wsVal[e.wizardId].firstMet=ds;
+      });
+      // 최초 2명: logs 최초 기록일로 보완
+      var ownedMap2={};try{if(vals[1]!==null)ownedMap2=JSON.parse(vals[1]);}catch(e){}
+      var allLogDays=Object.keys(savedLogs4).sort();
+      var firstLogDay=allLogDays.length>0?allLogDays[0]:gameDay();
+      Object.keys(ownedMap2).filter(wid=>ownedMap2[wid]).forEach(wid=>{
+        if(!wsVal[wid])wsVal[wid]={firstMet:null,taskCount:0,taskBreakdown:{}};
+        if(!wsVal[wid].firstMet)wsVal[wid].firstMet=firstLogDay;
+      });
+      storeSet('app:wizardStats',JSON.stringify(wsVal));
       setWizardStats(wsVal);
       // roomItems (22)
       if(vals[22]!==null){try{setRoomItems(JSON.parse(vals[22]));}catch(e){}}
@@ -3739,7 +3744,15 @@ if(to>=LV_REQ[curLv]&&curLv<maxLv){
       var wiz=wizards.find(w=>w.id===s.wizardId);
       var task=tasks.find(t=>t.id===s.taskId);
       var delta=s.tagMatch?25:20;
-      applyAff(s.wizardId,delta,'up');
+      // 이벤트 보너스 delta 합산
+      var bonusDeltaAdd=0;
+      if(eventMeta&&isEventActive(eventMeta)){
+        var isBonusTask=eventMeta.bonus_task_ids&&eventMeta.bonus_task_ids.includes(s.taskId);
+        var isBonusClub=wiz&&wiz.club===eventMeta.bonus_club;
+        if(isBonusTask||isBonusClub)bonusDeltaAdd=eventMeta.bonus_affinity||5;
+      }
+      var totalDelta=delta+bonusDeltaAdd;
+      applyAff(s.wizardId,totalDelta,'up');
       if(doneCount<13){
         setMahwa(n=>{
           var next=n+10;
@@ -3750,20 +3763,10 @@ if(to>=LV_REQ[curLv]&&curLv<maxLv){
       if(doneCount===12)setShowMahwaLimit(true);
       setDoneCount(n=>n+1);
       setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'done',dialogue:getLine(s.wizardId,'TASK_SUCCESS')}:sl));
-      addLogEntry({taskId:s.taskId,taskName:task?task.name:'?',wizardId:s.wizardId,wizardName:wiz?wiz.name:'?',delta,dir:'up',source:'task'});
+      addLogEntry({taskId:s.taskId,taskName:task?task.name:'?',wizardId:s.wizardId,wizardName:wiz?wiz.name:'?',delta:totalDelta,dir:'up',source:bonusDeltaAdd>0?'event_bonus':'task'});
       // wizardStats 업데이트
       var tname=task?task.name:'?';
       setWizardStats(p=>{var ws={...p};if(!ws[s.wizardId])ws[s.wizardId]={firstMet:null,taskCount:0,taskBreakdown:{}};ws[s.wizardId]={...ws[s.wizardId],taskCount:(ws[s.wizardId].taskCount||0)+1,taskBreakdown:{...ws[s.wizardId].taskBreakdown,[tname]:(ws[s.wizardId].taskBreakdown[tname]||0)+1}};return ws;});
-      // 이벤트 보너스 affinity — 기본 delta에 합산해서 한 번만 applyAff
-      if(eventMeta&&isEventActive(eventMeta)){
-        var isBonusTask=eventMeta.bonus_task_ids&&eventMeta.bonus_task_ids.includes(s.taskId);
-        var isBonusClub=wiz&&wiz.club===eventMeta.bonus_club;
-        if(isBonusTask||isBonusClub){
-          var bonusDelta=eventMeta.bonus_affinity||5;
-          applyAff(s.wizardId,bonusDelta,'up');
-          addLogEntry({taskId:s.taskId,taskName:task?task.name:'?',wizardId:s.wizardId,wizardName:wiz?wiz.name:'?',delta:bonusDelta,dir:'up',source:'event_bonus'});
-        }
-      }
     }else if(patch==='forfeit'){
       var s2=slots[idx];
       var wiz2=wizards.find(w=>w.id===s2.wizardId);
