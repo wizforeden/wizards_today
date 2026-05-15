@@ -25,6 +25,16 @@
     "W25": "(준의 원고지가 빠르게 채워지고 있다…….)",
     "W26": "(에이미는 표지의 후가공을 고르는 일로 도피하고 있다……)"
   },
+  "backgrounds": [
+    {
+      "key": "office",
+      "url": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/office.jpg"
+    },
+    {
+      "key": "sky",
+      "url": null
+    }
+  ],
   "rewards": [
     {
       "event_id": "event_001",
