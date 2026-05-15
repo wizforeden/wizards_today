@@ -21,7 +21,7 @@
       "ep": 1,
       "ep_title": "1화 — 원고를 하자",
       "mahwa": 50,
-      "item_id": "EI001_1",
+      "item_id": "EI001_2",
       "unlock_story_ep": 1
     },
     {
@@ -29,7 +29,7 @@
       "ep": 2,
       "ep_title": "2화 — 마감 대작전",
       "mahwa": 50,
-      "item_id": "EI001_2",
+      "item_id": "EI001_3",
       "unlock_story_ep": 2
     },
     {
@@ -37,7 +37,7 @@
       "ep": 3,
       "ep_title": "3화 — 뒷풀이",
       "mahwa": 50,
-      "item_id": "EI001_3",
+      "item_id": "EI001_4",
       "unlock_story_ep": 3
     },
     {
@@ -45,7 +45,7 @@
       "ep": 99,
       "ep_title": "이벤트 완수",
       "mahwa": 50,
-      "item_id": "EI001_4",
+      "item_id": "EI001_5",
       "unlock_story_ep": null
     }
   ],
