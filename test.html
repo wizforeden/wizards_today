@@ -3717,7 +3717,7 @@ function AppInner({onForceReset}){
       var newEntries=[...dl.entries,{taskId,taskName,wizardId,wizardName,delta,dir,source,ts:Date.now()}];
       var newTotals={...dl.affinityTotals};
       if(wizardId){var ex=newTotals[wizardId]||{name:wizardName,total:0};newTotals[wizardId]={name:wizardName,total:ex.total+(dir==='up'?delta:-delta)};}
-      var completedCount=newEntries.filter(e=>e.dir==='up'&&e.source==='task').length;
+      var completedCount=newEntries.filter(e=>e.dir==='up'&&(e.source==='task'||e.source==='event_task'||e.source==='gift')).length;
       return{...prev,[day]:{...dl,entries:newEntries,affinityTotals:newTotals,completedCount}};
     });
   }
@@ -3771,7 +3771,7 @@ if(to>=LV_REQ[curLv]&&curLv<maxLv){
       if(doneCount===12)setShowMahwaLimit(true);
       setDoneCount(n=>n+1);
       setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'done',dialogue:getLine(s.wizardId,'TASK_SUCCESS')}:sl));
-      addLogEntry({taskId:s.taskId,taskName:task?task.name:'?',wizardId:s.wizardId,wizardName:wiz?wiz.name:'?',delta:totalDelta,dir:'up',source:bonusDeltaAdd>0?'event_bonus':'task'});
+      addLogEntry({taskId:s.taskId,taskName:task?task.name:'?',wizardId:s.wizardId,wizardName:wiz?wiz.name:'?',delta:totalDelta,dir:'up',source:'task',hasEventBonus:bonusDeltaAdd>0});
       // wizardStats 업데이트
       var tname=task?task.name:'?';
       setWizardStats(p=>{var ws={...p};if(!ws[s.wizardId])ws[s.wizardId]={firstMet:null,taskCount:0,taskBreakdown:{}};ws[s.wizardId]={...ws[s.wizardId],taskCount:(ws[s.wizardId].taskCount||0)+1,taskBreakdown:{...ws[s.wizardId].taskBreakdown,[tname]:(ws[s.wizardId].taskBreakdown[tname]||0)+1}};return ws;});
