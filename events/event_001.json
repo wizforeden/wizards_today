@@ -4,7 +4,6 @@
   "subtitle": "「마감」강화 주간 이벤트",
   "start_date": "2026-05-14T15:00:00.000Z",
   "end_date": "2026-07-04T15:00:00.000Z",
-  "target_club": "어게인",
   "task_id": "T014",
   "task_label": "마감",
   "focus_minutes": 20,
@@ -13,7 +12,12 @@
     "T019",
     "T033"
   ],
-  "bonus_club": "어게인",
+  "target_wiz_ids": [
+    "W23",
+    "W24",
+    "W25",
+    "W26"
+  ],
   "bonus_affinity": 5,
   "theme": {
     "accent": "#FF8FC2",
