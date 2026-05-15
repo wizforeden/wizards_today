@@ -1,0 +1,55 @@
+{
+  "event_id": "event_001",
+  "episodes": [
+    {
+      "ep": 0,
+      "scenes": [
+        {
+          "bg": "office",
+          "speaker": null,
+          "text": "문호의 한쪽 구석, 어게인 분과회 작업실에서 소란이 일어나고 있었다."
+        },
+        {
+          "bg": "office",
+          "speaker": "W25",
+          "text": "마, 마감이 일주일 남았어!!"
+        },
+        {
+          "bg": "office",
+          "speaker": "W26",
+          "text": "뭐? 벌써?! 나 아직 아무것도 안 했는데!"
+        },
+        {
+          "bg": "office",
+          "speaker": "W24",
+          "text": "…그러니까 내가 미리 하라고 했잖아."
+        },
+        {
+          "bg": "office",
+          "speaker": "W23",
+          "text": "…다들, 조용히 해. 일단 앉아."
+        },
+        {
+          "bg": "office",
+          "speaker": null,
+          "text": "고요의 한 마디에 방 안이 조용해졌다. 바쁜 한 주가 시작될 것 같다."
+        }
+      ]
+    },
+    {
+      "ep": 1,
+      "scenes": [
+        {
+          "bg": "office",
+          "speaker": "W25",
+          "text": "자, 시작해 보자. 뭐든 일단 시작하면 돼!"
+        },
+        {
+          "bg": "office",
+          "speaker": "W24",
+          "text": "…말은 쉽지."
+        }
+      ]
+    }
+  ]
+}

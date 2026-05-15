@@ -1,0 +1,136 @@
+{
+  "event_id": "event_001",
+  "title": "오손도손 우당탕탕 마감 대작전",
+  "subtitle": "「마감」강화 주간 이벤트",
+  "start_date": "2026-05-17T15:00:00.000Z",
+  "end_date": "2026-07-04T15:00:00.000Z",
+  "target_club": "어게인",
+  "task_id": "T014",
+  "task_label": "마감",
+  "focus_minutes": 20,
+  "bonus_task_ids": [
+    "T014",
+    "T019",
+    "T033"
+  ],
+  "bonus_club": "어게인",
+  "bonus_affinity": 5,
+  "rewards": [
+    {
+      "event_id": "event_001",
+      "ep": 1,
+      "ep_title": "1화 — 원고를 하자",
+      "mahwa": 50,
+      "item_id": "EI001_1",
+      "unlock_story_ep": 1
+    },
+    {
+      "event_id": "event_001",
+      "ep": 2,
+      "ep_title": "2화 — 마감 대작전",
+      "mahwa": 50,
+      "item_id": "EI001_2",
+      "unlock_story_ep": 2
+    },
+    {
+      "event_id": "event_001",
+      "ep": 3,
+      "ep_title": "3화 — 뒷풀이",
+      "mahwa": 50,
+      "item_id": "EI001_3",
+      "unlock_story_ep": 3
+    },
+    {
+      "event_id": "event_001",
+      "ep": 99,
+      "ep_title": "이벤트 완수",
+      "mahwa": 50,
+      "item_id": "EI001_4",
+      "unlock_story_ep": null
+    }
+  ],
+  "items": [
+    {
+      "event_id": "event_001",
+      "item_id": "EI001_1",
+      "name": "준의 원고 뭉치",
+      "description": "어딘가 급하게 쓴 흔적이 있는 원고들.",
+      "granted_at_ep": 0,
+      "cost": 0,
+      "recipients": [
+        {
+          "wiz_id": "W25",
+          "action_comment": "{name}{josa} 원고를 조심스럽게 정리하고 있다."
+        }
+      ]
+    },
+    {
+      "event_id": "event_001",
+      "item_id": "EI001_2",
+      "name": "데인티의 행운 카드",
+      "description": "구겨진 트럼프 카드. 행운을 가져온다고 한다.",
+      "granted_at_ep": 1,
+      "cost": 0,
+      "recipients": [
+        {
+          "wiz_id": "W24",
+          "action_comment": "{name}{josa3} 카드로 손장난을 치고 있다."
+        }
+      ]
+    },
+    {
+      "event_id": "event_001",
+      "item_id": "EI001_3",
+      "name": "에이미의 응원 머그컵",
+      "description": "손잡이가 살짝 금 가 있다.",
+      "granted_at_ep": 2,
+      "cost": 0,
+      "recipients": [
+        {
+          "wiz_id": "W26",
+          "action_comment": "{name}{josa} 머그컵에 음료를 가득 따르고 있다."
+        }
+      ]
+    },
+    {
+      "event_id": "event_001",
+      "item_id": "EI001_4",
+      "name": "고요의 차 세트",
+      "description": "향이 좋은 찻잎과 다기 세트.",
+      "granted_at_ep": 3,
+      "cost": 0,
+      "recipients": [
+        {
+          "wiz_id": "W23",
+          "action_comment": "{name}{josa} 차를 천천히 우리며 당신을 기다린다."
+        }
+      ]
+    },
+    {
+      "event_id": "event_001",
+      "item_id": "EI001_5",
+      "name": "부스 참가 확인서",
+      "description": "제434회 아방궁 배 창작대전에 참가했다는 증거. ",
+      "granted_at_ep": 99,
+      "cost": 0,
+      "recipients": [
+        {
+          "wiz_id": "W23",
+          "action_comment": "{name}{josa} 낡은 천칭을 꺼내 먼지를 닦으며 그날을 떠올린다."
+        },
+        {
+          "wiz_id": "W24",
+          "action_comment": "{name}{josa3} 게임칩을 만지작거리다 조용히 웃는다."
+        },
+        {
+          "wiz_id": "W25",
+          "action_comment": "{name}{josa} 원고 뭉치를 끌어안고 뿌듯한 표정을 짓는다."
+        },
+        {
+          "wiz_id": "W26",
+          "action_comment": "{name}{josa} 머그컵에 음료를 따르며 그날 이야기를 꺼낸다."
+        }
+      ]
+    }
+  ]
+}
