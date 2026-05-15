@@ -2790,7 +2790,7 @@ function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp}){
   var[canComplete,setCanComplete]=useState(false);
   var[showGiveUp,setShowGiveUp]=useState(false);
   var[showWakeNotice,setShowWakeNotice]=useState(function(){
-    return!localStorage.getItem('focus_wake_notice_seen');
+    try{return!localStorage.getItem('focus_wake_notice_seen');}catch(e){return true;}
   });
   var intervalRef=useRef(null);
   var lastTickRef=useRef(null);
@@ -2842,7 +2842,7 @@ function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp}){
           </label>
           <button onClick={function(){
             var cb=document.getElementById('wake-no-show');
-            if(cb&&cb.checked)localStorage.setItem('focus_wake_notice_seen','1');
+            if(cb&&cb.checked){try{localStorage.setItem('focus_wake_notice_seen','1');}catch(e){}}
             setShowWakeNotice(false);
           }} style={{width:'100%',padding:'10px',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>
             확인, 시작하기
