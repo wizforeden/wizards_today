@@ -2953,7 +2953,8 @@ function EventPage({meta,story,prog,setProg,wizards,mahwa,setMahwa,applyAff,setR
     var pItem=meta.items&&meta.items.find(function(i){return i.granted_at_ep===0;});
     if(!pItem)return;
     grantEventItems([pItem],null);
-    showToast('참가 보상이 지급되었습니다!');
+    // 토스트 대신 보상 모달 표시
+    setRewardInfo({ep:0,isCompletion:false,isPrologue:true,reward:null,items:[pItem]});
   }
 
   // 이벤트 아이템 지급 (roomItems에 추가)
@@ -3227,9 +3228,11 @@ function EventPage({meta,story,prog,setProg,wizards,mahwa,setMahwa,applyAff,setR
       {rewardInfo&&(
         <Overlay>
           <div style={{background:'white',borderRadius:14,padding:'22px 20px',maxWidth:320,width:'100%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.1)',textAlign:'center'}}>
-            <div style={{fontSize:11,color:'var(--color-text-tertiary)',letterSpacing:'0.5px',marginBottom:8}}>{rewardInfo.isCompletion?'이벤트 완수 보상':'회차 보상'}</div>
+            <div style={{fontSize:11,color:'var(--color-text-tertiary)',letterSpacing:'0.5px',marginBottom:8}}>
+              {rewardInfo.isPrologue?'참가 보상':rewardInfo.isCompletion?'이벤트 완수 보상':'회차 보상'}
+            </div>
             <div style={{fontSize:18,fontWeight:600,color:'var(--color-primary)',marginBottom:4}}>
-              {rewardInfo.isCompletion?'✦ 완수!':rewardInfo.ep+'화 완료!'}
+              {rewardInfo.isPrologue?'✧ 참가 보상 지급!':rewardInfo.isCompletion?'✦ 완수!':rewardInfo.ep+'화 완료!'}
             </div>
             {rewardInfo.reward&&rewardInfo.reward.mahwa>0&&(
               <div style={{fontSize:13,color:'var(--color-text-secondary)',marginBottom:16}}>마화 +{rewardInfo.reward.mahwa}닢</div>
@@ -3676,6 +3679,16 @@ if(to>=LV_REQ[curLv]&&curLv<maxLv){
       // wizardStats 업데이트
       var tname=task?task.name:'?';
       setWizardStats(p=>{var ws={...p};if(!ws[s.wizardId])ws[s.wizardId]={firstMet:null,taskCount:0,taskBreakdown:{}};ws[s.wizardId]={...ws[s.wizardId],taskCount:(ws[s.wizardId].taskCount||0)+1,taskBreakdown:{...ws[s.wizardId].taskBreakdown,[tname]:(ws[s.wizardId].taskBreakdown[tname]||0)+1}};return ws;});
+      // 이벤트 보너스 affinity 적용 (보너스 task + 대상 club 마법사)
+      if(eventMeta&&isEventActive(eventMeta)){
+        var isBonusTask=eventMeta.bonus_task_ids&&eventMeta.bonus_task_ids.includes(s.taskId);
+        var isBonusClub=wiz&&wiz.club===eventMeta.bonus_club;
+        if(isBonusTask||isBonusClub){
+          var bonusDelta=eventMeta.bonus_affinity||5;
+          applyAff(s.wizardId,bonusDelta,'up');
+          addLogEntry({taskId:s.taskId,taskName:task?task.name:'?',wizardId:s.wizardId,wizardName:wiz?wiz.name:'?',delta:bonusDelta,dir:'up',source:'event_bonus'});
+        }
+      }
     }else if(patch==='forfeit'){
       var s2=slots[idx];
       var wiz2=wizards.find(w=>w.id===s2.wizardId);
