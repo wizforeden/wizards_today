@@ -5,34 +5,130 @@
       "ep": 0,
       "scenes": [
         {
-          "bg": "office",
+          "bg": "road",
           "speaker": null,
-          "text": "문호의 한쪽 구석, 어게인 분과회 작업실에서 소란이 일어나고 있었다."
+          "speaker_img": null,
+          "text": "청명한 여름 하늘. "
         },
         {
-          "bg": "office",
-          "speaker": "W25",
-          "text": "마, 마감이 일주일 남았어!!"
+          "bg": "road",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "전단지 한 장이 팔랑… 떨어져 내려오더니 고요의 손에 안착한다."
         },
         {
-          "bg": "office",
-          "speaker": "W26",
-          "text": "뭐? 벌써?! 나 아직 아무것도 안 했는데!"
-        },
-        {
-          "bg": "office",
-          "speaker": "W24",
-          "text": "…그러니까 내가 미리 하라고 했잖아."
-        },
-        {
-          "bg": "office",
+          "bg": "road",
           "speaker": "W23",
-          "text": "…다들, 조용히 해. 일단 앉아."
+          "speaker_img": null,
+          "text": "…제 444회 불도마뱀 동인 행사 개최?"
         },
         {
-          "bg": "office",
+          "bg": "road",
+          "speaker": "윤경",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc2.png",
+          "text": "아, 고요 씨! 오랜만이에요. 고요 씨도 받으셨군요."
+        },
+        {
+          "bg": "road",
           "speaker": null,
-          "text": "고요의 한 마디에 방 안이 조용해졌다. 바쁜 한 주가 시작될 것 같다."
+          "speaker_img": null,
+          "text": "부산스럽게 걸음을 재촉하던 문호의 마법사가 고요를 보고 아는 체를 하며 멈춰섰다. 고요는 어깨를 으쓱이는 것으로 인사를 대신했다."
+        },
+        {
+          "bg": "road",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "글쎄, 이걸 받았다고 해도 될지 모르겠네."
+        },
+        {
+          "bg": "road",
+          "speaker": "윤경",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc2.png",
+          "text": "아하하, 요즘 무슨 스팸 메일처럼 날아들고 있어요, 그 전단지. 아방궁 마법사들은 참 열심이라니까."
+        },
+        {
+          "bg": "road",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "(열심이라…….)"
+        },
+        {
+          "bg": "road",
+          "speaker": "윤경",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc2.png",
+          "text": "그래도 오랜만이죠? 불도마뱀 행사는. 20년 만이던가~ 이번엔 또 어떤 독창적인 작품들이 나올지 기대되네요. 고요 씨도 가시나요? 혹시 필요하시면 표, 구해다 드릴까요?"
+        },
+        {
+          "bg": "road",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "괴랄한 감성으로 디자인된 전단지는 얼핏 봐서는 행사의 목적도 개요도 불분명했다. 저도 모르게 빤히 바라볼 뻔했던 고요는 빠르게 눈을 돌렸다."
+        },
+        {
+          "bg": "road",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "고맙지만 지금은 딱히 예정이 없네. 내가 받기엔 좀 아깝겠어."
+        },
+        {
+          "bg": "road",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "점잖은 거절의 말에 윤경은 그럴 줄 알았다는 듯 빙긋 웃었다. 이내 몇 마디 간소한 안부를 전하고 다시 가던 길을 재촉한다. 변함없이 분주한 동료의 뒷모습을 배웅하다가 고요도 발걸음을 옮겼다."
+        },
+        {
+          "bg": "road",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "20년 만에 열리는 불도마뱀 행사라니, 글쎄 그 전에라고 딱히 소식을 들은 기억이 없는 걸 보니 분명 그와는 무연한 성격의 행사일 것이다. 아방궁의 일들이 대개 그러하듯이."
+        },
+        {
+          "bg": "road",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "이어서 생각은 꼬리를 물고, 장구한 세월간 그가 소소하게 겪었던 '아방궁 사건들'로 이어졌다. 대개는 무언가 터지거나, 뒤바뀌거나 하는 불유쾌한 경험들이었지만 지나고 보면 헛웃음이 나올 만한 해프닝에 불과하다."
+        },
+        {
+          "bg": "road",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "(아무튼 뭐 윤경이 맡은 행사라니 별일이 있지야 않겠지. …애초에 나랑은 상관이 없는 일이고.)"
+        },
+        {
+          "bg": "road",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "나 왔어─."
+        },
+        {
+          "bg": "road",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그렇게 고요가 캠밸가의 대문을 연 순간."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "고요…."
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그와 무척이나 상관이 있는 '아방궁의 일'이 등장하고 마는 것이었다."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "준…? 우는 거야?!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "나…… 공방에서 쫓겨나게 됐어……."
         }
       ]
     },
@@ -40,14 +136,709 @@
       "ep": 1,
       "scenes": [
         {
-          "bg": "office",
-          "speaker": "W25",
-          "text": "자, 시작해 보자. 뭐든 일단 시작하면 돼!"
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "아방궁의 서공, 준이 2년 전 계약한 공방은 불도마뱀 골목의 녹색기왓길 사거리에 위치한 2.3층짜리 벽돌집이었다. "
         },
         {
-          "bg": "office",
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "조건에 비해 꽤 저렴한 대가였기에 기쁜 마음으로 계약했고 모두가 축하하며 집들이를 했던 날도 생생하게 기억날 정도다. 그런데……."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "집 계약 조건에 '불도마뱀 행사 필참'이 있다고? 대체… 어떤 집주인이 그런 조건을 걸어?"
+        },
+        {
+          "bg": "garden",
           "speaker": "W24",
-          "text": "…말은 쉽지."
+          "speaker_img": null,
+          "text": "「낙원 유희」…… 괴팍하다는 소문은 꽤 들어봤어. 직접 만나봤을 땐 꽤 귀여운 인상이었지만 말이지."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "아방궁 마법사들은 다 좀 제정신이 아니긴 하지~ 준은 그래도 귀엽지만."
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "머리를 맞대고 깨알 같은 독소조항을 읽은 분과회의 마법사들은 각자 탄식을 내쉬었다. 수상할 정도로 좋은 조건이라고는 생각했지만 아방궁이야 워낙 수상한 곳이니까 그러려니 한 게 잘못이었을까."
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "아무리 그래도 무슨 행사에 참가하지 않으면 천문학적 배상금을 물어야 한다는 계약 따위는 역시 넣은 쪽이 잘못이라고 생각하지만."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "어, 어떡하지…… 이거, 절대로 갚을 수 없어. 나, 나, 빚, 빚쟁이가 되어서……."
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "사색이 된 준은 거의 울음을 터뜨릴 지경이었다. "
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "준을 달래주랴, 계약서를 들여다보랴… 마법사들이 부산해진 가운데.  "
+        },
+        {
+          "bg": "garden",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "그래서 대체 이 불도마뱀 동인 행사는 뭘 하는 행사인 건데?"
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "묘한 침묵이 감돌았다."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "…?"
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "우연이었을까? 묘하게도 그 순간 분과회원들은 동시에 입을 다물어 버렸다. "
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "…내, 내가 직접 만나서 얘기해 볼까? 어쩌면 조금쯤 깎아주실지도……."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "그래! 직접 가서 얘기해 보자! 여차하면 내가 처리할 수도 있고."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "아니, 그건 곤란하지~ "
+        },
+        {
+          "bg": "garden",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "(……? 지금 말을 돌리지 않았어…?)"
+        }
+      ]
+    },
+    {
+      "ep": 2,
+      "scenes": [
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "다들 그만!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "일동",
+          "speaker_img": null,
+          "text": "?!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "다 큰 어른 마법사들이 뭘 그런 걸로 고민하고 있어?"
+        },
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "내면 되잖아, 책!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "일동",
+          "speaker_img": null,
+          "text": "…!!!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "하, 하지만… 코하네…!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "그, 그래. 아무리 그래도 이 멤버로 「그런 책」은 좀……."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "(그러니까 대체 어떤 책?!)"
+        },
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "후후. 다들 정말 아무것도 모르는구나. 요즘은 'NCP 책'이 대세라구."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "NCP? 뭔가 영양소 이름 같기도 한데?"
+        },
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "논-커플링! 즉, 인물들 간의 로맨스 요소가 전혀 없는 장르를 뜻하지. 버디물, 가족물, 사건물 등이 속한다구. 어때? 우리한테 딱이지?"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "핫…! "
+        },
+        {
+          "bg": "garden",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "확실히, 그거라면…… 가능할지도!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "(뭐가?)"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "좋았어. 그럼 결정됐네. 준! 행사가 언제라구?"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "다, 다음주 월요일……. "
+        },
+        {
+          "bg": "garden",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "흐음. 꽤 빠듯한데."
+        },
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "계획적으로 움직여야겠어!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "일동(W23 제외)",
+          "speaker_img": null,
+          "text": "\"\"\"마감 개시다!\"\"\""
+        }
+      ]
+    },
+    {
+      "ep": 3,
+      "scenes": [
+        {
+          "bg": "night",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "일요일 새벽."
+        },
+        {
+          "bg": "night",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "으윽…… 눈이 안 떠져……. "
+        },
+        {
+          "bg": "night",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "뭣?! 안 돼! 너까지 쓰러지면 큰일이라고!"
+        },
+        {
+          "bg": "night",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "하아……. 그나저나 정말 용케 여기까지 왔네."
+        },
+        {
+          "bg": "night",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "준이야 잘할 거라고 믿고 있었지만 말이지~ 이러쿵저러쿵해도 고요도 마지막까지 힘내줬어. 고요 의외로 소질 있는 거 아닐까?"
+        },
+        {
+          "bg": "night",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그거, 본인이 들었다간 그다지 안 좋아할 것 같은 칭찬이네."
+        },
+        {
+          "bg": "night",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "오잉? 어째서!"
+        },
+        {
+          "bg": "night",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "아하하……. 으음. 앞으로 몇 페이지나 남은 거지?"
+        },
+        {
+          "bg": "night",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "글쎄, 한……."
+        },
+        {
+          "bg": "night",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "에이미! 데인티!"
+        },
+        {
+          "bg": "night",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "코하네!"
+        },
+        {
+          "bg": "night",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "헤헤, 물자 조달하러 왔어. 여기, 코하네 특제 밀크티!"
+        },
+        {
+          "bg": "night",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "으아아~ 너무 맛있어. 코하네, 최고야! 사랑해! "
+        },
+        {
+          "bg": "night",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "이건 정말 감동인걸."
+        },
+        {
+          "bg": "night",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "네 잔을 타 왔는데, 고요랑 준은……."
+        },
+        {
+          "bg": "night",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "쉿."
+        },
+        {
+          "bg": "night",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "쓴웃음을 지으며 데인티가 가리킨 곳을 본 코하네는 풋 웃음을 터뜨렸다."
+        },
+        {
+          "bg": "night",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "방 한 구석, 두 사람은 꼭 겨울잠에 든 고치처럼 이불을 돌돌 말고 잠들어 있었다. 근처에는 종이뭉치들이 마구 흩어져 있다."
+        },
+        {
+          "bg": "night",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "저 둘이 아주 하얗게 불태웠거든."
+        },
+        {
+          "bg": "night",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "이제 남은 건 우리 몫이지."
+        },
+        {
+          "bg": "night",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "쿡쿡 웃으며 에이미와 데인티는 눈짓을 주고받더니 누가 먼저랄 것도 없이 기지개를 켰다."
+        },
+        {
+          "bg": "night",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "좋아, 그럼 마저 힘내 볼까."
+        },
+        {
+          "bg": "night",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "내가 옆에서 도와줄 거 있어?"
+        },
+        {
+          "bg": "night",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "귀엽게 춤 추기!"
+        },
+        {
+          "bg": "night",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "그거 말고, 나 이제 다 컸단 말이야!"
+        },
+        {
+          "bg": "night",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "엑! 이상하네! 그럼 그냥 귀엽게 있기!"
+        },
+        {
+          "bg": "night",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "에이미도 참~!"
+        }
+      ]
+    },
+    {
+      "ep": 4,
+      "scenes": [
+        {
+          "bg": "morning",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "기묘할 정도로 적막한 아침이었다."
+        },
+        {
+          "bg": "morning",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "흔한 새 소리도, 분주한 거리의 소음도 모두 잠든 것처럼 고요하다."
+        },
+        {
+          "bg": "morning",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "마치 온 세계가 어떤 사건을 ─ 위대한 탄생을 기다리는 것처럼."
+        },
+        {
+          "bg": "morning",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "드디어…."
+        },
+        {
+          "bg": "morning",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "드디어 완성했어…!"
+        },
+        {
+          "bg": "morning",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "진짜로…… 마감할 수 있었어……."
+        },
+        {
+          "bg": "morning",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "준은 떨리는 손으로 책을 들어올렸다."
+        },
+        {
+          "bg": "morning",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "눈부실 정도로 찬란한 아침햇살 속, 한 권의 책이 모습을 드러낸다."
+        },
+        {
+          "bg": "morning",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그 책의 제목은 바로……"
+        },
+        {
+          "bg": "morning",
+          "speaker": "일동",
+          "speaker_img": null,
+          "text": "\"\"\"「바다, 비치발리볼, 그리고 섹시☆다이너마이트 비키니 대작전 ~어른의 게이머들~(전체연령가)」!!!!!!\"\"\""
+        },
+        {
+          "bg": "morning",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "..."
+        },
+        {
+          "bg": "morning",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "..."
+        },
+        {
+          "bg": "morning",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "..."
+        },
+        {
+          "bg": "morning",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "..."
+        },
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "라는 꿈을 꿨어."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "……."
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "장구한 이야기를 듣고 난 일행은 경악과 감탄이 딱 반씩 섞인 얼굴로 코하네를 보았다."
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "물론, 이야기의 중간쯤부터 중요한 일이 생각났다는 뻔한 거짓말로 자리를 피한 고요만 빼놓고."
+        },
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "엄청나지? 꿈에서 깨고도 한참이나 멍했다니까!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "어, 엄청나달까……"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "정말 반응하기 어렵네…."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "코하네, 바다가 가고 싶었어?!"
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "여름의 햇살은 아침부터 제법 뜨뜻했다. 모처럼 모두가 모인 주말 아침, 작심해서 야외 브런치를 갖기로 한 분과회는 조금전 들은 이야기로 정신이 반쯤 혼미해질 것만 같았다."
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그러나 그것도 잠시. 그러고 보니 여름 휴가 계획을 세워야겠다는 둥, 사실은 내가 그림을 좀 그렸었다는 둥, 별 시시콜콜한 이야기가 즐겁게 테이블을 덮었다."
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "한 사람, 준만 빼놓고."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "준? 괜찮아?"
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "혼자서 무언가를 골똘히 생각하고 있던 준이 데인티의 말에 고개를 들었다. 그러고도 잠시 준은 입을 열지 못했다."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "왜 그래? 너 설마 진짜 공방 주인이랑……?!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "아, 아니! 그건 아닌데!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "그러면?"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "그게… 실제로 있어. 불도마뱀 동인 행사…… 라는 이름은 아니지만, 그…… 비슷한 거."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "엥?! 정말?!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "사실 좀 재미있어 보여서 참가할까 하고 있었거든……"
+        },
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "뭐어?!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "아, 이, 이상한 책 같은 건 아니니까! 그게……."
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "머뭇거리던 준이 비장한 얼굴로 무언가를 가방에서 꺼냈다. 양손으로 꼭 감싸쥐고 있다가 조심스럽게 펼쳐보인 그것은……. "
+        },
+        {
+          "bg": "garden",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "우리잖아!"
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그들 자신이었다. 손가락 두 마디 크기 정도로 데포르메되고, 꼭 소설에 나올 것처럼 묘한 차림새를 한 어게인 분과회와 ─ 코하네."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "멋대로 만들어서 미안……! 그, 다, 다 만들고 보여주려고……. 저기, 마음에 안 들어?"
+        },
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "너무 귀여워! 최고야!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "제법 솜씨가 좋은데? 이건 고요한테 보여줘야겠다~."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "말도 안 돼, 우리 애는 역시 천재인가 봐!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "그, 그 정도는……."
+        },
+        {
+          "bg": "garden",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "어디야! 불도마뱀 어쩌구 행사! 당장 접수하러 가자!"
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "자, 잠깐만~! 에이미~!"
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "자리를 박차고 일어나는 에이미 덕분에 모처럼 예쁘게 쌓아 올려둔 딸기가 와르르 쏟아졌다."
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "비명 소리와 즐거운 웃음 소리가 마찬가지로 여름 과일처럼 터져나왔다. "
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그들의 모습을 본딴 인형이 실제로 불도마뱀 골목 부스에서 팔리고, 그것을 어떤 수상한 마법사가 죄다 사들여 버리게 되는 것은 그로부터 조금 훗날의 일."
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "─ END."
         }
       ]
     }
