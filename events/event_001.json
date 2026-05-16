@@ -1,8 +1,8 @@
 {
   "event_id": "event_001",
   "title": "오손도손 우당탕탕 마감 대작전",
-  "subtitle": "「마감」강화 주간 이벤트",
-  "start_date": "2026-05-14T15:00:00.000Z",
+  "subtitle": "「마감」강화 주간 이벤트 with 어게인",
+  "start_date": "2026-05-13T15:00:00.000Z",
   "end_date": "2026-07-04T15:00:00.000Z",
   "task_id": "T014",
   "task_label": "마감",
@@ -31,19 +31,27 @@
   },
   "backgrounds": [
     {
-      "key": "office",
-      "url": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/office.jpg"
+      "key": "road",
+      "url": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/bg_road.jpg"
     },
     {
-      "key": "sky",
-      "url": null
+      "key": "garden",
+      "url": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/bg_garden.jpg"
+    },
+    {
+      "key": "night",
+      "url": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/bg_night.jpg"
+    },
+    {
+      "key": "morning",
+      "url": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/bg_morning.jpg"
     }
   ],
   "rewards": [
     {
       "event_id": "event_001",
       "ep": 1,
-      "ep_title": "1화 — 원고를 하자",
+      "ep_title": "1화 — 계약은 신중히",
       "mahwa": 50,
       "item_id": "EI001_2",
       "unlock_story_ep": 1
@@ -59,7 +67,7 @@
     {
       "event_id": "event_001",
       "ep": 3,
-      "ep_title": "3화 — 뒷풀이",
+      "ep_title": "3화 — 마감 성공?",
       "mahwa": 50,
       "item_id": "EI001_4",
       "unlock_story_ep": 3
@@ -70,89 +78,89 @@
       "ep_title": "이벤트 완수",
       "mahwa": 50,
       "item_id": "EI001_5",
-      "unlock_story_ep": null
+      "unlock_story_ep": 4
     }
   ],
   "items": [
     {
       "event_id": "event_001",
       "item_id": "EI001_1",
-      "name": "준의 원고 뭉치",
-      "description": "어딘가 급하게 쓴 흔적이 있는 원고들.",
+      "name": "수상한 행사 전단지",
+      "description": "괴랄한 디자인의 전단지. 아방궁 배 제444회 불도마뱀 동인 행사…?",
       "granted_at_ep": 0,
       "cost": 0,
       "recipients": [
         {
-          "wiz_id": "W25",
-          "action_comment": "{name}{josa} 원고를 조심스럽게 정리하고 있다."
+          "wiz_id": "W23",
+          "action_comment": "고요는 심란한 표정으로 구겨진 전단지를 보고 있다. '분명히 버렸는데…….'"
         }
       ]
     },
     {
       "event_id": "event_001",
       "item_id": "EI001_2",
-      "name": "데인티의 행운 카드",
-      "description": "구겨진 트럼프 카드. 행운을 가져온다고 한다.",
+      "name": "「낙원 유희」 명함",
+      "description": "수상한 자의 명함. 어게인 분과회에 관심이 많은 것 같다.",
       "granted_at_ep": 1,
       "cost": 0,
       "recipients": [
         {
           "wiz_id": "W24",
-          "action_comment": "{name}{josa3} 카드로 손장난을 치고 있다."
+          "action_comment": "데인티는 배달 온 꽃다발을 얼떨떨하게 받아들고 있다. 발신인은 「낙원 유희」……."
         }
       ]
     },
     {
       "event_id": "event_001",
       "item_id": "EI001_3",
-      "name": "에이미의 응원 머그컵",
-      "description": "손잡이가 살짝 금 가 있다.",
+      "name": "수상한 얇은 책",
+      "description": "수상한 얇은 책들. 왠지 코하네의 책장에 있었다.",
       "granted_at_ep": 2,
       "cost": 0,
       "recipients": [
         {
-          "wiz_id": "W26",
-          "action_comment": "{name}{josa} 머그컵에 음료를 가득 따르고 있다."
+          "wiz_id": "W25",
+          "action_comment": "준은 진지한 얼굴로 무언가를 읽고 있다가 당신이 들어오자 황급히 뒤로 숨긴다. 평소 보던 것보다 얇은 책인 것 같은데…."
         }
       ]
     },
     {
       "event_id": "event_001",
       "item_id": "EI001_4",
-      "name": "고요의 차 세트",
-      "description": "향이 좋은 찻잎과 다기 세트.",
+      "name": "커플 수영복",
+      "description": "귀여운 과일 무늬 수영복. 코하네와 세트다.",
       "granted_at_ep": 3,
       "cost": 0,
       "recipients": [
         {
-          "wiz_id": "W23",
-          "action_comment": "{name}{josa} 차를 천천히 우리며 당신을 기다린다."
+          "wiz_id": "W26",
+          "action_comment": "휴양지 차림의 에이미와 마주쳤다. 코하네와 함께 바다에 놀러 간다고 한다."
         }
       ]
     },
     {
       "event_id": "event_001",
       "item_id": "EI001_5",
-      "name": "부스 참가 확인서",
-      "description": "제434회 아방궁 배 창작대전에 참가했다는 증거. ",
+      "name": "수제「어게인」 인형 ",
+      "description": "어게인 분과회를 본따 준이 직접 만든 인형.",
       "granted_at_ep": 99,
       "cost": 0,
       "recipients": [
         {
           "wiz_id": "W23",
-          "action_comment": "{name}{josa} 낡은 천칭을 꺼내 먼지를 닦으며 그날을 떠올린다."
+          "action_comment": "고요가 분과회원 모양의 인형을 톡톡 손끝으로 건드리고 있다."
         },
         {
           "wiz_id": "W24",
-          "action_comment": "{name}{josa3} 게임칩을 만지작거리다 조용히 웃는다."
+          "action_comment": "데인티는 분과회 인형을 둘 자리를 찾으려고 방안을 서성거리고 있다. 풍경 좋은 창가에 장식해 두고는 만족스러워했다."
         },
         {
           "wiz_id": "W25",
-          "action_comment": "{name}{josa} 원고 뭉치를 끌어안고 뿌듯한 표정을 짓는다."
+          "action_comment": "준은 예전에 만들었떤 인형을 리뉴얼하겠다며 몰입해 있다."
         },
         {
           "wiz_id": "W26",
-          "action_comment": "{name}{josa} 머그컵에 음료를 따르며 그날 이야기를 꺼낸다."
+          "action_comment": "에이미가 어게인 인형에게 밥을 잘 안 먹는다고 윽박지르고 있다."
         }
       ]
     }
