@@ -2933,8 +2933,26 @@ function RecordPage({logs,wizards,onMarkRead,onTestFinalize,lastWeeklyReport,onS
 }
 
 // ── 책장 페이지 ───────────────────────────────────────────────────────────────
-function BookshelfPage({wizards,affinity,level,roomItems,maxLvReached,wizardStats,logs,clubFilter,setPage,eventMeta}){
+function BookshelfPage({wizards,affinity,level,roomItems,maxLvReached,wizardStats,logs,clubFilter,setPage,eventMeta,backRef}){
   var[selWizId,setSelWizId]=useState(null);
+  var[savedScroll,setSavedScroll]=useState(0);
+
+  // 뒤로가기 핸들러를 부모(AppInner)에 등록 — 상세 열려 있을 때만 함수, 아니면 null
+  React.useEffect(function(){
+    if(backRef){
+      backRef.current=selWizId?function(){
+        setSelWizId(null);
+        setTimeout(function(){window.scrollTo(0,savedScroll);},0);
+      }:null;
+    }
+  },[selWizId,savedScroll]);
+
+  // 마법사 상세 진입 — 현재 스크롤 위치 저장 후 이동
+  function openDetail(wizId){
+    setSavedScroll(window.scrollY);
+    setSelWizId(wizId);
+    setTimeout(function(){window.scrollTo(0,0);},0);
+  }
 
   // 책장 탭 재클릭 시 상세→목록 복귀를 위해 setPage를 감싸서 BottomNav에 전달
   // → BottomNav에서 'bookshelf' 클릭 시 selWizId를 초기화하도록 외부에서 처리
@@ -2956,7 +2974,7 @@ function BookshelfPage({wizards,affinity,level,roomItems,maxLvReached,wizardStat
 
   if(selWizId){
     var wiz=wizards.find(w=>w.id===selWizId);
-    if(wiz)return<WizardDetailPage wiz={wiz} affinity={affinity} level={level} roomItems={roomItems} maxLvReached={maxLvReached} wizardStats={wizardStats} eventMeta={eventMeta} wizards={wizards} onBack={()=>setSelWizId(null)}/>;
+    if(wiz)return<WizardDetailPage wiz={wiz} affinity={affinity} level={level} roomItems={roomItems} maxLvReached={maxLvReached} wizardStats={wizardStats} eventMeta={eventMeta} wizards={wizards}/>;
   }
 
   var ownedCount=filteredWizards.filter(w=>w.owned).length;
@@ -2978,7 +2996,7 @@ function BookshelfPage({wizards,affinity,level,roomItems,maxLvReached,wizardStat
             {wizList.map(wiz=>{
               var owned=wiz.owned;
               return(
-                <button key={wiz.id} onClick={()=>owned&&setSelWizId(wiz.id)}
+                <button key={wiz.id} onClick={()=>owned&&openDetail(wiz.id)}
                   style={{display:'flex',flexDirection:'column',alignItems:'center',gap:5,
                     background:'none',border:'none',cursor:owned?'pointer':'default',
                     fontFamily:'inherit',padding:'4px 0'}}>
@@ -3011,7 +3029,7 @@ function BookshelfPage({wizards,affinity,level,roomItems,maxLvReached,wizardStat
 }
 
 // ── 마법사 상세 페이지 ─────────────────────────────────────────────────────────
-function WizardDetailPage({wiz,affinity,level,roomItems,maxLvReached,wizardStats,eventMeta,wizards,onBack}){
+function WizardDetailPage({wiz,affinity,level,roomItems,maxLvReached,wizardStats,eventMeta,wizards}){
   var aff=affinity[wiz.id]||0;
   var lv=level[wiz.id]||1;
   var threshold=lv<5?LV_REQ[lv]:LV_REQ[4];
@@ -4067,13 +4085,19 @@ function AppInner({onForceReset}){
   var[showResetConfirm,setShowResetConfirm]=useState(false);
   var[page,setPage]=useState('mission');
   var[bookshelfKey,setBookshelfKey]=useState(0);
+  var bookshelfBackRef=React.useRef(null);
 
-  // 안드로이드 뒤로가기: 항상 메인으로, 메인에서는 무시
+  // 안드로이드 뒤로가기: 책장 상세 → 목록, 그 외 → 메인, 메인에서는 무시
   useEffect(function(){
     window.history.pushState({app:true},'');
     function handlePop(){
-      if(page!=='mission'){handleSetPage('mission');}
-      // 메인이면 무시 (히스토리 다시 추가해서 앱이 안 꺼지게)
+      if(page==='bookshelf'&&bookshelfBackRef.current){
+        // 상세 페이지 열려 있으면 목록으로 복귀 (스크롤 복원 포함)
+        bookshelfBackRef.current();
+      } else if(page!=='mission'){
+        handleSetPage('mission');
+      }
+      // 히스토리 다시 추가해서 앱이 안 꺼지게
       window.history.pushState({app:true},'');
     }
     window.addEventListener('popstate',handlePop);
@@ -4761,7 +4785,7 @@ var cf={clubs:clubs||[],knownClubs:allKnown,changedAt:new Date().toISOString().s
         />
       )}
       {page==='mission'&&<MissionPage wizards={wizards} tasks={tasks} mahwa={mahwa} doneCount={doneCount} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} lvUpEvent={lvUpEvent} setLvUpEvent={setLvUpEvent} onUpd={onUpd} onConfirmMission={onConfirmMission} onReset={onReset} onSlotReset={onSlotReset} slots={slots} confirmed={confirmed} favTasks={favTasks} inventory={inventory} logs={logs} focusSlot={focusSlot} setFocusSlot={setFocusSlot} onFocusComplete={handleFocusComplete} onFocusForfeit={handleFocusForfeit}/>}
-      {page==='bookshelf'&&<BookshelfPage key={bookshelfKey} wizards={wizards} affinity={affinity} level={level} roomItems={roomItems} maxLvReached={maxLvReached} wizardStats={wizardStats} logs={logs} clubFilter={clubFilter} setPage={handleSetPage} eventMeta={eventMeta}/>}
+      {page==='bookshelf'&&<BookshelfPage key={bookshelfKey} wizards={wizards} affinity={affinity} level={level} roomItems={roomItems} maxLvReached={maxLvReached} wizardStats={wizardStats} logs={logs} clubFilter={clubFilter} setPage={handleSetPage} eventMeta={eventMeta} backRef={bookshelfBackRef}/>}
       {page==='store'&&<StorePage wizards={wizards} setWizards={setWizards} mahwa={mahwa} setMahwa={setMahwa} affinity={affinity} level={level} applyAff={applyAff} ownedCount={ownedCount} storeDate={storeDate} setStoreDate={setStoreDate} addLogEntry={addLogEntry} clubFilter={clubFilter} addMahwaLog={addMahwaLog} inventory={inventory} setInventory={setInventory} customTasks={customTasks} setCustomTasks={setCustomTasks} setGachaCount={setGachaCount} roomItems={roomItems} setRoomItems={setRoomItems} maxLvReached={maxLvReached} setMaxLvReached={setMaxLvReached} wizardStats={wizardStats} setWizardStats={setWizardStats} logs={logs}/>}
       {page==='record'&&<RecordPage logs={logs} wizards={wizards} onMarkRead={onMarkRead} onTestFinalize={onTestFinalize} lastWeeklyReport={lastWeeklyReport} onShowWeeklyReport={function(r){setWeeklyReportData(r);}}/>}
       {showInstallBanner&&(
