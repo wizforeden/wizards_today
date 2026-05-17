@@ -415,10 +415,10 @@ function buildActionPool(wiz,ownedRecs,allItems,allWizards){
   var clubmate=clubmates.length>0?clubmates[Math.floor(Math.random()*clubmates.length)]:null;
 
   var CONSTANTS=[
-    '{name}{josa} 지금 자리에 없는 것 같다.',
+    '{name}{josa} 지금 자리에 없다.',
     '{name}{josa} 임무에 불려나간 것 같다.',
     '{name}{josa3} 당신을 반기며 문을 열어 주었다.',
-    '{name}{josa} 뭔가를 골똘히 생각하느라 방문객을 눈치채지 못한 것 같다.',
+    '{name}{josa} 뭔가를 골똘히 생각하느라 방문객을 눈치채지 못했다.',
     '{clubmate}{clubmate.josa2} {name}{josa3} 무언가를 수상하게 의논하고 있다.',
     '{name}의 방에서 나오는 {clubmate}{clubmate.josa2} 마주쳤다. 무슨 일이었을까?',
   ];
@@ -4536,14 +4536,14 @@ if(to>=LV_REQ[curLv]&&curLv<maxLv){
       }
       var totalDelta=delta+bonusDeltaAdd;
       applyAff(s.wizardId,totalDelta,'up');
-      if(doneCount<13){
+      if(doneCount<15){
         setMahwa(n=>{
           var next=n+10;
           addMahwaLog('task',+10,next,`임무 완료: ${task?task.name:'?'} (${wiz?wiz.name:'?'})`);
           return next;
         });
       }
-      if(doneCount===12)setShowMahwaLimit(true);
+      if(doneCount===14)setShowMahwaLimit(true);
       setDoneCount(n=>n+1);
       setSlots(p=>p.map((sl,i)=>i===idx?{...sl,status:'done',dialogue:getLine(s.wizardId,'TASK_SUCCESS')}:sl));
       addLogEntry({taskId:s.taskId,taskName:task?task.name:'?',wizardId:s.wizardId,wizardName:wiz?wiz.name:'?',delta:totalDelta,dir:'up',source:'task',hasEventBonus:bonusDeltaAdd>0,eventAccent:bonusDeltaAdd>0&&eventMeta&&eventMeta.theme?eventMeta.theme.accent:null});
