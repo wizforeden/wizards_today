@@ -70,14 +70,14 @@
         {
           "bg": "road",
           "speaker": "윤경",
-          "speaker_img": null,
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc2.png",
           "text": "20년 만이던가~ 이번엔 또 어떤 독창적인 작품들이 나올지 기대되네요. ",
           "style_key": null
         },
         {
           "bg": "road",
           "speaker": "윤경",
-          "speaker_img": null,
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc2.png",
           "text": "고요 씨도 가시나요? 혹시 필요하시면 표, 구해다 드릴까요? 사실은 저도 운영 위원으로 섭외가 되어서요~",
           "style_key": null
         },
@@ -127,7 +127,7 @@
           "bg": "road",
           "speaker": null,
           "speaker_img": null,
-          "text": "하지만 그 전에라고 딱히 소식을 들은 기억이 없는 걸 보니 분명 그와는 무연한 성격의 행사일 것이다. ",
+          "text": "그 전에라고 딱히 소식을 들은 기억이 없는 걸 보니 분명 그와는 무연한 성격의 행사일 것이다. ",
           "style_key": null
         },
         {
@@ -216,21 +216,42 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "조건에 비해 꽤 저렴한 대가였기에 기쁜 마음으로 계약했고 모두가 축하하며 집들이를 했던 날도 생생하게 기억날 정도다. 그런데…….",
+          "text": "조건에 비해 꽤 저렴한 대가였기에 기쁜 마음으로 계약했고 모두가 축하하며 집들이를 했던 날도 생생하게 기억날 정도다.",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그런데…….",
           "style_key": null
         },
         {
           "bg": "garden",
           "speaker": "W23",
           "speaker_img": null,
-          "text": "집 계약 조건에 '불도마뱀 행사 필참'이 있다고? 대체… 어떤 집주인이 그런 조건을 걸어?",
+          "text": "집 계약 조건에 '불도마뱀 행사 필참'이 있다고? ",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": "W23",
+          "speaker_img": null,
+          "text": "대체… 어떤 집주인이 그런 조건을 걸어?",
           "style_key": null
         },
         {
           "bg": "garden",
           "speaker": "W24",
           "speaker_img": null,
-          "text": "「낙원 유희」…… 괴팍하다는 소문은 꽤 들어봤어. 직접 만나봤을 땐 꽤 귀여운 인상이었지만 말이지.",
+          "text": "「낙원 유희」…… 괴팍하다는 소문은 꽤 들어봤어.",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": "W24",
+          "speaker_img": null,
+          "text": "직접 만나봤을 땐 평범하게 귀여운 인상이었지만 말이지.",
           "style_key": null
         },
         {
@@ -244,7 +265,14 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "머리를 맞대고 깨알 같은 독소조항을 읽은 분과회의 마법사들은 각자 탄식을 내쉬었다. 수상할 정도로 좋은 조건이라고는 생각했지만 아방궁이야 워낙 수상한 곳이니까 그러려니 한 게 잘못이었을까.",
+          "text": "머리를 맞대고 깨알 같은 독소조항을 읽은 분과회의 마법사들은 각자 탄식을 내쉬었다. ",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "수상할 정도로 좋은 조건이라고는 생각했지만 아방궁이니 그러려니 한 게 잘못이었을까.",
           "style_key": null
         },
         {
@@ -410,7 +438,14 @@
           "bg": "garden",
           "speaker": "코하네",
           "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
-          "text": "논-커플링! 즉, 인물들 간의 로맨스 요소가 전혀 없는 장르를 뜻하지. 버디물, 가족물, 사건물 등이 속한다구. 어때? 우리한테 딱이지?",
+          "text": "논-커플링! 즉, 인물들 간의 로맨스 요소가 전혀 없는 장르를 뜻하지. 버디물, 가족물, 사건물 등이 속한다구. ",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
+          "text": "어때? 우리한테 딱이지?",
           "style_key": null
         },
         {
@@ -464,9 +499,9 @@
         },
         {
           "bg": "garden",
-          "speaker": "일동(W23 제외)",
+          "speaker": "일동(고요 제외)",
           "speaker_img": null,
-          "text": "\"\"\"마감 개시다!\"\"\"",
+          "text": "마감 개시다!",
           "style_key": "bold"
         }
       ]
@@ -506,7 +541,14 @@
           "bg": "night",
           "speaker": "W26",
           "speaker_img": null,
-          "text": "준이야 잘할 거라고 믿고 있었지만 말이지~ 이러쿵저러쿵해도 고요도 마지막까지 힘내줬어. 고요 의외로 소질 있는 거 아닐까?",
+          "text": "준이야 잘할 거라고 믿고 있었지만 말이지~ ",
+          "style_key": null
+        },
+        {
+          "bg": "night",
+          "speaker": "W26",
+          "speaker_img": null,
+          "text": "이러쿵저러쿵해도 고요도 마지막까지 힘내줬어. 고요 의외로 소질 있는 거 아닐까?",
           "style_key": null
         },
         {
@@ -735,21 +777,7 @@
           "bg": "morning",
           "speaker": "일동",
           "speaker_img": null,
-          "text": "\"\"\"「바다, 비치발리볼, 그리고 섹시☆다이너마이트 비키니 대작전 ~어른의 게이머들~(전체연령가)」!!!!!!\"\"\"",
-          "style_key": null
-        },
-        {
-          "bg": "morning",
-          "speaker": null,
-          "speaker_img": null,
-          "text": "...",
-          "style_key": null
-        },
-        {
-          "bg": "morning",
-          "speaker": null,
-          "speaker_img": null,
-          "text": "...",
+          "text": "「바다, 비치발리볼, 그리고 섹시☆다이너마이트 비키니 대작전 ~어른의 게이머들~(전체연령가)」!!!!!",
           "style_key": null
         },
         {
@@ -768,10 +796,24 @@
         },
         {
           "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "...",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "...",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
           "speaker": "코하네",
           "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
           "text": "라는 꿈을 꿨어.",
-          "style_key": null
+          "style_key": "bold"
         },
         {
           "bg": "garden",
@@ -826,14 +868,28 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "여름의 햇살은 아침부터 제법 뜨뜻했다. 모처럼 모두가 모인 주말 아침, 작심해서 야외 브런치를 갖기로 한 분과회는 조금전 들은 이야기로 정신이 반쯤 혼미해질 것만 같았다.",
+          "text": "여름의 햇살은 아침부터 제법 뜨뜻했다. ",
           "style_key": null
         },
         {
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "그러나 그것도 잠시. 그러고 보니 여름 휴가 계획을 세워야겠다는 둥, 사실은 내가 그림을 좀 그렸었다는 둥, 별 시시콜콜한 이야기가 즐겁게 테이블을 덮었다.",
+          "text": "모처럼 모두가 모인 주말 아침, 작심해서 야외 브런치를 갖기로 한 분과회는 조금전 들은 이야기로 정신이 반쯤 혼미해질 것만 같았다.",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그러나 그것도 잠시.",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": " 그러고 보니 여름 휴가 계획을 세워야겠다는 둥, 사실은 내가 그림을 좀 그렸었다는 둥, 별 시시콜콜한 이야기가 즐겁게 테이블을 덮었다.",
           "style_key": null
         },
         {
@@ -854,7 +910,14 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "혼자서 무언가를 골똘히 생각하고 있던 준이 데인티의 말에 고개를 들었다. 그러고도 잠시 준은 입을 열지 못했다.",
+          "text": "혼자서 무언가를 골똘히 생각하고 있던 준이 데인티의 말에 고개를 들었다. ",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그러고도 잠시 준은 입을 열지 못했다.",
           "style_key": null
         },
         {
@@ -882,7 +945,14 @@
           "bg": "garden",
           "speaker": "W25",
           "speaker_img": null,
-          "text": "그게… 실제로 있어. 불도마뱀 동인 행사…… 라는 이름은 아니지만, 그…… 비슷한 거.",
+          "text": "그게… 실제로 있어. ",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": "W25",
+          "speaker_img": null,
+          "text": "불도마뱀 동인 행사…… 라는 이름은 아니지만, 그…… 비슷한 거.",
           "style_key": null
         },
         {
@@ -924,7 +994,14 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "머뭇거리던 준이 비장한 얼굴로 무언가를 가방에서 꺼냈다. 양손으로 꼭 감싸쥐고 있다가 조심스럽게 펼쳐보인 그것은……. ",
+          "text": "머뭇거리던 준이 비장한 얼굴로 무언가를 가방에서 꺼냈다. ",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "양손으로 꼭 감싸쥐고 있다가 조심스럽게 펼쳐보인 그것은……. ",
           "style_key": null
         },
         {
@@ -1015,7 +1092,14 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "그들의 모습을 본딴 인형이 실제로 불도마뱀 골목 부스에서 팔리고, 그것을 어떤 수상한 마법사가 죄다 사들여 버리게 되는 것은 그로부터 조금 훗날의 일.",
+          "text": "그들의 모습을 본딴 인형이 실제로 불도마뱀 골목 부스에서 팔리고, 그것을 어떤 수상한 마법사가 죄다 사들여 버리게 되는 것은…",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그로부터 조금 훗날의 일.",
           "style_key": null
         },
         {
