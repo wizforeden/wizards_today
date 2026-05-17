@@ -22,7 +22,7 @@
           "bg": "road",
           "speaker": "W23",
           "speaker_img": null,
-          "text": "…제 444회 불도마뱀 동인 행사 개최?",
+          "text": "…제444회 불도마뱀 동인 행사 개최?",
           "style_key": null
         },
         {
@@ -141,7 +141,7 @@
           "bg": "road",
           "speaker": "W23",
           "speaker_img": null,
-          "text": "(아무튼 뭐 윤경이 맡은 행사라니 별일이 있지야 않겠지. …애초에 나랑은 상관이 없는 일이고.)",
+          "text": "(뭐 윤경이 맡은 행사라니 별일이야 없겠지. …애초에 나랑은 상관이 없는 일이고.)",
           "style_key": null
         },
         {
@@ -279,7 +279,7 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "아무리 그래도 무슨 행사에 참가하지 않으면 천문학적 배상금을 물어야 한다는 계약 따위는 역시 넣은 쪽이 잘못이라고 생각하지만.",
+          "text": "아무리 그래도 이 따위의 조항은 역시 넣은 쪽이 나빴다고 생각하지만.",
           "style_key": null
         },
         {
@@ -312,9 +312,9 @@
         },
         {
           "bg": "garden",
-          "speaker": null,
+          "speaker": "일동",
           "speaker_img": null,
-          "text": "묘한 침묵이 감돌았다.",
+          "text": "…….",
           "style_key": null
         },
         {
@@ -595,8 +595,8 @@
         },
         {
           "bg": "night",
-          "speaker": null,
-          "speaker_img": null,
+          "speaker": "코하네",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc1.png",
           "text": "헤헤, 물자 조달하러 왔어. 여기, 코하네 특제 밀크티!",
           "style_key": null
         },
@@ -778,7 +778,7 @@
           "speaker": "일동",
           "speaker_img": null,
           "text": "「바다, 비치발리볼, 그리고 섹시☆다이너마이트 비키니 대작전 ~어른의 게이머들~(전체연령가)」!!!!!",
-          "style_key": null
+          "style_key": "shout"
         },
         {
           "bg": "morning",
@@ -826,7 +826,7 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "장구한 이야기를 듣고 난 일행은 경악과 감탄이 딱 반씩 섞인 얼굴로 코하네를 보았다.",
+          "text": "장구한 이야기를 듣고서 마법사들은 경악과 감탄이 딱 반씩 섞인 얼굴로 코하네를 보았다.",
           "style_key": null
         },
         {
@@ -889,7 +889,7 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": " 그러고 보니 여름 휴가 계획을 세워야겠다는 둥, 사실은 내가 그림을 좀 그렸었다는 둥, 별 시시콜콜한 이야기가 즐겁게 테이블을 덮었다.",
+          "text": "그러고 보니 여름 휴가 계획을 세워야겠다는 둥, 사실은 내가 그림을 좀 그렸었다는 둥, 별 시시콜콜한 이야기가 즐겁게 테이블을 덮었다.",
           "style_key": null
         },
         {
