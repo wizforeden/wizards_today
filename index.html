@@ -602,24 +602,28 @@ function parseEventDate(val){
   if(s.indexOf('T')>0)return s.slice(0,10);
   return s;
 }
-function isEventActive(meta,clubFilter){
+function isEventActive(meta,clubFilter,wizards){
   if(!meta)return false;
   var today=gameDay();
   var s=parseEventDate(meta.start_date);
   var e=parseEventDate(meta.end_date);
   if(today<s||today>e)return false;
-  // target_wiz_ids 기반 분과회 필터 체크
   var twIds=meta.target_wiz_ids||[];
-  if(twIds.length>0&&clubFilter&&clubFilter.clubs&&clubFilter.clubs.length>0){
-    // target_wiz_ids 중 하나라도 유저 clubFilter에 속하면 참여 가능
-    // wiz 데이터가 없으므로 club 매핑은 앱 전역 FB_WIZARDS에서 읽음
-    var allowed=twIds.some(function(wid){
-      var w=FB_WIZARDS.find(function(fw){return fw.id===wid;});
-      return w&&clubFilter.clubs.includes(w.club);
-    });
-    if(!allowed)return false;
-  }
-  return true;
+  if(twIds.length===0)return true;
+  // target_wiz_ids에 해당하는 마법사들의 club 목록
+  var targetClubs=[...new Set(twIds.map(function(wid){
+    var w=FB_WIZARDS.find(function(fw){return fw.id===wid;});
+    return w?w.club:null;
+  }).filter(Boolean))];
+  // 조건1: target club 중 하나라도 clubFilter에 포함
+  if(clubFilter&&clubFilter.clubs&&targetClubs.some(function(club){
+    return clubFilter.clubs.includes(club);
+  }))return true;
+  // 조건2: target club에 속한 마법사 중 1명이라도 owned
+  var wizList=wizards||[];
+  return targetClubs.some(function(club){
+    return wizList.some(function(w){return w.club===club&&w.owned;});
+  });
 }
 function initEventProgress(eventId){
   return{
@@ -3622,7 +3626,7 @@ function EventPage({meta,story,prog,setProg,wizards,mahwa,setMahwa,applyAff,setR
   var[toast,setToast]=useState('');
 
   var eventId=meta.event_id;
-  var active=isEventActive(meta,clubFilter);
+  var active=isEventActive(meta,clubFilter,wizards);
   var thisWeekDone=completedThisWeek(prog);
   var nextEpNum=nextEventEp(prog);
   var allDone=allEventEpsCompleted(prog);
@@ -4086,6 +4090,9 @@ function AppInner({onForceReset}){
   var[page,setPage]=useState('mission');
   var[bookshelfKey,setBookshelfKey]=useState(0);
   var bookshelfBackRef=React.useRef(null);
+  var[eventNoticeDismissed,setEventNoticeDismissed]=useState(function(){
+   try{return!!localStorage.getItem('app:eventNotice_seen');}catch(e){return false;}
+  });
 
   // 안드로이드 뒤로가기: 책장 상세 → 목록, 그 외 → 메인, 메인에서는 무시
   useEffect(function(){
@@ -4551,7 +4558,7 @@ if(to>=LV_REQ[curLv]&&curLv<maxLv){
       var delta=s.tagMatch?25:20;
       // 이벤트 보너스 delta 합산
       var bonusDeltaAdd=0;
-      if(eventMeta&&isEventActive(eventMeta,clubFilter)){
+      if(eventMeta&&isEventActive(eventMeta,clubFilter,wizards)){
         var isBonusTask=eventMeta.bonus_task_ids&&eventMeta.bonus_task_ids.includes(s.taskId);
         var twIds=eventMeta.target_wiz_ids||[];
         var isBonusWiz=twIds.includes(s.wizardId);
@@ -4750,12 +4757,27 @@ var cf={clubs:clubs||[],knownClubs:allKnown,changedAt:new Date().toISOString().s
       )}
 
       {/* 이벤트 배너 버튼 (이벤트 활성 시 노출) */}
-      {eventMeta&&isEventActive(eventMeta,clubFilter)&&!showEvent&&(
+      {eventMeta&&isEventActive(eventMeta,clubFilter,wizards)&&!showEvent&&(
         <button onClick={function(){setShowEvent(true);}}
           style={{position:'fixed',top:14,left:14,zIndex:150,background:(eventMeta.theme&&eventMeta.theme.accent)||'#FF8FC2',border:'none',borderRadius:20,padding:'5px 14px',fontSize:11,fontWeight:600,color:'white',cursor:'pointer',boxShadow:'0 2px 8px rgba(0,0,0,0.15)',fontFamily:'inherit'}}>
           ✦ 이벤트
         </button>
       )}
+      {eventMeta&&isEventActive(eventMeta,clubFilter,wizards)&&!showEvent&&!eventNoticeDismissed&&(
+  <Overlay>
+    <div style={{background:'white',borderRadius:14,padding:'24px 20px',maxWidth:300,width:'100%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.1)',textAlign:'center'}}>
+      <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginBottom:8,letterSpacing:'0.5px'}}>기간 한정 이벤트 개최!</div>
+      <div style={{fontSize:17,fontWeight:700,color:'var(--color-text-primary)',marginBottom:4}}>{eventMeta.title}</div>
+      <div style={{fontSize:12,color:'var(--color-text-secondary)',marginBottom:8,fontStyle:'italic'}}>{eventMeta.subtitle}</div>
+      <div style={{fontSize:11,color:'var(--color-text-tertiary)',marginBottom:16}}>{parseEventDate(eventMeta.start_date).slice(5).replace('-','/')} – {parseEventDate(eventMeta.end_date).slice(5).replace('-','/')}</div>
+      <div style={{fontSize:12,color:'var(--color-text-secondary)',marginBottom:20}}>우측 상단의 이벤트 버튼을 눌러 확인해 보세요!</div>
+      <button onClick={function(){
+        try{localStorage.setItem('app:eventNotice_seen','1');}catch(e){}
+        setEventNoticeDismissed(true);
+      }} style={{width:'100%',padding:'10px',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>확인</button>
+    </div>
+  </Overlay>
+)}
       {/* 이벤트 페이지 */}
       {showEvent&&eventMeta&&(
         <EventPage
