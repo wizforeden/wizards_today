@@ -50,7 +50,14 @@
           "bg": "road",
           "speaker": "윤경",
           "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc2.png",
-          "text": "아하하, 요즘 무슨 스팸 메일처럼 날아들고 있어요, 그 전단지. 아방궁 마법사들은 참 열심이라니까.",
+          "text": "아하하…… 요즘 무슨 스팸 메일처럼 날아들고 있어요, 그 전단지. ",
+          "style_key": null
+        },
+        {
+          "bg": "road",
+          "speaker": "윤경",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc2.png",
+          "text": "아방궁 마법사들은 참 열심이라니까.",
           "style_key": null
         },
         {
@@ -78,7 +85,14 @@
           "bg": "road",
           "speaker": "윤경",
           "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc2.png",
-          "text": "고요 씨도 가시나요? 혹시 필요하시면 표, 구해다 드릴까요? 사실은 저도 운영 위원으로 섭외가 되어서요~",
+          "text": "고요 씨도 가시나요? 혹시 필요하시면 표, 구해다 드릴까요? ",
+          "style_key": null
+        },
+        {
+          "bg": "road",
+          "speaker": "윤경",
+          "speaker_img": "https://raw.githubusercontent.com/wizforeden/wizards_today/main/events/npc2.png",
+          "text": "사실은 저도 운영 위원으로 섭외가 되어서요~",
           "style_key": null
         },
         {
@@ -216,7 +230,7 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "조건에 비해 꽤 저렴한 대가였기에 기쁜 마음으로 계약했고 모두가 축하하며 집들이를 했던 날도 생생하게 기억날 정도다.",
+          "text": "입지에 비해 조건이 꽤 좋았다길래 모두가 축하하며 집들이를 했던 날도 생생하게 기억난다.",
           "style_key": null
         },
         {
@@ -721,7 +735,7 @@
           "bg": "morning",
           "speaker": null,
           "speaker_img": null,
-          "text": "흔한 새 소리도, 분주한 거리의 소음도 모두 잠든 것처럼 고요하다.",
+          "text": "흔한 새 소리도, 분주한 거리의 소음도 모두 잠든 것처럼 조용하다.",
           "style_key": null
         },
         {
@@ -889,7 +903,14 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "그러고 보니 여름 휴가 계획을 세워야겠다는 둥, 사실은 내가 그림을 좀 그렸었다는 둥, 별 시시콜콜한 이야기가 즐겁게 테이블을 덮었다.",
+          "text": "그러고 보니 여름 휴가 계획을 세워야겠다는 둥, 사실은 내가 그림을 좀 그렸었다는 둥,",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": " 별 시시콜콜한 이야기가 즐겁게 테이블을 덮는다.",
           "style_key": null
         },
         {
@@ -1015,7 +1036,7 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "그들 자신이었다. 손가락 두 마디 크기 정도로 데포르메되고, 꼭 소설에 나올 것처럼 묘한 차림새를 한 어게인 분과회와 ─ 코하네.",
+          "text": "손가락 두 마디 크기 정도로 데포르메되고, 꼭 소설에 나올 것처럼 묘한 차림새를 한 어게인 분과회와 ─ 코하네의 인형이다.",
           "style_key": null
         },
         {
@@ -1092,7 +1113,14 @@
           "bg": "garden",
           "speaker": null,
           "speaker_img": null,
-          "text": "그들의 모습을 본딴 인형이 실제로 불도마뱀 골목 부스에서 팔리고, 그것을 어떤 수상한 마법사가 죄다 사들여 버리게 되는 것은…",
+          "text": "그들의 모습을 본딴 인형이 실제로 불도마뱀 골목 부스에서 팔리고, ",
+          "style_key": null
+        },
+        {
+          "bg": "garden",
+          "speaker": null,
+          "speaker_img": null,
+          "text": "그것을 어떤 수상한 마법사가 죄다 사들여 버리게 되는 것은…",
           "style_key": null
         },
         {
