@@ -419,6 +419,7 @@ function buildActionPool(wiz,ownedRecs,allItems,allWizards){
     '{name}{josa} 임무에 불려나간 것 같다.',
     '{name}{josa3} 당신을 반기며 문을 열어 주었다.',
     '{name}{josa} 뭔가를 골똘히 생각하느라 방문객을 눈치채지 못했다.',
+    '방에서 무언가를 찾던 {name}{josa3} 머쓱하게 당신을 맞이한다.',
     '{clubmate}{clubmate.josa2} {name}{josa3} 무언가를 수상하게 의논하고 있다.',
     '{name}의 방에서 나오는 {clubmate}{clubmate.josa2} 마주쳤다. 무슨 일이었을까?',
   ];
@@ -4319,7 +4320,7 @@ function AppInner({onForceReset}){
         if(!wsVal[e.wizardId].firstMet||ds<wsVal[e.wizardId].firstMet)wsVal[e.wizardId].firstMet=ds;
       });
       // 최초 2명: logs 최초 기록일로 보완
-      var ownedMap2={};try{if(vals[1]!==null)ownedMap2=JSON.parse(vals[1]);}catch(e){}
+      var ownedMap2={};try{if(vals[1]!==null){var _d2=JSON.parse(decodeURIComponent(escape(atob(vals[1]))));ownedMap2=Object.fromEntries(Object.entries(_d2).map(function(e){return[e[0],e[1]===1];}));}}catch(e){}
       var allLogDays=Object.keys(savedLogs4).sort();
       var firstLogDay=allLogDays.length>0?allLogDays[0]:gameDay();
       Object.keys(ownedMap2).filter(wid=>ownedMap2[wid]).forEach(wid=>{
@@ -4350,7 +4351,7 @@ function AppInner({onForceReset}){
       if(nowDay.getDay()===1&&shown!==lastMon){
         if(true){
           var savedLogs2={};try{if(vals[8]!==null)savedLogs2=JSON.parse(vals[8]);}catch(e){}
-          var savedWizards=_wizardDefs.map(w=>({...w,owned:(vals[1]!==null?JSON.parse(vals[1]):{})[w.id]||false}));
+          var _ownedMap={};try{if(vals[1]!==null){var _dec=JSON.parse(decodeURIComponent(escape(atob(vals[1]))));_ownedMap=Object.fromEntries(Object.entries(_dec).map(function(e){return[e[0],e[1]===1];}));}}catch(e){} var savedWizards=_wizardDefs.map(w=>({...w,owned:_ownedMap[w.id]||false}));
           var savedMahwaLog=[];try{if(vals[13]!==null)savedMahwaLog=JSON.parse(vals[13]);}catch(e){}
           var sunStr2=weekEnd(lastMon);
           var report=buildWeeklyReport(savedLogs2,savedWizards,savedMahwaLog,gc,lastMon,sunStr2,eventMeta);
