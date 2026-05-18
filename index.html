@@ -4346,10 +4346,9 @@ function AppInner({onForceReset}){
       // 주간 리포트 자동 트리거 (월요일 접속 시, 아직 안 본 경우)
       var shown=vals[20]||'';
       var lastMon=lastWeekMonday();
-      if(now.getDay()===1&&shown!==lastMon){
-        // now는 아직 정의 안 됐으므로 현재 요일 재확인
-        var nowDay=new Date();if(nowDay.getHours()<5)nowDay=new Date(nowDay.getTime()-864e5);
-        if(nowDay.getDay()===1){
+      var nowDay=new Date();if(nowDay.getHours()<5)nowDay=new Date(nowDay.getTime()-864e5);
+      if(nowDay.getDay()===1&&shown!==lastMon){
+        if(true){
           var savedLogs2={};try{if(vals[8]!==null)savedLogs2=JSON.parse(vals[8]);}catch(e){}
           var savedWizards=_wizardDefs.map(w=>({...w,owned:(vals[1]!==null?JSON.parse(vals[1]):{})[w.id]||false}));
           var savedMahwaLog=[];try{if(vals[13]!==null)savedMahwaLog=JSON.parse(vals[13]);}catch(e){}
