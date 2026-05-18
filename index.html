@@ -4015,8 +4015,8 @@ function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,ap
                   <div style={{display:'flex',gap:6,flex:1}}>
                     {targetWizards.map(function(w){
                       return(
-                        <div key={w.id} style={{width:30,height:30,borderRadius:'50%',overflow:'hidden',border:'1.5px solid '+(w.border||evBorder),flexShrink:0}}>
-                          <Avatar wiz={w} size={30}/>
+                        <div key={w.id} style={{width:35,height:35,borderRadius:'50%',overflow:'hidden',border:'0.5px solid '+(w.border||evBorder),flexShrink:0}}>
+                          <Avatar wiz={w} size={35}/>
                         </div>
                       );
                     })}
