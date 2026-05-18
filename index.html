@@ -1207,32 +1207,26 @@ function buildWeeklyReport(logs,wizards,mahwaLog,gachaCount,monStr,sunStr,eventM
     comments.push(nameStr+josa+' 푹 쉬었던 것 같다.');
   }
 
-  // 3. 신규 수집 마법사
-  var newWizIds=[];
-  dayKeys.forEach(d=>{
-    (logs[d].entries||[]).filter(e=>e.source==='gacha'&&e.dir==='up'&&e.taskId==='__gacha__').forEach(e=>{
-      if(e.wizardId&&!newWizIds.includes(e.wizardId))newWizIds.push(e.wizardId);
-    });
-  });
-  var newFromLog=mahwaLog.filter(e=>{
-    if(e.type!=='gacha_new'||!e.wizardId)return false;
-    var d=new Date(e.ts);
-    var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-    return ds>=monStr&&ds<=sunStr;
-  }).map(e=>e.wizardId).filter(Boolean);
-  newFromLog.forEach(id=>{if(!newWizIds.includes(id))newWizIds.push(id);});
-  newWizIds.forEach(id=>{
-    var w=wizards.find(w=>w.id===id);
-    if(w)comments.push((w.name)+(w.josa2||'와')+' 새로 알게 되었다.');
-  });
-
-  // 4. 중복 수집 마법사
+  // 3. 중복 수집 먼저 집계
   var dupThisWeek={};
   mahwaLog.filter(e=>e.type==='gacha_dup'&&e.wizardId).forEach(e=>{
     var d=new Date(e.ts);
     var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
     if(ds>=monStr&&ds<=sunStr)dupThisWeek[e.wizardId]=true;
   });
+  // 4. 신규 수집 — mahwaLog gacha_new만, 중복 수집된 건 제외
+  var dupIds=new Set(Object.keys(dupThisWeek));
+  var newWizIds=mahwaLog.filter(e=>{
+    if(e.type!=='gacha_new'||!e.wizardId)return false;
+    var d=new Date(e.ts);
+    var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    return ds>=monStr&&ds<=sunStr;
+  }).map(e=>e.wizardId).filter(function(id,i,arr){return arr.indexOf(id)===i;});
+  newWizIds.forEach(id=>{
+    var w=wizards.find(w=>w.id===id);
+    if(w)comments.push((w.name)+(w.josa2||'와')+' 새로 알게 되었다.');
+  });
+  // 5. 중복 수집 메시지
   Object.keys(dupThisWeek).forEach(id=>{
     var w=wizards.find(w=>w.id===id);
     var total=gachaCount[id]||1;
@@ -1241,7 +1235,7 @@ function buildWeeklyReport(logs,wizards,mahwaLog,gachaCount,monStr,sunStr,eventM
     if(w)comments.push((w.name)+josa2+' 재회했다. '+recount);
   });
 
-  // 5. 레벨업 마법사
+  // 6. 레벨업 마법사
   var lvUpIds=[];
   dayKeys.forEach(d=>{
     (logs[d].entries||[]).filter(e=>e.source==='levelup').forEach(e=>{
@@ -1253,7 +1247,7 @@ function buildWeeklyReport(logs,wizards,mahwaLog,gachaCount,monStr,sunStr,eventM
     if(w)comments.push(w.name+'과의 운명이 깊어졌다.');
   });
 
-  // 6. 전용 아이템 선물한 마법사
+  // 7. 전용 아이템 선물한 마법사
   var giftIds=[];
   dayKeys.forEach(d=>{
     (logs[d].entries||[]).filter(e=>e.source==='gift'&&e.dir==='up'&&e.itemType==='only').forEach(e=>{
@@ -1265,7 +1259,7 @@ function buildWeeklyReport(logs,wizards,mahwaLog,gachaCount,monStr,sunStr,eventM
     if(w)comments.push(w.name+'에게 특별한 선물을 주었다.');
   });
 
-  // 7. 이벤트 임무 수행 (첫 완료인 경우만)
+  // 8. 이벤트 임무 수행 (첫 완료인 경우만)
   if(hasEventTask&&eventTaskLabel){
     var label=eventTaskLabel;
     comments.push('뿌듯할 만큼 '+label+'에 매진한 일주일이었다.');
