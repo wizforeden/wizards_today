@@ -3419,7 +3419,7 @@ function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp,bas
               transition:'background 0.5s,color 0.5s',fontFamily:'inherit'}}>
             완료
           </button>
-          {canComplete&&targetMs<40*60000&&elapsed<30*60000&&(
+          {canComplete&&targetMs<40*60000&&(
             <div style={{fontSize:10,color:'var(--color-text-tertiary)',textAlign:'center',lineHeight:1.6}}>집중 시간에 따라 소량의 보너스가 추가됩니다. (최대 40분까지)</div>
           )}
           {!canComplete&&(
