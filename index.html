@@ -3845,11 +3845,7 @@ function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,ap
     // 이번 주 이미 완료한 경우: 보상 없이 종료 (결과 모달만)
     if(thisWeekDone){
       setProg(function(p){return{...p,timerState:{elapsed:0,weekKey:''}};});
-      if(hasTimebonus){
-        setRewardInfo({ep:null,isCompletion:false,isRepeat:true,hasTimebonus:true,bonusMahwa,totalMahwa,reward:null,items:[]});
-      }else{
-        setView('page');
-      }
+      setView('page');
       return;
     }
 
