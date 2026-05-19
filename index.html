@@ -1699,17 +1699,15 @@ function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
   if(resultModal){
     return(
       <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.4)',zIndex:600,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 24px'}}>
-        <div style={{background:'white',borderRadius:14,padding:'24px 20px',maxWidth:300,width:'100%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.12)',textAlign:'center'}}>
-          {resultModal.hasBonus&&(
-            <div style={{fontSize:13,color:'var(--color-primary)',fontWeight:500,marginBottom:10,fontFamily:"Georgia,'Nanum Myeongjo',serif"}}>보상이 약간 두둑해졌다!</div>
-          )}
-          <div style={{fontSize:13,color:'var(--color-text-primary)',marginBottom:6}}>
+        <div style={{background:'white',borderRadius:14,padding:'18px 20px',maxWidth:280,width:'100%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.12)',textAlign:'center'}}>
+          <div style={{fontSize:11,fontWeight:600,letterSpacing:'0.5px',color:'var(--color-text-tertiary)',marginBottom:10}}>임무 완료!</div>
+          <div style={{fontSize:13,color:'var(--color-text-primary)',marginBottom:5}}>
             마화를 <span style={{fontWeight:600}}>{resultModal.baseMahwa+resultModal.bonusMahwa}닢</span> 획득했다.
           </div>
-          <div style={{fontSize:13,color:'var(--color-text-primary)',marginBottom:20}}>
-            {wiz&&wiz.name}의 인연이 총 <span style={{fontWeight:600}}>{resultModal.baseAff+resultModal.bonusAff}</span> 상승했다.
+          <div style={{fontSize:13,color:'var(--color-text-primary)',marginBottom:16}}>
+            {wiz&&wiz.name}의 인연이 <span style={{fontWeight:600}}>{resultModal.baseAff+resultModal.bonusAff}</span> 상승했다.
           </div>
-          <button onClick={handleResultConfirm} style={{width:'100%',padding:'11px',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>확인</button>
+          <button onClick={handleResultConfirm} style={{width:'100%',padding:'9px',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>확인</button>
         </div>
       </div>
     );
@@ -3292,10 +3290,11 @@ function fmtTimerHMS(ms){
   return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
 
-function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp}){
+function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp,baseAff,bonusD,clubBonus}){
   var[elapsed,setElapsed]=useState(0);
   var[canComplete,setCanComplete]=useState(false);
   var[showGiveUp,setShowGiveUp]=useState(false);
+  var[focusResultModal,setFocusResultModal]=useState(null);
   var[showWakeNotice,setShowWakeNotice]=useState(function(){
     try{return!localStorage.getItem('focus_wake_notice_seen');}catch(e){return true;}
   });
@@ -3407,7 +3406,12 @@ function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp}){
 
         {/* 버튼 — 완료 위, 포기 아래, 각각 전체 폭 */}
         <div style={{width:'100%',display:'flex',flexDirection:'column',gap:8,marginTop:'auto',flexShrink:0,paddingBottom:24}}>
-          <button onClick={function(){onComplete(elapsed);}} disabled={!canComplete}
+          <button onClick={function(){
+            if(!canComplete)return;
+            var b=getFocusBonus(elapsed);
+            var totalAffForModal=(baseAff||20)+(bonusD||0)+(clubBonus||0)+b.aff;
+            setFocusResultModal({totalAff:totalAffForModal,totalMahwa:10+b.mahwa,hasBonus:b.aff>0||b.mahwa>0});
+          }} disabled={!canComplete}
             style={{width:'100%',padding:'13px',borderRadius:10,border:'none',
               background:canComplete?'var(--color-primary)':'rgba(0,0,0,0.07)',
               color:canComplete?'white':'rgba(0,0,0,0.28)',
@@ -3418,12 +3422,30 @@ function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp}){
           {canComplete&&targetMs<40*60000&&elapsed<30*60000&&(
             <div style={{fontSize:10,color:'var(--color-text-tertiary)',textAlign:'center',lineHeight:1.6}}>집중 시간에 따라 소량의 보너스가 추가됩니다. (최대 40분까지)</div>
           )}
-          <button onClick={function(){setShowGiveUp(true);}}
-            style={{width:'100%',padding:'11px',borderRadius:10,border:'0.5px solid rgba(0,0,0,0.2)',background:'white',fontSize:13,color:'rgba(0,0,0,0.5)',cursor:'pointer',fontFamily:'inherit'}}>
-            포기하기
-          </button>
+          {!canComplete&&(
+            <button onClick={function(){setShowGiveUp(true);}}
+              style={{width:'100%',padding:'11px',borderRadius:10,border:'0.5px solid rgba(0,0,0,0.2)',background:'white',fontSize:13,color:'rgba(0,0,0,0.5)',cursor:'pointer',fontFamily:'inherit'}}>
+              포기하기
+            </button>
+          )}
         </div>
       </div>
+
+      {/* 임무 완료 결과 모달 */}
+      {focusResultModal&&wiz&&(
+        <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.4)',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 24px',zIndex:10}}>
+          <div style={{background:'white',borderRadius:14,padding:'18px 20px',maxWidth:280,width:'100%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.12)',textAlign:'center'}}>
+            <div style={{fontSize:11,fontWeight:600,letterSpacing:'0.5px',color:'var(--color-text-tertiary)',marginBottom:10}}>임무 완료!</div>
+            <div style={{fontSize:13,color:'var(--color-text-primary)',marginBottom:5}}>
+              마화를 <span style={{fontWeight:600}}>{focusResultModal.totalMahwa}닢</span> 획득했다.
+            </div>
+            <div style={{fontSize:13,color:'var(--color-text-primary)',marginBottom:16}}>
+              {wiz.name}의 인연이 <span style={{fontWeight:600}}>{focusResultModal.totalAff}</span> 상승했다.
+            </div>
+            <button onClick={function(){setFocusResultModal(null);onComplete(elapsed);}} style={{width:'100%',padding:'9px',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>확인</button>
+          </div>
+        </div>
+      )}
 
       {/* 포기 확인 */}
       {showGiveUp&&(
@@ -3700,7 +3722,7 @@ function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,ap
 
   function startEventGacha(){
     var today=gameDay();
-    setMahwa(function(n){var nx=n-80;addMahwaLog('gacha_cost',-80,nx,'이벤트 수집 시도');return nx;});
+    setMahwa(function(n){var nx=n-90;addMahwaLog('gacha_cost',-90,nx,'이벤트 수집 시도');return nx;});
     setStoreDate(function(p){var u={...p,gacha:today};storeSet('app:storeDate',JSON.stringify(u));return u;});
     setEGPhase('loading');
   }
@@ -3875,6 +3897,7 @@ function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,ap
   function startFocus(){
     if(!selWiz){showToast('마법사를 먼저 선택해 주세요.');return;}
     // 이어하기 없음 — 항상 처음부터
+    isCompletingRef.current=false; // 재수행 시 완료 처리 잠금 해제
     setProg(function(p){return{...p,timerState:{elapsed:0,weekKey:weekKey()}};});
     setView('focus');
   }
@@ -3902,8 +3925,15 @@ function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,ap
 
   // ── 포커스/VN 화면 ──────────────────────────────────────────────────────────
   if(view==='focus'&&selWiz){
+    // FocusMode 결과 모달용 affinity 수치 미리 계산
+    var _twIds=meta.target_wiz_ids||[];
+    var _isTagMatch=selWiz.tags&&selWiz.tags.includes(EVENT_TASK_TAG);
+    var _baseAff=_isTagMatch?25:20;
+    var _bonusD=meta.bonus_affinity||5;
+    var _clubBonus=_twIds.includes(selWiz.id)?(meta.bonus_affinity||5):0;
     return<FocusMode wiz={selWiz} taskLabel={meta.task_label} targetMs={targetMs}
       focusDialogue={getFocusDialogue()}
+      baseAff={_baseAff} bonusD={_bonusD} clubBonus={_clubBonus}
       onComplete={handleFocusComplete}
       onGiveUp={function(){setView('page');showToast('집중 모드를 종료했습니다. 다시 도전할 수 있어요.');}}/>;
   }
@@ -3999,7 +4029,7 @@ function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,ap
           {active&&(function(){
             var today=gameDay();
             var gachaDone=storeDate&&storeDate.gacha===today;
-            var canAfford=mahwa>=80;
+            var canAfford=mahwa>=90;
             var canGacha=!gachaDone&&canAfford;
             var twIds=meta.target_wiz_ids||[];
             var targetWizards=wizards.filter(function(w){return twIds.includes(w.id);});
@@ -4015,8 +4045,8 @@ function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,ap
                   <div style={{display:'flex',gap:6,flex:1}}>
                     {targetWizards.map(function(w){
                       return(
-                        <div key={w.id} style={{width:35,height:35,borderRadius:'50%',overflow:'hidden',border:'0.5px solid '+(w.border||evBorder),flexShrink:0}}>
-                          <Avatar wiz={w} size={35}/>
+                        <div key={w.id} style={{width:30,height:30,borderRadius:'50%',overflow:'hidden',border:'1.5px solid '+(w.border||evBorder),flexShrink:0}}>
+                          <Avatar wiz={w} size={30}/>
                         </div>
                       );
                     })}
@@ -4028,7 +4058,7 @@ function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,ap
                     style={{flexShrink:0,padding:'6px 14px',borderRadius:8,border:'0.5px solid '+(canGacha?evBorder:'rgba(0,0,0,0.1)'),background:canGacha?evBg:'rgba(0,0,0,0.03)',color:canGacha?evAccent:'rgba(0,0,0,0.25)',fontSize:12,fontWeight:600,cursor:canGacha?'pointer':'not-allowed',fontFamily:'inherit',transition:'all 0.15s',textAlign:'center',lineHeight:1.4}}>
                     {gachaDone
                       ?<>매진<br/><span style={{fontSize:9,fontWeight:400}}>오전 5시 리셋</span></>
-                      :'수집 · 80닢'}
+                      :'수집 · 90닢'}
                   </button>
                 </div>
               </div>
@@ -4650,7 +4680,16 @@ function AppInner({onForceReset}){
     var baseAff=result.baseAff;
     var bonusAff=result.bonus.aff;
     var bonusMahwa=result.bonus.mahwa;
-    var totalAff=baseAff+bonusAff;
+    // 이벤트 보너스 계산 (일반 슬롯의 onUpd와 동일한 로직)
+    var eventBonusAff=0;
+    if(eventMeta&&isEventActive(eventMeta,clubFilter,wizards)){
+      var twIds=eventMeta.target_wiz_ids||[];
+      var isBonusTask=eventMeta.bonus_task_ids&&eventMeta.bonus_task_ids.includes(task.id);
+      var isBonusWiz=twIds.includes(wiz.id);
+      if(isBonusTask)eventBonusAff+=eventMeta.bonus_affinity||5;
+      if(isBonusWiz)eventBonusAff+=eventMeta.bonus_affinity||5;
+    }
+    var totalAff=baseAff+bonusAff+eventBonusAff;
     var totalMahwa=10+bonusMahwa;
     applyAff(wiz.id,totalAff,'up');
     setMahwa(function(m){
@@ -4659,7 +4698,7 @@ function AppInner({onForceReset}){
       return nx;
     });
     setDoneCount(function(n){return n+1;});
-    addLogEntry({taskId:task.id,taskName:task.name,wizardId:wiz.id,wizardName:wiz.name,delta:totalAff,dir:'up',source:'task'});
+    addLogEntry({taskId:task.id,taskName:task.name,wizardId:wiz.id,wizardName:wiz.name,delta:totalAff,dir:'up',source:'task',hasEventBonus:eventBonusAff>0,eventAccent:eventBonusAff>0&&eventMeta&&eventMeta.theme?eventMeta.theme.accent:null});
     setWizardStats(function(p){
       var ws={...p};
       if(!ws[wiz.id])ws[wiz.id]={firstMet:null,taskCount:0,taskBreakdown:{}};
