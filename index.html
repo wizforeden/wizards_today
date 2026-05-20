@@ -434,9 +434,10 @@ function buildActionPool(wiz,ownedRecs,allItems,allWizards){
     if(item.type==='only')
       pool.push(resolve(item.action_comment,wiz,clubmate));
     if(item.type==='event'){
-      var c=item.action_comment&&item.action_comment[wiz.id];
-      if(c)pool.push(resolve(c,wiz,clubmate));
-    }
+      var recArr=Array.isArray(item.action_comment)?item.action_comment:[];
+      var recObj=recArr.find(function(r){return r.wiz_id===wiz.id;});
+    if(recObj&&recObj.action_comment)pool.push(resolve(recObj.action_comment,wiz,clubmate));
+}
   });
   return pool;
 }
@@ -3069,7 +3070,10 @@ function WizardDetailPage({wiz,affinity,level,roomItems,maxLvReached,wizardStats
   var roomMsg=getRoomMsg(roomScore,wiz);
 
   // action comment pool — 방문할 때마다 랜덤 (gameDay+wiz.id 시드로 하루 단위 고정)
-  var actionPool=buildActionPool(wiz,ownedRecs,FB_ROOM_ITEMS,wizards);
+  var allItemsForPool=FB_ROOM_ITEMS.concat(allEventItems.map(function(ei){
+  return{id:ei.item_id,type:'event',action_comment:ei.recipients,item_pref:null};
+}));
+var actionPool=buildActionPool(wiz,ownedRecs,allItemsForPool,wizards);
   var actionSlot=(new Date().getHours()>=5&&new Date().getHours()<17)?0:1;
   var actionSeed=hashStr(gameDay()+String(actionSlot)+wiz.id)%actionPool.length;
   var todayAction=actionPool[actionSeed];
