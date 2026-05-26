@@ -83,7 +83,7 @@ const FB_WIZARDS = [
   {id:"W12",name:"판",club:"낙원 여행자",tags:["생업","작업"],josa:"은",josa2:"과",josa3:"이",maxLv:5,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w012.png",bg:"#EDF7FC",border:"#B0D4E6",accent:"#2C5F7A",m_name:"당신의 모든 순간",pref:["작업","수집"],pref_n:["사치"]},
   {id:"W13",name:"캐럴",club:"낙원 여행자",tags:["생존","가정"],josa:"은",josa2:"과",josa3:"이",maxLv:5,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w013.png",bg:"#F8E6F3",border:"#E89BCF",accent:"#8A2C6A",m_name:"아침이 올 때 까지",pref:["생활","수집"]},
   {id:"W14",name:"사요",club:"웬수들",tags:["지성","회복"],josa:"는",josa2:"와",josa3:"가",maxLv:5,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w014.png",bg:"#e6ebf0",border:"#9DB2C8",accent:"#0C1A2B",m_name:"어둠이 잦아드는 밤",pref:["장식","미식"],pref_n:["MZ","레저","기묘","사치"]},
-  {id:"W15",name:"세르비",club:"웬수들",tags:["생존","정리"],josa:"는",josa2:"와",josa3:"가",maxLv:5,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w015.png",bg:"#F2EEE0",border:"#D8CCA8",accent:"#706030",m_name:"잠들지 않는 자",pref:["장식","사치"],pref_n:["작업","생활","수집","단련"]},
+  {id:"W15",name:"세르비",club:"웬수들",tags:["생업","정리"],josa:"는",josa2:"와",josa3:"가",maxLv:5,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w015.png",bg:"#F2EEE0",border:"#D8CCA8",accent:"#706030",m_name:"잠들지 않는 자",pref:["장식","사치"],pref_n:["작업","생활","수집","단련"]},
   {id:"W16",name:"레위",club:"웬수들",tags:["근육","생업"],josa:"는",josa2:"와",josa3:"가",maxLv:5,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w016.png",bg:"#E5EFED",border:"#A3BDB8",accent:"#2A4A46",m_name:"사냥꾼의 자장가",pref:["MZ","감성"],pref_n:["연구","작업"]},
   {id:"W17",name:"재이",club:"웬수들",tags:["생존","작업"],josa:"는",josa2:"와",josa3:"가",maxLv:1,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w017.png",bg:"#F1EAF5",border:"#B9A3C9",accent:"#1C1423",m_name:"썩은 심장에 흐르는 것은",pref:["작업","휴식"],pref_n:["장식","사치","단련"]},
   {id:"W18",name:"타토",club:"웬수들",tags:["근육","회복"],josa:"는",josa2:"와",josa3:"가",maxLv:5,owned:false,img:"https://raw.githubusercontent.com/wizforeden/wizards_today/main/image/w018.png",bg:"#FEF6F9",border:"#F6C8DA",accent:"#8A3A5A",m_name:"끝까지 혼신을",pref:["MZ","레저"],pref_n:["연구","감성","생활","장식","휴식","사치","음악"]},
@@ -157,6 +157,8 @@ const FB_TASKS = [
   {id:"T033",name:"오타쿠 숙제",tag:"작업"},
   {id:"T034",name:"약 먹기",tag:"생존"},
   {id:"T035",name:"돌보기",tag:"회복"},
+  {id:"T036",name:"식사",tag:"생존"},
+
 ].sort((a,b)=>a.name.localeCompare(b.name,'ko'));
 
 const FB_DLG = {
