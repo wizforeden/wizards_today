@@ -1609,7 +1609,12 @@ function getFocusBonus(elapsedMs){
 }
 
 function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
-  var[elapsed,setElapsed]=useState(0);
+  // 세션 복구: 이전에 저장된 elapsed 불러오기
+  var _SESSION_KEY='app:focusSession_normal';
+  var _initElapsed=(function(){
+    try{var s=localStorage.getItem(_SESSION_KEY);if(s){var d=JSON.parse(s);if(d.wizardId===wiz.id&&d.taskId===task.id&&d.targetMs===targetMs)return d.elapsed||0;}return 0;}catch(e){return 0;}
+  })();
+  var[elapsed,setElapsed]=useState(_initElapsed);
   var[showGiveUp,setShowGiveUp]=useState(false);
   var[resultModal,setResultModal]=useState(null);
   var[showWakeNotice,setShowWakeNotice]=useState(function(){  // ← 여기
@@ -1619,11 +1624,22 @@ function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
   var lastTickRef=useRef(Date.now());
   var isCompletingRef=useRef(false);
   var isVisibleRef=useRef(!document.hidden);
+  var saveSessionRef=useRef(null);
+  var elapsedRef=useRef(_initElapsed);
 
   useEffect(function(){
+    // 세션 저장 (5초마다)
+    saveSessionRef.current=setInterval(function(){
+      if(!isVisibleRef.current)return;
+      try{localStorage.setItem(_SESSION_KEY,JSON.stringify({wizardId:wiz.id,taskId:task.id,targetMs:targetMs,elapsed:elapsedRef.current}));}catch(e){}
+    },5000);
     function handleVis(){
       isVisibleRef.current=!document.hidden;
       if(!document.hidden)lastTickRef.current=Date.now();
+      // 백그라운드 전환 시 즉시 저장
+      if(document.hidden){
+        try{localStorage.setItem(_SESSION_KEY,JSON.stringify({wizardId:wiz.id,taskId:task.id,targetMs:targetMs,elapsed:elapsedRef.current}));}catch(e){}
+      }
     }
     document.addEventListener('visibilitychange',handleVis);
     lastTickRef.current=Date.now();
@@ -1632,10 +1648,11 @@ function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
       var now=Date.now();
       var delta=now-(lastTickRef.current||now);
       lastTickRef.current=now;
-      setElapsed(function(p){return p+delta;});
+      setElapsed(function(p){var next=p+delta;elapsedRef.current=next;return next;});
     },200);
     return function(){
       clearInterval(intervalRef.current);
+      clearInterval(saveSessionRef.current);
       document.removeEventListener('visibilitychange',handleVis);
     };
   },[]);
@@ -1664,6 +1681,7 @@ function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
   function handleComplete(){
     if(isCompletingRef.current)return;
     isCompletingRef.current=true;
+    try{localStorage.removeItem('app:focusSession_normal');}catch(e){}
     var b=getFocusBonus(elapsed);
     setResultModal({baseAff,bonusAff:b.aff,baseMahwa:10,bonusMahwa:b.mahwa,hasBonus:b.aff>0||b.mahwa>0});
   }
@@ -1790,8 +1808,8 @@ function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
       {showGiveUp&&(
         <ForfeitModal
           forfeitTickets={(inventory&&inventory.forfeitTickets)||0}
-          onForfeit={function(){onForfeit(false);}}
-          onForfeitTicket={function(){onForfeit(true);}}
+          onForfeit={function(){try{localStorage.removeItem('app:focusSession_normal');}catch(e){}onForfeit(false);}}
+          onForfeitTicket={function(){try{localStorage.removeItem('app:focusSession_normal');}catch(e){}onForfeit(true);}}
           onCancel={function(){setShowGiveUp(false);}}
         />
       )}
@@ -1799,11 +1817,13 @@ function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
   );
 }
 
-function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,level,lvTransitions,lvUpEvent,setLvUpEvent,onUpd,onConfirmMission,onReset,onSlotReset,slots,confirmed,favTasks,inventory,logs,focusSlot,setFocusSlot,onFocusComplete,onFocusForfeit}){
+function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,level,lvTransitions,lvUpEvent,setLvUpEvent,onUpd,onConfirmMission,onReset,onSlotReset,slots,confirmed,favTasks,inventory,logs,focusSlot,setFocusSlot,onFocusComplete,onFocusForfeit,initFocusActive,onInitFocusConsumed}){
   var[modal,setModal]=useState(null);
   var[diceMsg,setDiceMsg]=useState('');
-  var[modeView,setModeView]=useState('normal'); // 'normal'|'focus'
-  var[focusTimerActive,setFocusTimerActive]=useState(false);
+  var[modeView,setModeView]=useState(initFocusActive?'focus':'normal'); // 'normal'|'focus'
+  var[focusTimerActive,setFocusTimerActive]=useState(initFocusActive||false);
+  // 복구 후 initFocusActive 소비
+  React.useEffect(function(){if(initFocusActive&&onInitFocusConsumed)onInitFocusConsumed();},[]);
   function formatElapsed(startedAt){
     if(!startedAt)return '알 수 없는 시간';
     var mins=Math.floor((Date.now()-startedAt)/60000);
@@ -2970,7 +2990,7 @@ function BookshelfPage({wizards,affinity,level,roomItems,maxLvReached,wizardStat
   // clubFilter에 포함된 분과회 마법사 전체 (owned 여부 무관)
   var allowedClubs=clubFilter&&clubFilter.clubs&&clubFilter.clubs.length>0?clubFilter.clubs:null;
   var filteredWizards=allowedClubs
-    ?wizards.filter(w=>allowedClubs.includes(w.club))
+    ?wizards.filter(w=>allowedClubs.includes(w.club)||w.owned)
     :wizards;
 
   // 분과회 목록 (필터된 마법사 기준)
@@ -3297,8 +3317,13 @@ function fmtTimerHMS(ms){
 }
 
 function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp,baseAff,bonusD,clubBonus}){
-  var[elapsed,setElapsed]=useState(0);
-  var[canComplete,setCanComplete]=useState(false);
+  // 세션 복구: 이전에 저장된 elapsed 불러오기
+  var _SESSION_KEY='app:focusSession_event';
+  var _initElapsed=(function(){
+    try{var s=localStorage.getItem(_SESSION_KEY);if(s){var d=JSON.parse(s);if(d.wizardId===wiz.id&&d.targetMs===targetMs)return d.elapsed||0;}return 0;}catch(e){return 0;}
+  })();
+  var[elapsed,setElapsed]=useState(_initElapsed);
+  var[canComplete,setCanComplete]=useState(_initElapsed>=targetMs);
   var[showGiveUp,setShowGiveUp]=useState(false);
   var[focusResultModal,setFocusResultModal]=useState(null);
   var[showWakeNotice,setShowWakeNotice]=useState(function(){
@@ -3307,11 +3332,22 @@ function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp,bas
   var intervalRef=useRef(null);
   var lastTickRef=useRef(null);
   var isVisibleRef=useRef(!document.hidden);
+  var saveSessionRef=useRef(null);
+  var elapsedRef=useRef(_initElapsed);
 
   useEffect(function(){
+    // 세션 저장 (5초마다)
+    saveSessionRef.current=setInterval(function(){
+      if(!isVisibleRef.current)return;
+      try{localStorage.setItem(_SESSION_KEY,JSON.stringify({wizardId:wiz.id,targetMs:targetMs,elapsed:elapsedRef.current}));}catch(e){}
+    },5000);
     function handleVis(){
       isVisibleRef.current=!document.hidden;
       if(!document.hidden)lastTickRef.current=Date.now();
+      // 백그라운드 전환 시 즉시 저장
+      if(document.hidden){
+        try{localStorage.setItem(_SESSION_KEY,JSON.stringify({wizardId:wiz.id,targetMs:targetMs,elapsed:elapsedRef.current}));}catch(e){}
+      }
     }
     document.addEventListener('visibilitychange',handleVis);
     lastTickRef.current=Date.now();
@@ -3321,13 +3357,15 @@ function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp,bas
       var delta=now-(lastTickRef.current||now);
       lastTickRef.current=now;
       setElapsed(function(prev){
-        var next=prev+delta;
+       var next=prev+delta;
+       elapsedRef.current=next;
         if(next>=targetMs)setCanComplete(true);
         return next;
       });
     },200);
     return function(){
       clearInterval(intervalRef.current);
+      clearInterval(saveSessionRef.current);
       document.removeEventListener('visibilitychange',handleVis);
     };
   },[]);
@@ -3414,6 +3452,7 @@ function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp,bas
         <div style={{width:'100%',display:'flex',flexDirection:'column',gap:8,marginTop:'auto',flexShrink:0,paddingBottom:24}}>
           <button onClick={function(){
             if(!canComplete)return;
+            try{localStorage.removeItem('app:focusSession_event');}catch(e){}
             var b=getFocusBonus(elapsed);
             var totalAffForModal=(baseAff||20)+(bonusD||0)+(clubBonus||0)+b.aff;
             setFocusResultModal({totalAff:totalAffForModal,totalMahwa:10+b.mahwa,hasBonus:b.aff>0||b.mahwa>0});
@@ -3461,7 +3500,7 @@ function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp,bas
             <div style={{fontSize:11,color:'var(--color-text-tertiary)',textAlign:'center',marginBottom:20,lineHeight:1.7}}>포기해도 페널티는 없습니다.<br/>다시 도전할 때는 처음부터 시작합니다.</div>
             <div style={{display:'flex',gap:8}}>
               <button onClick={function(){setShowGiveUp(false);}} style={{flex:1,padding:'10px',borderRadius:8,border:'0.5px solid #D0D0D0',background:'white',fontSize:13,color:'var(--color-text-secondary)',cursor:'pointer',fontFamily:'inherit'}}>계속하기</button>
-              <button onClick={onGiveUp} style={{flex:1,padding:'10px',borderRadius:8,border:'none',background:'#8A3030',color:'white',fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>포기하기</button>
+              <button onClick={function(){try{localStorage.removeItem('app:focusSession_event');}catch(e){}onGiveUp();}} style={{flex:1,padding:'10px',borderRadius:8,border:'none',background:'#8A3030',color:'white',fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>포기하기</button>
             </div>
           </div>
         </div>
@@ -3649,9 +3688,18 @@ function VNViewer({episode,wizards,onClose,evAccent,evBg,backgrounds}){
 
 
 // ── 이벤트 페이지 ──────────────────────────────────────────────────────────────
-function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,applyAff,setRoomItems,addLogEntry,addMahwaLog,doneCount,setDoneCount,setWizardStats,setGachaCount,storeDate,setStoreDate,clubFilter,onClose}){
-  var[view,setView]=useState('page'); // 'page'|'focus'|'vn'
-  var[selWiz,setSelWiz]=useState(null);
+function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,applyAff,setRoomItems,addLogEntry,addMahwaLog,doneCount,setDoneCount,setWizardStats,setGachaCount,storeDate,setStoreDate,clubFilter,onClose,eventFocusRestore,onEventFocusRestoreConsumed}){
+  // 이벤트 집중 복구: 세션이 있으면 바로 focus 진입
+  var _initView='page';
+  var _initSelWiz=null;
+  if(eventFocusRestore&&eventFocusRestore.wizardId){
+    var _rWiz=wizards.find(function(w){return w.id===eventFocusRestore.wizardId;});
+    if(_rWiz){_initView='focus';_initSelWiz=_rWiz;}
+  }
+  var[view,setView]=useState(_initView); // 'page'|'focus'|'vn'
+  var[selWiz,setSelWiz]=useState(_initSelWiz);
+  // 복구 소비
+  React.useEffect(function(){if(eventFocusRestore&&onEventFocusRestoreConsumed)onEventFocusRestoreConsumed();},[]);
   var[showWizPick,setShowWizPick]=useState(false);
   var[vnEp,setVnEp]=useState(null);
   var[modal,setModal]=useState(null); // 'info'
@@ -4349,6 +4397,8 @@ function AppInner({onForceReset}){
   var[eventStory,setEventStory]=useState(null);   // fetch된 스토리
   var[eventProgress,setEventProgress]=useState({}); // app:eventProgress
   var[showEvent,setShowEvent]=useState(false);    // 이벤트 페이지 표시 여부
+  var[eventFocusRestore,setEventFocusRestore]=useState(null); // 이벤트 집중 복구용 {wizardId}
+  var[initFocusActive,setInitFocusActive]=useState(false);    // 일반 집중 복구용
   var[focusSlot,setFocusSlot]=useState(function(){
     try{var v=localStorage.getItem('app:focusSlotSession');return v?JSON.parse(v):{taskId:null,wizardId:null,targetMs:0};}
     catch(e){return{taskId:null,wizardId:null,targetMs:0};}
@@ -4549,6 +4599,45 @@ function AppInner({onForceReset}){
       if(!betaDone&&firstGacha==='1'&&tod>='2026-05-17'&&tod<='2026-05-19'){
         setBetaModal('announcement');
       }
+      // ── 집중 모드 세션 복구 ──────────────────────────────────────────────────
+      // 일반 집중: focusSlot + focusTimerActive 복구 → MissionPage에 initFocusActive prop으로 전달
+      try{
+        var nSess=localStorage.getItem('app:focusSession_normal');
+        if(nSess){
+          var nD=JSON.parse(nSess);
+          if(nD.wizardId&&nD.taskId&&nD.elapsed>0){
+            // focusSlot이 이미 세팅되어 있으면 그대로, 아니면 세션값으로 세팅
+            setFocusSlot(function(prev){
+              if(prev.wizardId===nD.wizardId&&prev.taskId===nD.taskId)return prev;
+              var updated={wizardId:nD.wizardId,taskId:nD.taskId,targetMs:nD.targetMs||0};
+              localStorage.setItem('app:focusSlotSession',JSON.stringify(updated));
+              return updated;
+            });
+            setInitFocusActive(true);
+          }
+        }
+      }catch(e){}
+      // 이벤트 집중: showEvent + EventPage selWiz 복구
+      try{
+        var eSess=localStorage.getItem('app:focusSession_event');
+        if(eSess){
+          var eD=JSON.parse(eSess);
+          if(eD.wizardId&&eD.elapsed>0){
+            setShowEvent(true);
+            setEventFocusRestore({wizardId:eD.wizardId});
+          }
+        }
+      }catch(e){}
+      // 책장 이미지 프리로드 (clubFilter 소속 + owned 마법사)
+      try{
+        var cfForPreload=vals[11]?JSON.parse(vals[11]):null;
+        var cfClubs=cfForPreload&&cfForPreload.clubs?cfForPreload.clubs:[];
+        _wizardDefs.filter(function(w){
+          return w.img&&(cfClubs.includes(w.club)||ownedMap[w.id]);
+        }).forEach(function(w){
+          var img=new Image();img.src=w.img;
+        });
+      }catch(e){}
       setUserLoaded(true);
     }).catch(()=>setUserLoaded(true));
   },[]);
@@ -4997,9 +5086,11 @@ var cf={clubs:clubs||[],knownClubs:allKnown,changedAt:new Date().toISOString().s
           setStoreDate={setStoreDate}
           clubFilter={clubFilter}
           onClose={function(){setShowEvent(false);}}
+          eventFocusRestore={eventFocusRestore}
+          onEventFocusRestoreConsumed={function(){setEventFocusRestore(null);}}
         />
       )}
-      {page==='mission'&&<MissionPage wizards={wizards} tasks={tasks} mahwa={mahwa} doneCount={doneCount} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} lvUpEvent={lvUpEvent} setLvUpEvent={setLvUpEvent} onUpd={onUpd} onConfirmMission={onConfirmMission} onReset={onReset} onSlotReset={onSlotReset} slots={slots} confirmed={confirmed} favTasks={favTasks} inventory={inventory} logs={logs} focusSlot={focusSlot} setFocusSlot={setFocusSlot} onFocusComplete={handleFocusComplete} onFocusForfeit={handleFocusForfeit}/>}
+      {page==='mission'&&<MissionPage wizards={wizards} tasks={tasks} mahwa={mahwa} doneCount={doneCount} affinity={affinity} affinityChanges={affinityChanges} level={level} lvTransitions={lvTransitions} lvUpEvent={lvUpEvent} setLvUpEvent={setLvUpEvent} onUpd={onUpd} onConfirmMission={onConfirmMission} onReset={onReset} onSlotReset={onSlotReset} slots={slots} confirmed={confirmed} favTasks={favTasks} inventory={inventory} logs={logs} focusSlot={focusSlot} setFocusSlot={setFocusSlot} onFocusComplete={handleFocusComplete} onFocusForfeit={handleFocusForfeit} initFocusActive={initFocusActive} onInitFocusConsumed={function(){setInitFocusActive(false);}}/>}
       {page==='bookshelf'&&<BookshelfPage key={bookshelfKey} wizards={wizards} affinity={affinity} level={level} roomItems={roomItems} maxLvReached={maxLvReached} wizardStats={wizardStats} logs={logs} clubFilter={clubFilter} setPage={handleSetPage} eventMeta={eventMeta} backRef={bookshelfBackRef}/>}
       {page==='store'&&<StorePage wizards={wizards} setWizards={setWizards} mahwa={mahwa} setMahwa={setMahwa} affinity={affinity} level={level} applyAff={applyAff} ownedCount={ownedCount} storeDate={storeDate} setStoreDate={setStoreDate} addLogEntry={addLogEntry} clubFilter={clubFilter} addMahwaLog={addMahwaLog} inventory={inventory} setInventory={setInventory} customTasks={customTasks} setCustomTasks={setCustomTasks} setGachaCount={setGachaCount} roomItems={roomItems} setRoomItems={setRoomItems} maxLvReached={maxLvReached} setMaxLvReached={setMaxLvReached} wizardStats={wizardStats} setWizardStats={setWizardStats} logs={logs}/>}
       {page==='record'&&<RecordPage logs={logs} wizards={wizards} onMarkRead={onMarkRead} onTestFinalize={onTestFinalize} lastWeeklyReport={lastWeeklyReport} onShowWeeklyReport={function(r){setWeeklyReportData(r);}}/>}
