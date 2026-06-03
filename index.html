@@ -4140,7 +4140,7 @@ function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,ap
                 var done=prog.rewards[r.ep]!==null;
                 var isCurrent=!done&&r.ep===nextEpNum;
                 var isCompletion=r.ep===99;
-                var storyUnlocked=!isCompletion&&prog.unlockedEps.includes(r.unlock_story_ep);
+                var storyUnlocked=prog.unlockedEps.includes(r.unlock_story_ep);
                 var isLast=idx===(meta.rewards.length-1);
                 // 해당 회차 아이템
                 var epItems=meta.items&&meta.items.filter(function(i){return i.granted_at_ep===r.ep;});
@@ -4157,7 +4157,7 @@ function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,ap
                     </div>
                     <div style={{flexShrink:0,display:'flex',alignItems:'center',gap:6}}>
                       {done&&prog.rewards[r.ep]&&<span style={{fontSize:10,color:'var(--color-text-tertiary)'}}>{new Date(prog.rewards[r.ep].grantedAt).toLocaleDateString('ko-KR',{month:'short',day:'numeric'})}</span>}
-                      {!isCompletion&&storyUnlocked&&(
+                      {storyUnlocked&&(
                         <button onClick={function(){openStory(r.unlock_story_ep);}}
                           style={{width:32,height:32,borderRadius:8,border:'0.5px solid '+evBorder,background:evBg,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:15,fontFamily:'inherit'}}>
                           📖
