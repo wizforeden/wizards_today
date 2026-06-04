@@ -4577,6 +4577,13 @@ function AppInner({onForceReset}){
       // eventProgress (24)
       var epVal={};
       if(vals[24]!==null){try{epVal=JSON.parse(vals[24]);}catch(e){}}
+      // 마이그레이션: rewards[99] 수령 완료인데 unlockedEps에 4가 없는 경우 보정
+      Object.keys(epVal).forEach(function(eid){
+        var ep=epVal[eid];
+        if(ep.rewards&&ep.rewards[99]&&!ep.unlockedEps.includes(4)){
+          ep.unlockedEps=[...new Set([...ep.unlockedEps,4])];
+        }
+      });
       setEventProgress(epVal);
       // 주간 리포트 자동 트리거 (월요일 접속 시, 아직 안 본 경우)
       var shown=vals[20]||'';
