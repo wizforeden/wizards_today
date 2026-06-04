@@ -1680,8 +1680,9 @@ function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
 
   function handleComplete(){
     if(isCompletingRef.current)return;
-    isCompletingRef.current=true;
-    try{localStorage.removeItem('app:focusSession_normal');}catch(e){}
+isCompletingRef.current=true;
+clearInterval(saveSessionRef.current);
+try{localStorage.removeItem('app:focusSession_normal');}catch(e){}
     var b=getFocusBonus(elapsed);
     setResultModal({baseAff,bonusAff:b.aff,baseMahwa:10,bonusMahwa:b.mahwa,hasBonus:b.aff>0||b.mahwa>0});
   }
@@ -3452,7 +3453,8 @@ function FocusMode({wiz,taskLabel,targetMs,focusDialogue,onComplete,onGiveUp,bas
         <div style={{width:'100%',display:'flex',flexDirection:'column',gap:8,marginTop:'auto',flexShrink:0,paddingBottom:24}}>
           <button onClick={function(){
             if(!canComplete)return;
-            try{localStorage.removeItem('app:focusSession_event');}catch(e){}
+clearInterval(saveSessionRef.current);
+try{localStorage.removeItem('app:focusSession_event');}catch(e){}
             var b=getFocusBonus(elapsed);
             var totalAffForModal=(baseAff||20)+(bonusD||0)+(clubBonus||0)+b.aff;
             setFocusResultModal({totalAff:totalAffForModal,totalMahwa:10+b.mahwa,hasBonus:b.aff>0||b.mahwa>0});
