@@ -3934,7 +3934,9 @@ function EventPage({meta,story,prog,setProg,wizards,setWizards,mahwa,setMahwa,ap
           });
         }
         if(cItems&&cItems.length)grantEventItems(cItems,99);
+        var cUnlocked=[...new Set([...updated.unlockedEps,cReward&&cReward.unlock_story_ep].filter(Boolean))];
         updated.rewards={...newRewards,99:{grantedAt:new Date().toISOString(),weekKey:weekKey()}};
+        updated.unlockedEps=cUnlocked;
         setTimeout(function(){setRewardInfo({ep:99,isCompletion:true,hasTimebonus,bonusMahwa,totalMahwa,reward:cReward,items:cItems});},400);
       }
       return updated;
