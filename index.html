@@ -691,12 +691,7 @@ function nextEventEp(prog){
 function allEventEpsCompleted(prog){
   return[1,2,3].every(function(ep){return prog.rewards[ep]!==null;});
 }
-function fmtTimer(ms){
-  if(ms<=0)return'00:00';
-  var total=Math.floor(ms/1000);
-  var m=Math.floor(total/60),s=total%60;
-  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-}
+
 function Avatar({wiz,size}){
   var s=size||36;var[err,setErr]=useState(false);
   var st={width:s,height:s,borderRadius:'50%',overflow:'hidden',flexShrink:0,border:'0.5px solid rgba(0,0,0,0.12)'};
@@ -755,7 +750,7 @@ function TaskPickerModal({tasks,favTasks,selected,onSelect,onClose}){
     return<span key={(keyPfx||'')+t.id} onClick={()=>{onSelect(t.id);onClose();}} style={{fontSize:12,padding:'5px 12px',borderRadius:20,border:'0.5px solid '+(sel?'var(--color-primary)':'rgba(0,0,0,0.13)'),background:sel?'var(--color-primary)':'rgba(255,255,255,0.9)',color:sel?'white':'var(--color-text-primary)',cursor:'pointer',transition:'all 0.12s',fontWeight:sel?500:400}}>{t.name}</span>;
   }
   return(
-    <Overlay>
+    <Overlay onClose={onClose}>
       <div style={{background:'white',borderRadius:14,padding:'20px 18px',maxWidth:310,width:'92%',border:'0.5px solid #D8D8D8',boxShadow:'0 6px 28px rgba(0,0,0,0.10)',maxHeight:'78vh',overflowY:'auto'}}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
           <span style={{fontSize:12,fontWeight:600,letterSpacing:'0.3px',color:'var(--color-text-secondary)'}}>임무 선택</span>
@@ -836,7 +831,7 @@ function WizardPickerModal({wizards,disabledIds,affinity,level,onSelect,onClose}
   });
 
   return(
-    <Overlay>
+    <Overlay onClose={onClose}>
       <div style={{background:'white',borderRadius:14,padding:'20px 18px',maxWidth:310,width:'92%',border:'0.5px solid #D8D8D8',boxShadow:'0 6px 28px rgba(0,0,0,0.10)',maxHeight:'78vh',overflowY:'auto'}}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
           <div style={{display:'flex',alignItems:'center',gap:8}}>
@@ -872,8 +867,8 @@ function WizardPickerModal({wizards,disabledIds,affinity,level,onSelect,onClose}
     </Overlay>
   );
 }
-function Overlay({children}){
-  return<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.28)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:100}}>{children}</div>;
+function Overlay({children,onClose}){
+  return<div onClick={onClose?function(e){if(e.target===e.currentTarget)onClose();}:undefined} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.28)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:100}}>{children}</div>;
 }
 function ConfirmModal({msg,onConfirm,onCancel,confirmDisabled,confirmLabel,cancelLabel,danger}){
   return(
@@ -1658,7 +1653,9 @@ function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
   })();
   var[elapsed,setElapsed]=useState(_initElapsed);
   var[showGiveUp,setShowGiveUp]=useState(false);
+  var[confirmComplete,setConfirmComplete]=useState(false);
   var[resultModal,setResultModal]=useState(null);
+  var isPausedRef=useRef(false);
   var[showWakeNotice,setShowWakeNotice]=useState(function(){  // ← 여기
     try{return!localStorage.getItem('focus_wake_notice_seen');}catch(e){return true;}
   });
@@ -1672,7 +1669,7 @@ function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
   useEffect(function(){
     // 세션 저장 (5초마다)
     saveSessionRef.current=setInterval(function(){
-      if(!isVisibleRef.current)return;
+      if(!isVisibleRef.current||isPausedRef.current)return;
       try{localStorage.setItem(_SESSION_KEY,JSON.stringify({wizardId:wiz.id,taskId:task.id,targetMs:targetMs,elapsed:elapsedRef.current}));}catch(e){}
     },5000);
     function handleVis(){
@@ -1686,7 +1683,7 @@ function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
     document.addEventListener('visibilitychange',handleVis);
     lastTickRef.current=Date.now();
     intervalRef.current=setInterval(function(){
-      if(!isVisibleRef.current)return;
+      if(!isVisibleRef.current||isPausedRef.current){lastTickRef.current=Date.now();return;}
       var now=Date.now();
       var delta=now-(lastTickRef.current||now);
       lastTickRef.current=now;
@@ -1722,11 +1719,24 @@ function FocusTimerPage({wiz,task,targetMs,inventory,onComplete,onForfeit}){
 
   function handleComplete(){
     if(isCompletingRef.current)return;
-isCompletingRef.current=true;
-clearInterval(saveSessionRef.current);
-try{localStorage.removeItem('app:focusSession_normal');}catch(e){}
+    isPausedRef.current=true;
+    setConfirmComplete(true);
+  }
+
+  function handleConfirmYes(){
+    if(isCompletingRef.current)return;
+    isCompletingRef.current=true;
+    setConfirmComplete(false);
+    clearInterval(saveSessionRef.current);
+    try{localStorage.removeItem('app:focusSession_normal');}catch(e){}
     var b=getFocusBonus(elapsed);
     setResultModal({baseAff,bonusAff:b.aff,baseMahwa:10,bonusMahwa:b.mahwa,hasBonus:b.aff>0||b.mahwa>0});
+  }
+
+  function handleConfirmNo(){
+    setConfirmComplete(false);
+    lastTickRef.current=Date.now();
+    isPausedRef.current=false;
   }
 
   function handleResultConfirm(){
@@ -1759,7 +1769,22 @@ try{localStorage.removeItem('app:focusSession_normal');}catch(e){}
       </div>
     );
   }
-
+  if(confirmComplete){
+    return(
+      <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.4)',zIndex:600,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 24px'}}>
+        <div style={{background:'white',borderRadius:14,padding:'20px',maxWidth:280,width:'100%',border:'0.5px solid #D0D0D0',boxShadow:'0 4px 20px rgba(0,0,0,0.12)',textAlign:'center'}}>
+          <div style={{fontSize:14,fontWeight:600,color:'var(--color-text-primary)',marginBottom:8}}>임무를 완료할까요?</div>
+          <div style={{fontSize:12,color:'var(--color-text-tertiary)',marginBottom:18,lineHeight:1.7}}>
+            집중 시간 {fmtTimerHMS(elapsed)}<br/>확인하는 동안 타이머는 멈춰 있습니다.
+          </div>
+          <div style={{display:'flex',gap:8}}>
+            <button onClick={handleConfirmNo} style={{flex:1,padding:'10px',borderRadius:8,border:'0.5px solid rgba(0,0,0,0.15)',background:'white',fontSize:13,color:'var(--color-text-secondary)',cursor:'pointer',fontFamily:'inherit'}}>취소</button>
+            <button onClick={handleConfirmYes} style={{flex:1,padding:'10px',borderRadius:8,border:'none',background:'var(--color-primary)',color:'white',fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:'inherit'}}>확인</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   if(resultModal){
     return(
       <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.4)',zIndex:600,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 24px'}}>
@@ -1950,11 +1975,12 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
       onComplete={function(result){
         setFocusTimerActive(false);
         onFocusComplete(result,focusWiz,focusTask);
-        setFocusSlot({taskId:null,wizardId:null,targetMs:0});
+        setFocusSlot(function(p){return{...p,result:'success',resultLine:getLine(focusWiz.id,'TASK_SUCCESS')};});
       }}
       onForfeit={function(useTicket){
         setFocusTimerActive(false);
         onFocusForfeit(focusWiz,useTicket);
+        setFocusSlot(function(p){return{...p,result:'failure',resultLine:getLine(focusWiz.id,'TASK_FAILURE')};});
       }}/>;
   }
 
@@ -2016,10 +2042,15 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
               </div>
               {/* 대사창 — 마법사 선택 후 */}
               {focusWiz&&(function(){
-                var tagMatch=focusWiz.tags&&focusTask&&focusWiz.tags.includes(focusTask.tag);
-                var dlgKey=tagMatch?'TASK_MATCH':'TASK_UNMATCH';
-                var lines=_dlg[focusWiz.id]&&_dlg[focusWiz.id][dlgKey];
-                var dialogue=lines&&lines.length?lines[Math.floor(hashStr(gameDay()+focusWiz.id)%lines.length)]:null;
+                var dialogue=null;
+                if(focusSlot&&focusSlot.result&&focusSlot.resultLine){
+                  dialogue=focusSlot.resultLine;
+                }else{
+                  var tagMatch=focusWiz.tags&&focusTask&&focusWiz.tags.includes(focusTask.tag);
+                  var dlgKey=tagMatch?'TASK_MATCH':'TASK_UNMATCH';
+                  var lines=_dlg[focusWiz.id]&&_dlg[focusWiz.id][dlgKey];
+                  dialogue=lines&&lines.length?lines[Math.floor(hashStr(gameDay()+focusWiz.id)%lines.length)]:null;
+                }
                 return dialogue?(
                   <div style={{display:'flex',gap:10,alignItems:'flex-start',padding:'9px 11px',background:'rgba(255,255,255,0.55)',borderRadius:'var(--border-radius-md)',border:'0.5px solid '+focusWiz.border}}>
                     <Avatar wiz={focusWiz} size={40}/>
@@ -2054,14 +2085,14 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
             </div>
 
             {/* 임무 확정 버튼 */}
-            <button onClick={function(){if(focusCanConfirm)setFocusTimerActive(true);}} disabled={!focusCanConfirm}
+            <button onClick={function(){if(focusCanConfirm){setFocusSlot(function(p){return{...p,result:null,resultLine:null};});setFocusTimerActive(true);}}} disabled={!focusCanConfirm}
               style={{marginTop:4,background:focusCanConfirm?'var(--color-primary)':'rgba(0,0,0,0.07)',color:focusCanConfirm?'white':'var(--color-text-tertiary)',border:'none',borderRadius:'var(--border-radius-lg)',padding:'11px 0',fontSize:13,fontWeight:500,cursor:focusCanConfirm?'pointer':'not-allowed',transition:'background 0.2s',fontFamily:'inherit'}}>
               임무 확정
             </button>
           </div>
         )}
       </div>
-      {modal&&modal.type==='focusTask'&&<TaskPickerModal tasks={[...tasks,...([]||[])]} favTasks={favTasks} selected={focusSlot&&focusSlot.taskId} onSelect={function(tid){setFocusSlot(function(p){return{...p,taskId:tid,wizardId:null};});setModal(null);}} onClose={function(){setModal(null);}}/>}
+      {modal&&modal.type==='focusTask'&&<TaskPickerModal tasks={[...tasks,...([]||[])]} favTasks={favTasks} selected={focusSlot&&focusSlot.taskId} onSelect={function(tid){setFocusSlot(function(p){return{...p,taskId:tid,wizardId:null,result:null,resultLine:null};});setModal(null);}} onClose={function(){setModal(null);}}/>}
       {modal&&modal.type==='focusWiz'&&(function(){
         // 진행중(active) 슬롯의 마법사는 선택 불가
         var activeWizIds=slots.filter(function(sl){return sl.status==='active';}).map(function(sl){return sl.wizardId;}).filter(Boolean);
@@ -2085,7 +2116,7 @@ function MissionPage({wizards,tasks,mahwa,doneCount,affinity,affinityChanges,lev
               }
             }
           });
-          setFocusSlot(function(p){return{...p,wizardId:wid};});
+          setFocusSlot(function(p){return{...p,wizardId:wid,result:null,resultLine:null};});
           setModal(null);
         }} onClose={function(){setModal(null);}}/>;
       })()}
@@ -4451,8 +4482,8 @@ function AppInner({onForceReset}){
   var[eventFocusRestore,setEventFocusRestore]=useState(null); // 이벤트 집중 복구용 {wizardId}
   var[initFocusActive,setInitFocusActive]=useState(false);    // 일반 집중 복구용
   var[focusSlot,setFocusSlot]=useState(function(){
-    try{var v=localStorage.getItem('app:focusSlotSession');return v?JSON.parse(v):{taskId:null,wizardId:null,targetMs:0};}
-    catch(e){return{taskId:null,wizardId:null,targetMs:0};}
+    try{var v=localStorage.getItem('app:focusSlotSession');return v?JSON.parse(v):{taskId:null,wizardId:null,targetMs:0,result:null};}
+    catch(e){return{taskId:null,wizardId:null,targetMs:0,result:null};}
   });
   var tasks=[...customTasks,...FB_TASKS];
   var currentDayRef = useRef(gameDay());
